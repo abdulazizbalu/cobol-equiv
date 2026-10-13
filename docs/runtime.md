@@ -4,7 +4,7 @@
 Python, modelled on GnuCOBOL 3.1.2 with `cobc -std=default`. The behaviour
 below is checked by generated oracle cases (`src/cobol_equiv/oracle/rules.py`)
 that are compiled and run with GnuCOBOL and compared byte for byte with the
-runtime. Results: `results/oracle_cases.csv`, summary in `results/SUMMARY.md`.
+runtime. Results: `results/gnucobol-<version>/oracle_cases.csv`, summary in `results/SUMMARY.md`.
 Each section names the oracle rules that cover it.
 
 Coverage limits, stated plainly:

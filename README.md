@@ -143,7 +143,7 @@ behaviour was checked on 3.1.2 and 3.2 is in [docs/findings.md](docs/findings.md
   stderr are not compared.
 - The mutation results measure the harness on these programs and these
   mutants only. Which mutants count as "equivalent" is a manual judgement,
-  written down for each one in `results/mutation.csv`.
+  written down for each one in `results/gnucobol-3.1.2/mutation.csv`.
 
 ## Repository layout
 

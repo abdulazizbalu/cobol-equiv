@@ -162,4 +162,4 @@ loancalc, `float-gross` in payroll, `float-divide` in sizeerr,
 runs with the earlier input generator, which shows how much detection
 depends on the sample. Random testing alone is weak against this class of
 error; vectors with deliberate ties are needed.
-Backed by: `results/mutation.csv`.
+Backed by: `results/gnucobol-3.1.2/mutation.csv`.

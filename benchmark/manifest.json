@@ -2,7 +2,7 @@
   "schema": 1,
   "protocol": {
     "file": "docs/benchmark-protocol.md",
-    "status": "drafted, PR open, not merged"
+    "status": "draft under review; not merged"
   },
   "steps": [
     {
@@ -22,7 +22,7 @@
     },
     {
       "id": 4,
-      "name": "analysis, taxonomy, docs",
+      "name": "analysis, taxonomy, report and documentation",
       "status": "not started"
     }
   ],
@@ -32,5 +32,15 @@
     "rosettacodedata_commit": "1d475861d7141ef2fafff293d9339f56e4b0f5db",
     "nist_newcob_val_tar_gz_sha256": "e4513f26a9b38911f7bf882fe3d3339a80b45cabc2caf85eb3055b0f5ce87ee0"
   },
-  "attempts": []
+  "attempts": [],
+  "frozen_before_first_call": {
+    "model_id": null,
+    "runtime_harness_commit": null,
+    "python": null,
+    "hypothesis": "6.169.0",
+    "gnucobol_primary": "3.1.2",
+    "gnucobol_secondary": "3.2",
+    "client_version": null,
+    "api_sheet_sha256": null
+  }
 }

@@ -28,8 +28,9 @@ It is:
    inputs (fixed regression vectors plus Hypothesis-generated ones derived
    from the record layouts), compare stdout and output files byte for byte,
    and report the first difference by line and field name.
-3. **Later (not in this repository yet):** a benchmark and failure taxonomy
-   for LLM-produced translations. There are no LLM features here.
+3. **Benchmark (in progress):** LLM-produced translations measured with
+   the harness, under the pre-registered protocol in
+   [docs/benchmark-protocol.md](docs/benchmark-protocol.md).
 
 ## Current results
 
@@ -136,8 +137,7 @@ behaviour was checked on 3.1.2 and 3.2 is in [docs/findings.md](docs/findings.md
   backed by tests and, where one exists, a GnuCOBOL ticket or NEWS entry. We
   did not have the text of the COBOL standard, so no statement here says
   what the standard requires.
-- The corpus is small (10 programs), written by the author of this
-  repository for this purpose. It is not production code and does not
+- The corpus is small (10 programs), written for this repository. It is not production code and does not
   represent the size, style or history of real mainframe applications.
 - The harness compares stdout and output files only; the exit status and
   stderr are not compared.

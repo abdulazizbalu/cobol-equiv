@@ -342,6 +342,33 @@ def rule_arith(rng, n_per_variant=45):
     return cases
 
 
+def rule_arith_edited_giving(rng, n=120):
+    """Arithmetic GIVING into numeric-edited receivers, with results that fit
+    and results wider than the receiver."""
+    cases = []
+    pics = ["-(7)9.99", "ZZZ9", "Z,ZZ9.99-", "$$$9.99", "---9", "+ZZZ9.9", "ZZ9.99CR", "9(4)"]
+    for i in range(n):
+        ep = pics[i % len(pics)]
+        if ep == "9(4)":
+            ep = "ZZZ9.9"
+        a_pic, b_pic = "S9(9)V99", "S9(5)V99"
+        av = scaled_decimal(rng.randint(-10**11 + 1, 10**11 - 1) // pick(rng, [1, 10, 1000, 10**6]), 2)
+        bv = scaled_decimal(rng.randint(-10**7 + 1, 10**7 - 1), 2)
+        a, b, t = Num("A", a_pic), Num("B", b_pic), Edited("T", ep)
+        op = pick(rng, ["ADD", "SUBTRACT", "MULTIPLY"])
+        if op == "ADD":
+            st, fn = "ADD {A} TO {B} GIVING {T}", lambda f: arith.add_giving([f["A"], f["B"]], f["T"])
+        elif op == "SUBTRACT":
+            st, fn = "SUBTRACT {B} FROM {A} GIVING {T}", lambda f: arith.subtract_giving([f["B"]], f["A"], f["T"])
+        else:
+            st, fn = "MULTIPLY {A} BY {B} GIVING {T}", lambda f: arith.multiply_giving(f["A"], f["B"], f["T"])
+        cases.append(Case(
+            "arith_edited_giving", f"{op} {num_literal(av)} {num_literal(bv)} -> {ep}", [a, b, t],
+            [f"MOVE {num_literal(av)} TO {{A}}", f"MOVE {num_literal(bv)} TO {{B}}", st],
+            (lambda f, av=av, bv=bv, fn=fn: (move(av, f["A"]), move(bv, f["B"]), fn(f))), [("hex", "T")]))
+    return cases
+
+
 def rule_divide_remainder(rng, n=60):
     cases = []
     qpics = ["S9(4)", "S9(3)V9", "9(3)V99", "S9(2)", "S9(5)V9(3)"]
@@ -495,6 +522,7 @@ RULES = {
     "edit": rule_edit,
     "arith": rule_arith,
     "arith_divide_remainder": rule_divide_remainder,
+    "arith_edited_giving": rule_arith_edited_giving,
     "compute_intermediate": rule_compute_expr,
     "binary_store": rule_binary_store,
     "display_format": rule_display_format,

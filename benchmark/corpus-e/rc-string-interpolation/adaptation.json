@@ -1,0 +1,6 @@
+{
+  "edits": [
+    ["       01  extra PIC X(6) VALUE \"little\".\n", "       01  extra PIC X(6).\n"],
+    ["       PROCEDURE DIVISION.\n", "       PROCEDURE DIVISION.\n           ACCEPT extra\n"]
+  ]
+}

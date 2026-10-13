@@ -125,6 +125,11 @@ def store_numeric(dst: FieldRef, neg: bool, mag: int, scale: int, *,
         # editing reads it for a trailing + or - (see edit.py)
         # (MOVE only; arithmetic results are stored at the receiver's scale)
         extra = (mag // 10 ** (scale - p.scale - 1)) % 10 if edit_extra and scale > p.scale else 0
+        if not edit_extra:
+            # an arithmetic result is first stored in a DISPLAY temporary of
+            # the receiver's digits (high-order truncation), then edited; a
+            # MOVE edits the sender's digits (rule arith_edited_giving)
+            m %= 10 ** p.digits
         dst.set_raw(edit(p, is_neg, m, extra))
         return overflow
     u = dst.usage

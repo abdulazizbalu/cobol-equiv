@@ -1,14 +1,25 @@
 # Runtime: supported COBOL subset
 
 `cobol_equiv.runtime` implements COBOL data and arithmetic semantics in pure
-Python, modelled on GnuCOBOL 3.1.2 with `cobc -std=default`. Every rule below
-is exercised by generated oracle cases (`src/cobol_equiv/oracle/rules.py`)
+Python, modelled on GnuCOBOL 3.1.2 with `cobc -std=default`. The behaviour
+below is checked by generated oracle cases (`src/cobol_equiv/oracle/rules.py`)
 that are compiled and run with GnuCOBOL and compared byte for byte with the
 runtime. Results: `results/oracle_cases.csv`, summary in `results/SUMMARY.md`.
+Each section names the oracle rules that cover it.
 
-When a case is outside this subset the runtime raises
+Coverage limits, stated plainly:
+
+* figurative constants, group moves, `INITIALIZE` and `OCCURS` subscripting
+  are covered by a small rule (`figurative_group`, a few dozen cases), not
+  by a systematic generator;
+* sequential files are covered by `tests/oracle/test_files.py` (four
+  inputs), not by the oracle rules;
+* the runtime accepts some editing PICTUREs that cobc rejects (for example
+  `$$$,$$$.$$CR`); PICTURE validation is not a goal.
+
+When a case is outside the subset the runtime raises
 `cobol_equiv.runtime.errors.Unsupported` (or `MoveError` / `PicError`) instead
-of guessing.
+of guessing. Unsupported cases are counted separately in the results.
 
 ## Data description
 
@@ -60,8 +71,10 @@ form of zero (GnuCOBOL's default; checked by rule `default_init`).
   receiver does the same only from a DISPLAY sender. All other cases give a
   positive zero.
 * COMP is truncated to its PICTURE digits (GnuCOBOL `binary-truncate: yes`).
-  COMP-5 is not: `MOVE 99999` to `S9(4) COMP-5` wraps the 16-bit value to
-  `-31073`.
+  COMP-5 is not: moving an item holding 99999 to `S9(4) COMP-5` wraps the
+  16-bit value to `-31073`.
+* A numeric literal that truncates to zero keeps its sign: `MOVE -0.004` to
+  `S9V99` stores a negative zero (rule `literal_truncation`).
 * Integer numeric to alphanumeric: the PICTURE digits without sign, then
   alphanumeric padding/truncation. Non-integer numeric to alphanumeric is
   rejected by cobc and by the runtime.
@@ -70,6 +83,9 @@ form of zero (GnuCOBOL's default; checked by rule `default_init`).
   implementation-specific results in GnuCOBOL and raises `MoveError` here.
 * Alphanumeric / group moves: left-justified, space-padded, truncated on the
   right. Group moves copy bytes without conversion.
+* Refused: alphanumeric to numeric-edited, and numeric-edited to numeric or
+  numeric-edited. GnuCOBOL converts these numerically (`MOVE "123"` to
+  `ZZZ9` gives `" 123"`); the runtime does not model that conversion.
 * Figuratives: `SPACES`, `ZEROS`, `HIGH_VALUES`, `LOW_VALUES`, `All("x")`.
 * A numeric literal with more integer digits than the receiver is refused
   (cobc warns, and the resulting sign is inconsistent between items).
@@ -85,6 +101,9 @@ differ from a naive reading of the standard:
 
 * the first symbol of a floating string consumes one high-order digit; if it
   is non-zero, suppression ends: `1000` edited with `---9` gives `" 000"`;
+* a trailing `+` or `-` reads the sender's next digit after the receiver's
+  last decimal place; if it is non-zero the value counts as non-zero:
+  `-0.5` edited with `ZZZ9-` gives `"   0-"` (rule `edit_trailing_sign`);
 * a fixed leading sign or currency symbol combined with a floating string
   (e.g. `-$$$9.99`) is not supported: GnuCOBOL 3.1.2 prints `-` for positive
   values there (pinned by `tests/oracle/test_gnucobol_quirks.py`).
@@ -106,6 +125,13 @@ err = compute(ws["T"], dec(ws["BAL"]) * dec(ws["RATE"]) / 1200, rounded=True)
   value is truncated on the left (COMP-5: wraps).
 * Division by zero is a size error; the receiver is unchanged even without
   ON SIZE ERROR.
+* `ADD x TO y` / `SUBTRACT x FROM y` with a single operand and no ON SIZE
+  ERROR can be compiled by cobc to an integer fast path with different
+  overflow results (rule `arith_single_operand`): an unsigned COMP-5
+  receiver wraps (`SUBTRACT 1 FROM` a zero `9(4) COMP-5` gives 65535), and a
+  COMP-3 receiver with an even digit count carries into its spare nibble
+  (`ADD 1` to `9(4) COMP-3` holding 9999 stores `x'10000F'`). The runtime
+  refuses these two outcomes for single-operand ADD/SUBTRACT.
 * `DIVIDE ... REMAINDER`: remainder = dividend - divisor * q, with q the
   quotient truncated to the quotient item's decimal places. GnuCOBOL stores
   the remainder even when the quotient had a size error.
@@ -136,17 +162,23 @@ COUNT IN), `inspect_tallying`, `inspect_replacing`, `inspect_converting`.
 Covered forms: DELIMITED BY SIZE / literal, WITH POINTER, ON OVERFLOW;
 UNSTRING with `[ALL] d1 OR [ALL] d2`, no DELIMITED BY, TALLYING IN;
 INSPECT ALL / LEADING / FIRST / CHARACTERS with BEFORE / AFTER INITIAL,
-several phrases in one statement, CONVERTING. One detail: UNSTRING without
-DELIMITED BY advances the pointer by the characters actually taken, not by
-the receiver size.
+several phrases in one statement, CONVERTING. Two details:
+
+* UNSTRING without DELIMITED BY advances the pointer by the characters
+  actually taken, not by the receiver size;
+* INSPECT with several phrases follows GnuCOBOL, not the standard: each
+  phrase scans the whole field in turn and marks what it matched, and later
+  phrases skip marked characters. `INSPECT "ABCABC" TALLYING C1 FOR ALL "BC"
+  C2 FOR ALL "AB"` gives C1=2, C2=0; the standard's position-by-position
+  rule gives C1=0, C2=2.
 
 ## Sequential files
 
 `runtime/files.py` reads and writes LINE SEQUENTIAL and fixed-length record
 sequential files as byte strings. Observed GnuCOBOL 3.1.2 behaviour for LINE
-SEQUENTIAL: short lines are padded with spaces, long lines truncated, a CR
-before LF dropped; WRITE removes trailing spaces. This module is checked only
-through the corpus programs that use files, not by oracle rules.
+SEQUENTIAL: short lines are padded with spaces, long lines truncated, carriage
+returns dropped (also inside a line); WRITE removes trailing spaces. Checked by
+`tests/oracle/test_files.py`.
 
 ## DISPLAY (rule `display_format`)
 

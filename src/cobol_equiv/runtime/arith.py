@@ -20,7 +20,9 @@ without ON SIZE ERROR, matching GnuCOBOL 3.x.
 
 from __future__ import annotations
 
+from . import encoding as enc
 from .cobdec import CobDecimal, dec
+from .errors import Unsupported
 from .move import store_cobdec
 from .storage import FieldRef
 
@@ -57,11 +59,35 @@ def _store_all(results, rounded, on_size_error) -> bool:
     return err
 
 
+def _single_operand_guard(operands, results, on_size_error) -> None:
+    """ADD/SUBTRACT with one operand and no ON SIZE ERROR: GnuCOBOL 3.1.2 may
+    compile this to an integer fast path whose overflow handling differs
+    (oracle rule arith_single_operand): an unsigned COMP-5 receiver wraps
+    instead of taking the absolute value, and a COMP-3 receiver with an even
+    number of digits can carry into its unused high-order nibble. Those two
+    outcomes are refused instead of guessed."""
+    if on_size_error or (isinstance(operands, (list, tuple)) and len(operands) != 1):
+        return
+    for f, _, v in results:
+        p = f.pic
+        if v.nan:
+            continue
+        ip = v.value // 10 ** v.scale if v.value >= 0 else -((-v.value) // 10 ** v.scale)
+        if f.usage == enc.COMP5 and not p.signed and v.value < 0:
+            raise Unsupported(f"single-operand ADD/SUBTRACT giving a negative value in unsigned "
+                              f"COMP-5 {f.name}")
+        if (f.usage == enc.COMP3 and p.digits % 2 == 0
+                and abs(ip) >= 10 ** (p.digits - p.scale)):
+            raise Unsupported(f"single-operand ADD/SUBTRACT overflowing even-digit COMP-3 {f.name}")
+
+
 def add(operands, targets, *, rounded=False, on_size_error=False) -> bool:
     """ADD operands TO targets."""
     s = _sum(operands)
     ts = _targets(targets, rounded)
-    return _store_all([(f, r, dec(f) + s) for f, r in ts], rounded, on_size_error)
+    results = [(f, r, dec(f) + s) for f, r in ts]
+    _single_operand_guard(operands, results, on_size_error)
+    return _store_all(results, rounded, on_size_error)
 
 
 def add_giving(operands, giving, *, rounded=False, on_size_error=False) -> bool:
@@ -74,7 +100,9 @@ def subtract(operands, targets, *, rounded=False, on_size_error=False) -> bool:
     """SUBTRACT operands FROM targets."""
     s = _sum(operands)
     ts = _targets(targets, rounded)
-    return _store_all([(f, r, dec(f) - s) for f, r in ts], rounded, on_size_error)
+    results = [(f, r, dec(f) - s) for f, r in ts]
+    _single_operand_guard(operands, results, on_size_error)
+    return _store_all(results, rounded, on_size_error)
 
 
 def subtract_giving(operands, minuend, giving, *, rounded=False, on_size_error=False) -> bool:

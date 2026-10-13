@@ -100,6 +100,7 @@ def python_line(i: int, c: Case) -> str:
     try:
         st = Storage("CASE", [Group(f"G-{it.name}", [it]) for it in c.items])
         f = {it.name: st[it.name] for it in c.items}
+        f["_storage"] = st
         err = c.py(f)
         parts = [case_tag(i)]
         for kind, x in c.out:
@@ -120,7 +121,8 @@ def python_line(i: int, c: Case) -> str:
 
 def run_chunk(name: str, chunk, build: Path) -> dict[int, str]:
     src = cobol_for_chunk(name, chunk)
-    digest = hashlib.sha256((cobc_version() + src).encode("utf-8")).hexdigest()[:16]
+    key = cobc_version() + "\0" + " ".join(COBC_FLAGS) + "\0" + src
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
     cob = build / f"{name}-{digest}.cob"
     exe = build / f"{name}-{digest}"
     if not exe.exists():

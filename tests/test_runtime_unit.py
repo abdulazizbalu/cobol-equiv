@@ -159,3 +159,33 @@ def test_redefines_and_occurs():
 def test_float_rejected():
     with pytest.raises(TypeError):
         CobDecimal.of(1.5)
+
+
+def test_inspect_phrases_processed_one_after_another():
+    from cobol_equiv.runtime import Phrase, inspect_replacing, inspect_tallying
+
+    st = Storage("W", [Alnum("X", "X(6)", value="ABCABC"), Num("C1", "99"), Num("C2", "99")])
+    inspect_tallying(st["X"], [Phrase("ALL", "BC", counter=st["C1"]),
+                               Phrase("ALL", "AB", counter=st["C2"])])
+    assert (st["C1"].value, st["C2"].value) == (2, 0)
+    inspect_replacing(st["X"], [Phrase("ALL", "BC", by="xy"), Phrase("ALL", "AB", by="pq")])
+    assert st["X"].raw == b"AxyAxy"
+
+
+def test_trailing_sign_reads_next_sender_digit():
+    st = Storage("W", [Num("S", "S9(5)V9(3)"), Edited("E", "ZZZ9-")])
+    move(Decimal("-0.5"), st["S"])
+    move(st["S"], st["E"])
+    assert st["E"].raw == b"   0-"
+
+
+def test_literal_truncated_to_zero_keeps_sign():
+    f = one(Num("X", "S9V99"))
+    move(Decimal("-0.004"), f)
+    assert f.raw == b"00p"
+
+
+def test_alnum_to_edited_refused():
+    st = Storage("W", [Alnum("A", "X(3)", value="123"), Edited("E", "ZZZ9")])
+    with pytest.raises(Unsupported):
+        move(st["A"], st["E"])

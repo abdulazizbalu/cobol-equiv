@@ -171,43 +171,49 @@ def _region(data: bytes, ph: Phrase) -> tuple[int, int]:
 
 
 def _scan(data: bytes, phrases: list[Phrase]):
-    """Yield (phrase index, position, length) for each match, left to right,
-    phrases tried in order at each position (COBOL INSPECT rules)."""
-    regions = [_region(data, ph) for ph in phrases]
-    pats = [b"" if ph.mode == "CHARACTERS" else _text(ph.pattern) for ph in phrases]
-    leading_alive = [True] * len(phrases)
-    first_done = [False] * len(phrases)
-    pos = 0
-    while pos < len(data):
-        hit = None
-        for i, ph in enumerate(phrases):
-            s, e = regions[i]
-            if not s <= pos < e:
-                continue
-            if ph.mode == "CHARACTERS":
-                hit = (i, 1)
-                break
-            n = len(pats[i])
-            if pos + n > e or data[pos:pos + n] != pats[i]:
-                continue
-            if ph.mode == "LEADING" and not leading_alive[i]:
-                continue
-            if ph.mode == "FIRST" and first_done[i]:
-                continue
-            hit = (i, n)
-            break
-        for i, ph in enumerate(phrases):
-            s, _ = regions[i]
-            if ph.mode == "LEADING" and pos >= s and (hit is None or hit[0] != i):
-                leading_alive[i] = False
-        if hit is None:
-            pos += 1
+    """Matches as (phrase index, position, length).
+
+    GnuCOBOL 3.1.2 (libcob/strings.c) handles the phrases one after another,
+    not position by position as the COBOL standard describes: each phrase
+    scans its whole region left to right and marks the characters it
+    matched; a later phrase cannot match a marked character. So
+    INSPECT "ABCABC" TALLYING C1 FOR ALL "BC" C2 FOR ALL "AB" gives C1=2,
+    C2=0 (the standard would give C1=0, C2=2). Searches always see the
+    original data; replacements are applied afterwards.
+    """
+    marks = [False] * len(data)
+    hits = []
+    for i, ph in enumerate(phrases):
+        s, e = _region(data, ph)
+        if ph.mode == "CHARACTERS":
+            for k in range(s, e):
+                if not marks[k]:
+                    marks[k] = True
+                    hits.append((i, k, 1))
             continue
-        i, n = hit
-        if phrases[i].mode == "FIRST":
-            first_done[i] = True
-        yield i, pos, n
-        pos += n
+        pat = _text(ph.pattern)
+        n = len(pat)
+        if ph.mode == "LEADING":
+            k = s
+            while k + n <= e:
+                if data[k:k + n] != pat:
+                    break
+                if not any(marks[k:k + n]):
+                    marks[k:k + n] = [True] * n
+                    hits.append((i, k, n))
+                k += n
+            continue
+        k = s
+        while k + n <= e:
+            if data[k:k + n] == pat and not any(marks[k:k + n]):
+                marks[k:k + n] = [True] * n
+                hits.append((i, k, n))
+                if ph.mode == "FIRST":
+                    break
+                k += n
+            else:
+                k += 1
+    return hits
 
 
 def inspect_tallying(field, phrases: list[Phrase]) -> None:
@@ -223,7 +229,7 @@ def inspect_tallying(field, phrases: list[Phrase]) -> None:
 def inspect_replacing(field: FieldRef, phrases: list[Phrase]) -> None:
     """INSPECT field REPLACING {ALL|LEADING|FIRST} pattern BY repl | CHARACTERS BY c ..."""
     data = bytearray(field.raw)
-    for i, pos, n in list(_scan(bytes(data), phrases)):
+    for i, pos, n in _scan(bytes(data), phrases):
         by = _text(phrases[i].by)
         if len(by) != n:
             raise ValueError("REPLACING operands must have equal length")

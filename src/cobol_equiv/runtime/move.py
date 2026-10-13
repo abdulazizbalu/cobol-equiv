@@ -8,12 +8,17 @@ Implemented MOVE categories (anything else raises MoveError):
                                      unsigned targets; negative zero kept
   numeric        -> numeric-edited   alignment and truncation as above, then
                                      editing (see edit.py)
+  numeric-edited -> alphanumeric     byte copy, alphanumeric rules
   numeric int    -> alphanumeric     the unsigned digits, then alphanumeric rules
   alphanumeric   -> numeric          only when the sending value is all digits:
                                      treated as an unsigned integer
-  alphanumeric/group -> alphanumeric/group/edited
+  alphanumeric/group -> alphanumeric/group
                                      left-justified, space padded, truncated
-                                     on the right
+                                     on the right (a group receiver also takes
+                                     any sender as bytes)
+
+Refused with Unsupported: alphanumeric to numeric-edited and numeric-edited
+to numeric or numeric-edited (GnuCOBOL converts these numerically).
   figuratives    SPACES, ZEROS, HIGH-VALUES, LOW-VALUES, ALL "lit"
 
 Binary truncation (GnuCOBOL default -fbinary-truncate): a COMP item is
@@ -83,7 +88,7 @@ def _scale_to(value: int, from_scale: int, to_scale: int, rounded: bool) -> int:
 
 def store_numeric(dst: FieldRef, neg: bool, mag: int, scale: int, *,
                   rounded: bool = False, keep_on_overflow: bool = False,
-                  sign_mode: str = "arith") -> bool:
+                  sign_mode: str = "arith", edit_extra: bool = False) -> bool:
     """Store sign/magnitude into a numeric or numeric-edited item.
 
     Returns True on size error (value does not fit). With keep_on_overflow the
@@ -110,7 +115,11 @@ def store_numeric(dst: FieldRef, neg: bool, mag: int, scale: int, *,
         overflow = m >= 10 ** p.digits
         if overflow and keep_on_overflow:
             return True
-        dst.set_raw(edit(p, is_neg, m))
+        # the first sender digit right of the receiver's last place: GnuCOBOL's
+        # editing reads it for a trailing + or - (see edit.py)
+        # (MOVE only; arithmetic results are stored at the receiver's scale)
+        extra = (mag // 10 ** (scale - p.scale - 1)) % 10 if edit_extra and scale > p.scale else 0
+        dst.set_raw(edit(p, is_neg, m, extra))
         return overflow
     u = dst.usage
     if u == enc.COMP5:
@@ -130,7 +139,7 @@ def store_numeric(dst: FieldRef, neg: bool, mag: int, scale: int, *,
         return True
     if u == enc.COMP and m >= 1 << 63:
         # GnuCOBOL 3.1.2 converts through a 64-bit integer here; the result is
-        # not a decimal truncation (see docs/semantic-traps.md).
+        # not a decimal truncation (docs/runtime.md, "MOVE").
         raise Unsupported(f"store of a value >= 2**63 into binary item {dst.name}")
     m %= 10 ** p.digits
     if u == enc.DISPLAY:
@@ -193,7 +202,7 @@ def _move1(src, dst: FieldRef) -> None:
         if dcat == NUMERIC:
             _alnum_to_numeric(data, dst)
         elif dcat == NUMERIC_EDITED:
-            _alnum_store(dst, data)
+            raise Unsupported(_TO_EDITED.format(dst.name))
         else:
             _alnum_store(dst, data)
         return
@@ -208,7 +217,10 @@ def _move1(src, dst: FieldRef) -> None:
             ip = dst.pic.digits - dst.pic.scale
             if abs(d.value) // 10 ** d.scale >= 10 ** ip:
                 raise Unsupported(f"numeric literal {d.to_decimal()} does not fit {dst.name}")
-            store_cobdec(dst, d)
+            # a literal that truncates to zero keeps its sign: MOVE -0.004 to
+            # S9V99 stores a negative zero (oracle rule encode_literal)
+            store_numeric(dst, d.value < 0, abs(d.value), d.scale, sign_mode="sender",
+                          edit_extra=True)
         else:
             raise MoveError("MOVE of a numeric literal to alphanumeric: write it as a string")
         return
@@ -229,7 +241,7 @@ def _move1(src, dst: FieldRef) -> None:
             keep = dst.usage == enc.DISPLAY or (
                 dst.usage == enc.COMP3 and src.usage == enc.DISPLAY)
             store_numeric(dst, neg, mag, src.pic.scale,
-                          sign_mode="sender" if keep else "arith")
+                          sign_mode="sender" if keep else "arith", edit_extra=True)
         elif dcat == ALPHANUMERIC:
             _alnum_store(dst, _numeric_digits_text(src))
         else:
@@ -238,15 +250,22 @@ def _move1(src, dst: FieldRef) -> None:
     if scat in (ALPHANUMERIC, ALPHABETIC):
         if dcat == NUMERIC:
             _alnum_to_numeric(src.raw, dst)
+        elif dcat == NUMERIC_EDITED:
+            raise Unsupported(_TO_EDITED.format(dst.name))
         else:
             _alnum_store(dst, src.raw)
         return
     if scat == NUMERIC_EDITED:
-        if dcat in (ALPHANUMERIC, ALPHABETIC, NUMERIC_EDITED):
+        if dcat in (ALPHANUMERIC, ALPHABETIC):
             _alnum_store(dst, src.raw)
             return
-        raise MoveError("de-editing MOVE (numeric-edited to numeric) is not supported")
+        raise Unsupported(f"MOVE from numeric-edited {src.name} to {dcat} {dst.name} "
+                          "(GnuCOBOL de-edits the sender; not modelled)")
     raise MoveError(f"MOVE {scat} -> {dcat} not supported")
+
+
+_TO_EDITED = ("MOVE of alphanumeric data to numeric-edited {} (GnuCOBOL converts the "
+              "sender to a number and edits it; not modelled)")
 
 
 def _alnum_to_numeric(data: bytes, dst: FieldRef) -> None:

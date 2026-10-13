@@ -34,21 +34,28 @@ Source: `results/oracle_cases.csv`, produced by `python -m cobol_equiv.oracle.ru
 | arith_compute | 180 | 179 | 0 | 1 |
 | arith_divide_remainder | 240 | 240 | 0 | 0 |
 | compute_intermediate | 360 | 360 | 0 | 0 |
-| binary_store | 900 | 900 | 0 | 0 |
+| binary_store | 900 | 886 | 0 | 14 |
 | display_format | 306 | 306 | 0 | 0 |
 | string_stmt | 120 | 120 | 0 | 0 |
 | unstring_stmt | 150 | 150 | 0 | 0 |
-| inspect_stmt | 196 | 196 | 0 | 0 |
-| **total** | 6567 | 6500 | 0 | 67 |
+| inspect_stmt | 266 | 266 | 0 | 0 |
+| literal_truncation | 272 | 272 | 0 | 0 |
+| edit_trailing_sign | 420 | 420 | 0 | 0 |
+| arith_single_operand | 400 | 364 | 0 | 36 |
+| figurative_group | 31 | 31 | 0 | 0 |
+| **total** | 7760 | 7643 | 0 | 117 |
 
 Unsupported cases by reason:
 
 | rule | reason | cases |
 |---|---|---|
-| arith_add_to | store of a value >= 2**63 | 2 |
-| arith_compute | store of a value >= 2**63 | 1 |
-| arith_divide_into | store of a value >= 2**63 | 2 |
-| arith_multiply_by | store of a value >= 2**63 | 3 |
-| arith_subtract_giving | store of a value >= 2**63 | 2 |
+| arith_add_to | store of a value >= 2**63 into binary item | 2 |
+| arith_compute | store of a value >= 2**63 into binary item | 1 |
+| arith_divide_into | store of a value >= 2**63 into binary item | 2 |
+| arith_multiply_by | store of a value >= 2**63 into binary item | 3 |
+| arith_single_operand | single-operand ADD/SUBTRACT giving a negative value in unsigned COMP-5 | 11 |
+| arith_single_operand | single-operand ADD/SUBTRACT overflowing even-digit COMP-3 | 25 |
+| arith_subtract_giving | store of a value >= 2**63 into binary item | 2 |
+| binary_store | single-operand ADD/SUBTRACT giving a negative value in unsigned COMP-5 | 14 |
 | edit | PICTURE -$$$9.99 | 28 |
-| move_num_to_num | store of a value >= 2**63 | 29 |
+| move_num_to_num | store of a value >= 2**63 into binary item | 29 |

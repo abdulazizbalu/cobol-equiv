@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import re
 from collections import Counter, OrderedDict
 from pathlib import Path
 
@@ -49,7 +50,7 @@ def oracle_section(rows: list[dict]) -> list[str]:
     for r in rows:
         if r["outcome"] == "unsupported":
             msg = r["python"].split("UNSUPPORTED ", 1)[1]
-            key = msg.split(":")[0] if msg.startswith("PICTURE") else msg.split(" into ")[0]
+            key = msg.split(":")[0] if msg.startswith("PICTURE") else re.sub(r" [A-Z0-9-]+$", "", msg)
             reasons[(r["rule"], key)] += 1
     if reasons:
         out += ["", "Unsupported cases by reason:", ""]
@@ -65,7 +66,7 @@ def corpus_section(rows: list[dict]) -> list[str]:
     if not rows:
         return []
     out = ["## Corpus: reference translations vs GnuCOBOL", "",
-           "Source: `results/corpus.csv`, produced by `python -m cobol_equiv.harness.corpus_run`.", ""]
+           "Source: `results/corpus.csv`.", ""]
     out += _table(["program", "semantic area", "regression vectors", "generated inputs", "result"],
                   [[r["program"], r["area"], r["vectors"], r["generated"], r["result"]] for r in rows])
     return out + [""]
@@ -84,7 +85,7 @@ def mutation_section(rows: list[dict]) -> list[str]:
         table.append([cat, sum(c.values()), c["killed"], c["survived"]])
     table.append(["**total**", sum(tot.values()), tot["killed"], tot["survived"]])
     out = ["## Mutation testing of the harness", "",
-           "Source: `results/mutation.csv`, produced by `python -m cobol_equiv.harness.mutation_run`. "
+           "Source: `results/mutation.csv`. "
            "A mutant is a deliberately wrong copy of a reference translation. "
            "`killed`: the harness reported a difference against GnuCOBOL. "
            "`survived`: no input found a difference.", ""]

@@ -62,7 +62,7 @@ def _check_supported(pic: Pic) -> None:
     if fixed_lead and floating:
         raise Unsupported(
             f"PICTURE {pic.text}: a fixed leading sign or currency symbol combined with a "
-            "floating string gives non-standard results in GnuCOBOL 3.1.2 (see docs/semantic-traps.md)")
+            "floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py)")
     if len(floating) > 1:
         raise Unsupported(f"PICTURE {pic.text}: two floating strings")
     for c in ("$", "+", "-"):
@@ -75,13 +75,17 @@ def _check_supported(pic: Pic) -> None:
         raise Unsupported(f"PICTURE {pic.text}: B after the decimal point")
 
 
-def edit(pic: Pic, neg: bool, mag: int) -> bytes:
+def edit(pic: Pic, neg: bool, mag: int, extra: int = 0) -> bytes:
     """Edit an unsigned magnitude in units of 10**-pic.scale (not yet
     truncated: high-order digits beyond the picture are dropped here) with
-    sign `neg` into the picture's character form."""
+    sign `neg` into the picture's character form.
+
+    `extra` is the sender's next digit after the receiver's last decimal
+    place (0 if none). GnuCOBOL reads it for a trailing + or - sign, so
+    -0.5 edited with ZZZ9- gives "   0-" (oracle rule edit_trailing_sign)."""
     _check_supported(pic)
     width = _integer_positions(pic) + pic.scale
-    digits = str(mag).rjust(width, "0")[-width:] if width else ""
+    digits = (str(mag).rjust(width, "0")[-width:] if width else "") + str(extra)
     it = iter(digits)
 
     def take() -> str:
@@ -133,7 +137,8 @@ def edit(pic: Pic, neg: bool, mag: int) -> bytes:
             end = pos
             out.extend(s if (neg and not is_zero) else "  ")
         elif s in ("+", "-") and trailing:
-            take()
+            if take() != "0":
+                is_zero = suppress = False
             if neg and not is_zero:
                 out.append("-")
             else:

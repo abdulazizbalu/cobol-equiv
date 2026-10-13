@@ -1,10 +1,11 @@
 """Sequential files as byte strings, matching GnuCOBOL 3.1.2 behaviour.
 
-LINE SEQUENTIAL (ORGANIZATION IS LINE SEQUENTIAL), checked by the corpus
-programs that use files:
+LINE SEQUENTIAL (ORGANIZATION IS LINE SEQUENTIAL), checked against GnuCOBOL
+by tests/oracle/test_files.py:
   * READ: one record per line; a short line is padded with spaces, a long
-    line is truncated (the rest of that line is skipped); a carriage return
-    before the newline is dropped; a last line without newline is still read.
+    line is truncated (the rest of that line is skipped); carriage returns
+    are dropped (also inside a line); a last line without newline is still
+    read.
   * WRITE: trailing spaces of the record are removed, then a newline is added.
 
 RECORD SEQUENTIAL (ORGANIZATION IS SEQUENTIAL, fixed-length records): the
@@ -32,8 +33,7 @@ class LineSequentialReader:
         line = next(self._lines, None)
         if line is None:
             return None
-        if line.endswith(b"\r"):
-            line = line[:-1]
+        line = line.replace(b"\r", b"")
         rec = line[: self.size].ljust(self.size, b" ")
         if into is not None:
             into.set_raw(rec)

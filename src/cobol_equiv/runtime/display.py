@@ -13,7 +13,7 @@ pretty-display setting:
 COMP-5 items are rendered with as many digits as the largest value the binary
 field can hold (3, 5, 10 and 20 digits for 1, 2, 4 and 8 bytes), because COMP-5 is not
 truncated to its PICTURE, and without a decimal point even when the PICTURE
-has V (observed with GnuCOBOL 3.1.2; see results/oracle_summary.md).
+has V (observed with GnuCOBOL 3.1.2, oracle rule display_format).
 """
 
 from __future__ import annotations

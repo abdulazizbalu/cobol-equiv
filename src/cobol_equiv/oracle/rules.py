@@ -433,11 +433,11 @@ def rule_display_format(rng):
                     (lambda f, v=v: move(v, f["T"])), [("disp", "T")]))
     # negative zero (DISPLAY / COMP-3) produced by an arithmetic store
     for u in (enc.DISPLAY, enc.COMP3):
-        s, t = Num("S", "S9(6)"), Num("T", "S9(4)", usage=u)
+        s, t = Num("S", "S9(7)"), Num("T", "S9(5)", usage=u)
         cases.append(Case(
             "display_format", f"DISPLAY negative zero {fmt_item(t)}", [s, t],
-            ["MOVE -10000 TO {S}", "ADD {S} TO {T}"],
-            lambda f: (move(Decimal(-10000), f["S"]), arith.add(f["S"], f["T"])), [("disp", "T"), ("hex", "T")]))
+            ["MOVE -100000 TO {S}", "ADD {S} TO {T}"],
+            lambda f: (move(Decimal(-100000), f["S"]), arith.add(f["S"], f["T"])), [("disp", "T"), ("hex", "T")]))
     return cases
 
 
@@ -589,7 +589,7 @@ def rule_inspect(rng, n_per_form=14):
     cases = []
     for form, build, kind in INSPECT_FORMS:
         for _ in range(n_per_form):
-            src = _rtext(rng, "AAB0 *", rng.randint(1, 12))
+            src = _rtext(rng, "AABC0 *", rng.randint(1, 12))
             if rng.random() < 0.3:
                 src = "0" * rng.randint(1, 3) + src
             items = [Alnum("X", f"X({len(src)})"), Num("C1", "9(3)"), Num("C2", "9(3)")]
@@ -618,4 +618,169 @@ RULES.update({
     "string_stmt": rule_string,
     "unstring_stmt": rule_unstring,
     "inspect_stmt": rule_inspect,
+})
+
+
+# ---- rules added after independent review --------------------------------
+
+def rule_literal_truncation(rng):
+    """Numeric literals with more decimal places than the receiver."""
+    cases = []
+    vals = ["-0.004", "0.004", "-0.005", "-1.239", "1.239", "-0.0001", "-12.3456", "9.999"]
+    for pic in ("S9V99", "9V99", "S9(3)V9", "S9(3)", "S99V9(3)"):
+        ip = parse_pic(pic).digits - parse_pic(pic).scale
+        for u in USAGES:
+            for v in vals:
+                if abs(Decimal(v)) >= 10 ** ip:
+                    continue  # high-order overflow of literals is refused (encode_literal)
+                t = Num("T", pic, usage=u)
+                cases.append(Case(
+                    "literal_truncation", f"MOVE {v} TO {fmt_item(t)}", [t],
+                    [f"MOVE {v} TO {{T}}"], (lambda f, v=v: move(Decimal(v), f["T"])), [("hex", "T")]))
+        for epic in ("ZZ9.99-", "Z9.9+", "ZZ9.99CR"):
+            for v in vals:
+                t = Edited("T", epic)
+                cases.append(Case(
+                    "literal_truncation", f"MOVE {v} TO {epic}", [t],
+                    [f"MOVE {v} TO {{T}}"], (lambda f, v=v: move(Decimal(v), f["T"])), [("hex", "T")]))
+    return cases
+
+
+def rule_edit_trailing_sign(rng):
+    """Editing where the sender has more decimal places than the receiver."""
+    cases = []
+    pics = ["ZZZ9-", "999+", "ZZ9.99-", "ZZZ-", "***-", "ZZZ+", "ZZ9.9+", "ZZZ9CR", "-ZZ9", "---9"]
+    vals = ["-0.5", "0.5", "-0.004", "0.004", "-0.05", "-1.5", "12.345", "-12.345", "0", "-0.009"]
+    for sp in ("S9(5)V9(3)", "S9(3)V9"):
+        for su in (enc.DISPLAY, enc.COMP3, enc.COMP):
+            for pic in pics:
+                for v in vals:
+                    s, t = Num("S", sp, usage=su), Edited("T", pic)
+                    q = parse_pic(sp).scale
+                    if len(v.split(".")[-1]) > q and "." in v:
+                        continue
+                    cases.append(Case(
+                        "edit_trailing_sign", f"{v} {fmt_item(s)} -> {pic}", [s, t],
+                        [f"MOVE {v} TO {{S}}", "MOVE {S} TO {T}"],
+                        (lambda f, v=v: (move(Decimal(v), f["S"]), move(f["S"], f["T"]))),
+                        [("hex", "T")]))
+    return cases
+
+
+def rule_arith_single(rng):
+    """ADD / SUBTRACT with one operand (literal or item), the form GnuCOBOL
+    compiles to its integer fast path when the operand is a small integer."""
+    cases = []
+    targets = [("9(4)", enc.COMP5), ("S9(4)", enc.COMP5), ("9(4)", enc.COMP3), ("S9(4)", enc.COMP3),
+               ("9(3)", enc.COMP3), ("9(4)", enc.DISPLAY), ("S9(4)", enc.DISPLAY), ("9(4)", enc.COMP),
+               ("S9(3)V9", enc.COMP3), ("9(2)", enc.COMP5)]
+    operands = [("lit", None, "1"), ("lit", None, "9999"), ("lit", None, "123456789"),
+                ("lit", None, "1234567890"), ("lit", None, "0.5"),
+                ("item", "9", "1"), ("item", "9(9)", "999999999"), ("item", "9(10)", "1"),
+                ("item", "S9(4)", "-2"), ("item", "9V9", "1.0")]
+    starts = ["0", "1", "9999", "9998", "5"]
+    for tp, tu in targets:
+        for kind, opic, oval in operands:
+            for verb in ("ADD", "SUBTRACT"):
+                for se in (False, True):
+                    tv = pick(rng, starts)
+                    t = Num("T", tp, usage=tu)
+                    if Decimal(tv) >= 10 ** (parse_pic(tp).digits - parse_pic(tp).scale):
+                        tv = "1"
+                    items = [t]
+                    if kind == "item":
+                        o = Num("O", opic)
+                        items.append(o)
+                        src = "{O}"
+                    else:
+                        src = oval
+                    st = f"ADD {src} TO {{T}}" if verb == "ADD" else f"SUBTRACT {src} FROM {{T}}"
+                    if se:
+                        st += f' ON SIZE ERROR MOVE "Y" TO SE-FLAG END-{verb}'
+                    cob = [f"MOVE {tv} TO {{T}}"] + ([f"MOVE {oval} TO {{O}}"] if kind == "item" else []) + [st]
+
+                    def py(f, tv=tv, kind=kind, oval=oval, verb=verb, se=se):
+                        move(Decimal(tv), f["T"])
+                        if kind == "item":
+                            move(Decimal(oval), f["O"])
+                            op = f["O"]
+                        else:
+                            op = Decimal(oval)
+                        fn = arith.add if verb == "ADD" else arith.subtract
+                        return fn(op, f["T"], on_size_error=se) and se
+
+                    cases.append(Case(
+                        "arith_single_operand",
+                        f"{verb} {oval}{' ' + opic if opic else ''} {'TO' if verb == 'ADD' else 'FROM'} "
+                        f"{tv} {fmt_item(t)}{' SIZE-ERROR' if se else ''}",
+                        items, cob, py, [("flag", ""), ("hex", "T")]))
+    return cases
+
+
+def rule_figurative_group(rng):
+    from ..runtime.move import HIGH_VALUES, LOW_VALUES, SPACES, ZEROS, All, initialize
+    from ..runtime.storage import Group
+
+    cases = []
+    figs = [("SPACES", SPACES), ("ZEROS", ZEROS), ("HIGH-VALUES", HIGH_VALUES),
+            ("LOW-VALUES", LOW_VALUES), ('ALL "AB"', All("AB")), ('ALL "*"', All("*"))]
+    for name, fig in figs:
+        for pic in ("X(5)", "X", "X(12)"):
+            t = Alnum("T", pic)
+            cases.append(Case("figurative_group", f"MOVE {name} TO {pic}", [t], [f"MOVE {name} TO {{T}}"],
+                              (lambda f, fig=fig: move(fig, f["T"])), [("hex", "T")]))
+    for pic in ("S9(3)V99", "9(4)", "ZZ9.99"):
+        for u in (USAGES if parse_pic(pic).category == NUMERIC else [enc.DISPLAY]):
+            t = Num("T", pic, usage=u) if parse_pic(pic).category == NUMERIC else Edited("T", pic)
+            cases.append(Case("figurative_group", f"MOVE ZEROS TO {fmt_item(t)}", [t],
+                              ["MOVE 5 TO {T}", "MOVE ZEROS TO {T}"],
+                              (lambda f: (move(5, f["T"]), move(ZEROS, f["T"]))), [("hex", "T")]))
+
+    def grp(name):
+        return Group(name, [Alnum(name + "A", "X(3)"), Num(name + "N", "S9(3)V9", usage=enc.COMP3),
+                            Num(name + "D", "S99"), Group(name + "T", [Num(name + "E", "9")], occurs=3)])
+
+    # group to group, group to elementary, elementary to group
+    for txt in ("ABC", "1234567890", ""):
+        s = Alnum("S", "X(12)")
+        g = grp("G")
+        lit = _lit(txt) if txt else "SPACES"
+        cases.append(Case("figurative_group", f"MOVE {lit} X(12) TO group", [s, g],
+                          [f"MOVE {lit} TO {{S}}", "MOVE {S} TO {G}"],
+                          (lambda f, txt=txt: (move(txt or SPACES, f["S"]), move(f["S"], f["G"]))),
+                          [("hex", "G")]))
+    g1, g2 = grp("H"), grp("K")
+    cases.append(Case("figurative_group", "MOVE group TO group, INITIALIZE, OCCURS subscripts",
+                      [g1, g2],
+                      ['MOVE "XYZ" TO {H}A', "MOVE -12.5 TO {H}N", "MOVE -7 TO {H}D",
+                       "MOVE 4 TO {H}E(2)", "MOVE {H} TO {K}", "INITIALIZE {H}"],
+                      None, [("hex", "H"), ("hex", "K")]))
+
+    def py_group(f):
+        st = f["_storage"]
+        move("XYZ", st["HA"]); move(Decimal("-12.5"), st["HN"]); move(-7, st["HD"])
+        move(4, st.f("HE", 2)); move(st["H"], st["K"]); initialize(st["H"])
+
+    cases[-1].py = py_group
+    return cases
+
+
+INSPECT_FORMS.extend([
+    ('TALLYING {C1} FOR ALL "BC" {C2} FOR ALL "AB"',
+     lambda f: [_P("ALL", "BC", counter=f["C1"]), _P("ALL", "AB", counter=f["C2"])], "T"),
+    ('TALLYING {C1} FOR LEADING "A" {C2} FOR ALL "AA"',
+     lambda f: [_P("LEADING", "A", counter=f["C1"]), _P("ALL", "AA", counter=f["C2"])], "T"),
+    ('TALLYING {C1} FOR ALL "AA" {C2} FOR LEADING "A"',
+     lambda f: [_P("ALL", "AA", counter=f["C1"]), _P("LEADING", "A", counter=f["C2"])], "T"),
+    ('REPLACING ALL "BC" BY "xy" ALL "AB" BY "pq"',
+     lambda f: [_P("ALL", "BC", by="xy"), _P("ALL", "AB", by="pq")], "R"),
+    ('REPLACING FIRST "AB" BY "12" CHARACTERS BY "-" AFTER INITIAL "B"',
+     lambda f: [_P("FIRST", "AB", by="12"), _P("CHARACTERS", by="-", after="B")], "R"),
+])
+
+RULES.update({
+    "literal_truncation": rule_literal_truncation,
+    "edit_trailing_sign": rule_edit_trailing_sign,
+    "arith_single_operand": rule_arith_single,
+    "figurative_group": rule_figurative_group,
 })

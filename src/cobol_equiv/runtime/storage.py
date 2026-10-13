@@ -124,7 +124,8 @@ class Storage:
         self.placed: dict[str, Placed] = {}
         self.order: list[Placed] = []
         self._place(self.root, 0, ())
-        self.initialize_all()
+        if area is None:  # a supplied area (e.g. a record just read) keeps its bytes
+            self.initialize_all()
 
     def _place(self, item: Item, offset: int, strides: tuple) -> None:
         size = item.elem_size()

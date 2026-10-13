@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 ALLOWED_UNSUPPORTED = (
     "store of a value >= 2**63 into binary item",
     "PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string",
+    "single-operand ADD/SUBTRACT giving a negative value in unsigned COMP-5",
+    "single-operand ADD/SUBTRACT overflowing even-digit COMP-3",
 )
 
 

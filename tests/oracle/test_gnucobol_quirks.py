@@ -1,6 +1,6 @@
 """GnuCOBOL behaviours that the runtime deliberately refuses to model or that
 deviate from the COBOL standard. Each test pins what GnuCOBOL 3.1.2 actually
-does, so docs/semantic-traps.md can cite it."""
+does, so the documentation can cite it."""
 
 import subprocess
 from decimal import Decimal

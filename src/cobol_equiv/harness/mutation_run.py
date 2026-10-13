@@ -8,10 +8,14 @@ is "killed" when the harness reports a difference against GnuCOBOL (on a
 regression vector or a generated input, including a crash of the mutated
 translation), "survived" otherwise.
 
-`equivalent: True` marks a mutant that, by manual analysis written in
-`note`, cannot change the output on the program's input domain. This is a
-judgement, not a proof; the report shows it separately from survivors that
-the harness simply missed.
+Two measurements per mutant: (a) the fixed regression vectors plus the
+Hypothesis-generated inputs; (b) the same plus the general boundary vectors
+of harness/boundary.py, which are derived from the PICTURE clauses only.
+
+`equivalent: True` marks a mutant that, by the argument in docs/mutants.md
+(checked by tests/test_equivalent_mutants.py where a bounded domain allows),
+cannot change the output for any valid input. A mutant labelled equivalent
+that either run kills is reported as "disproved".
 """
 
 from __future__ import annotations
@@ -22,7 +26,7 @@ import sys
 from pathlib import Path
 
 from ..cobc import results_dir
-from .check import check, import_hits
+from .check import check, check_boundary, import_hits
 from .corpus import load_mutants, load_mutated, load_spec, program_dirs
 
 DEFAULT_EXAMPLES = 200
@@ -39,15 +43,28 @@ def run(examples: int = DEFAULT_EXAMPLES, programs: list[str] | None = None) -> 
             if m["category"] not in CATEGORIES:
                 raise ValueError(f"{d.name}/{m['id']}: unknown category {m['category']}")
             mod = load_mutated(d, m)
-            r = check(spec, mod.main, examples, hits_at_import=import_hits(mod))
+            main, hits = mod.main, import_hits(mod)
+            r = check(spec, main, examples, hits_at_import=hits)
             killed = not r.passed
+            if killed:
+                killed_b, by_b, diff_b = True, r.failing_source, r.difference
+            else:
+                _, bad, bd = check_boundary(spec, main, hits_at_import=hits)
+                killed_b, by_b, diff_b = bad is not None, (f"boundary {bad}" if bad else ""), bd
+            equivalent = bool(m.get("equivalent"))
             rows.append({
                 "program": spec.name, "mutant": m["id"], "category": m["category"],
                 "description": m["description"],
                 "status": "killed" if killed else "survived",
-                "survivor_kind": "" if killed else ("equivalent" if m.get("equivalent") else "missed"),
+                "survivor_kind": "" if killed else ("equivalent" if equivalent else "missed"),
                 "detected_by": r.failing_source if killed else "",
                 "difference": r.difference.describe()[:300] if killed else "",
+                "status_with_boundary": "killed" if killed_b else "survived",
+                "detected_by_with_boundary": by_b,
+                "difference_with_boundary": diff_b.describe()[:300] if killed_b else "",
+                # a mutant labelled equivalent must survive both runs
+                "equivalence": ("disproved" if equivalent and killed_b else
+                                "claimed" if equivalent else ""),
                 "note": "" if killed else m.get("note", ""),
             })
     return rows

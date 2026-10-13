@@ -178,6 +178,22 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
     return result
 
 
+def check_boundary(spec: ProgramSpec, main, build_dir: Path | None = None,
+                   hits_at_import: int | None = None):
+    """Run the PICTURE-derived boundary vectors (harness/boundary.py).
+    Returns (number of vectors, index of the first failing vector or None,
+    Difference or None)."""
+    from .boundary import boundary_vectors
+
+    exe = compile_program(spec.source, build_dir or BUILD_DIR)
+    vecs = boundary_vectors(spec.inputs)
+    for i, v in enumerate(vecs, 1):
+        d = run_once(spec, exe, main, v, hits_at_import)
+        if d:
+            return len(vecs), i, d
+    return len(vecs), None, None
+
+
 def load_module(path: Path, name: str = "translation") -> types.ModuleType:
     spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)

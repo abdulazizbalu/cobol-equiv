@@ -154,12 +154,10 @@ Backed by: `test_alnum_moves_and_figuratives` (the runtime refusal only).
 A float-based translation is right on most inputs and wrong on some: values
 near or at a half-cent tie (binary approximation on the wrong side of it, or
 Python's `round()` rounding exact ties to even), and values long enough to
-lose digits. Of the nine float mutants in the committed run, three were
-killed, two are argued equivalent, and four survived the regression vectors
-and up to 200 generated inputs without being equivalent (`float-payment` in
-loancalc, `float-gross` in payroll, `float-divide` in sizeerr,
-`float-discount` in redef). `float-gross` and `float-discount` were killed in
-runs with the earlier input generator, which shows how much detection
-depends on the sample. Random testing alone is weak against this class of
+lose digits, or sums long enough to pass the PICTURE. In the committed
+mutation run (`results/SUMMARY.md`, category `float`) several float mutants
+survive the regression vectors, the generated inputs and the PICTURE
+boundary vectors, each with the reason recorded; which ones a sample catches
+changes with the sample. Random testing alone is weak against this class of
 error; vectors with deliberate ties are needed.
 Backed by: `results/gnucobol-3.1.2/mutation.csv`.

@@ -88,18 +88,19 @@ python -m cobol_equiv.harness.mutation_run    # all mutants -> results/gnucobol-
 `corpus/<name>/mutants.py` lists deliberately wrong variants of the reference
 translation, each as text edits with a category (`float`, `rounding`,
 `truncation`, `sign`, `off-by-one`, `branch`). A mutant is killed when the
-harness reports a difference on a vector or a generated input. Survivors are
-analysed by hand: `equivalent: True` with a `note` when the mutant cannot
-change the output on the program's input domain, otherwise a note on why the
-inputs did not reach the difference. These notes are judgements; the report
-keeps them apart from the counts.
+harness reports a difference on a vector or a generated input. Each mutant
+is measured twice: (a) regression vectors and generated inputs; (b) the same
+plus the boundary vectors derived from the PICTURE clauses
+(`harness/boundary.py`). Survivors carry a `note` on why the inputs did not
+reach the difference; `equivalent: True` marks a mutant that cannot change
+the output, justified in [mutants.md](mutants.md).
 
-What the mutation results show, read plainly: errors in control flow,
+What the mutation results show, read plainly: most errors in control flow,
 signs, truncation and fixed rounding positions are found by the regression
-vectors or the first generated inputs (vectors run first, so they get the
-credit for anything they catch). Floating-point errors are the hardest: they
-change the output only on some inputs (half-cent ties, or values long enough
-to lose precision), and whether the generated sample contains one is partly
-luck. An independent review found one mutant labelled equivalent that was
+vectors or the generated inputs (vectors run first, so they get the credit
+for anything they catch); the survivors and their reasons are listed in
+`results/SUMMARY.md`. Floating-point errors are the hardest: they change the
+output only on some inputs (half-cent ties, or values long enough to lose
+precision), and whether the inputs contain one is partly luck. An independent review found one mutant labelled equivalent that was
 not (see `format-instead-of-edit` in `results/gnucobol-3.1.2/mutation.csv`); the labels are
 judgements and can be wrong.

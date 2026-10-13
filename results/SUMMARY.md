@@ -96,49 +96,49 @@ Source: `results/gnucobol-<version>/corpus.csv`. The reference translations were
 
 | program | semantic area | GnuCOBOL 3.1.2 | GnuCOBOL 3.2 |
 |---|---|---|---|
-| classify | EVALUATE and nested IF classification | pass (vectors 2/2, generated 200) | pass (vectors 2/2, generated 200) |
-| ctlbreak | sequential file with control break | pass (vectors 3/3, generated 200) | pass (vectors 3/3, generated 200) |
-| datecalc | date arithmetic without the system clock | pass (vectors 2/2, generated 200) | pass (vectors 2/2, generated 200) |
-| loancalc | fixed-point interest and loan calculation with ROUNDED | pass (vectors 2/2, generated 200) | pass (vectors 2/2, generated 200) |
-| payroll | COMP-3 payroll with signed values | pass (vectors 2/2, generated 200) | pass (vectors 2/2, generated 200) |
-| redef | REDEFINES and variant records | pass (vectors 2/2, generated 200) | pass (vectors 2/2, generated 200) |
-| report | numeric-edited report lines | pass (vectors 2/2, generated 200) | pass (vectors 2/2, generated 200) |
-| sizeerr | ON SIZE ERROR handling and truncation | pass (vectors 2/2, generated 200) | pass (vectors 2/2, generated 200) |
-| strproc | STRING / UNSTRING / INSPECT | pass (vectors 2/2, generated 200) | FAIL (vectors 1/2, generated 0) |
-| tables | OCCURS tables, SEARCH, PERFORM VARYING | pass (vectors 4/4, generated 200) | pass (vectors 4/4, generated 200) |
+| classify | EVALUATE and nested IF classification | pass (vectors 2/2, generated 200; boundary pass, 9 vectors) | pass (vectors 2/2, generated 200; boundary pass, 9 vectors) |
+| ctlbreak | sequential file with control break | pass (vectors 3/3, generated 200; boundary pass, 5 vectors) | pass (vectors 3/3, generated 200; boundary pass, 5 vectors) |
+| datecalc | date arithmetic without the system clock | pass (vectors 2/2, generated 200; boundary pass, 18 vectors) | pass (vectors 2/2, generated 200; boundary pass, 18 vectors) |
+| loancalc | fixed-point interest and loan calculation with ROUNDED | pass (vectors 2/2, generated 200; boundary pass, 17 vectors) | pass (vectors 2/2, generated 200; boundary pass, 17 vectors) |
+| payroll | COMP-3 payroll with signed values | pass (vectors 2/2, generated 200; boundary pass, 19 vectors) | pass (vectors 2/2, generated 200; boundary pass, 19 vectors) |
+| redef | REDEFINES and variant records | pass (vectors 2/2, generated 200; boundary pass, 3 vectors) | pass (vectors 2/2, generated 200; boundary pass, 3 vectors) |
+| report | numeric-edited report lines | pass (vectors 2/2, generated 200; boundary pass, 19 vectors) | pass (vectors 2/2, generated 200; boundary pass, 19 vectors) |
+| sizeerr | ON SIZE ERROR handling and truncation | pass (vectors 2/2, generated 200; boundary pass, 6 vectors) | pass (vectors 2/2, generated 200; boundary pass, 6 vectors) |
+| strproc | STRING / UNSTRING / INSPECT | pass (vectors 2/2, generated 200; boundary pass, 3 vectors) | FAIL (vectors 1/2, generated 0; boundary pass, 3 vectors) |
+| tables | OCCURS tables, SEARCH, PERFORM VARYING | pass (vectors 4/4, generated 200; boundary pass, 3 vectors) | pass (vectors 4/4, generated 200; boundary pass, 3 vectors) |
 
 strproc on GnuCOBOL 3.2: vector 2: <stdout> line 4, field WS-COMMAS: expected b'01', got b'03'
 
 ## Mutation testing of the harness
 
-Source: `results/gnucobol-3.1.2/mutation.csv`. A mutant is a deliberately wrong copy of a reference translation. `killed`: the harness reported a difference against GnuCOBOL. `equivalent`: survived, and manual analysis (in the CSV `note`) argues it cannot change the output; a judgement, not a proof. `missed`: survived although it can change the output.
+Source: `results/gnucobol-3.1.2/mutation.csv`. A mutant is a deliberately wrong copy of a reference translation; it is killed when the harness reports a difference against GnuCOBOL. Two measurements: (a) the fixed regression vectors and the generated inputs; (b) the same plus the boundary vectors derived from the PICTURE clauses only (`harness/boundary.py`). `equivalent`: labelled as unable to change the output, with the argument or exhaustive check in `docs/mutants.md`; not counted as missed. `missed`: survived and not labelled equivalent.
 
-| category | mutants | killed | survived, equivalent | survived, missed |
+| category | mutants | equivalent | killed (a) | missed (a) | killed (b) | missed (b) |
+|---|---|---|---|---|---|---|
+| branch | 14 | 0 | 14 | 0 | 14 | 0 |
+| off-by-one | 15 | 3 | 10 | 2 | 10 | 2 |
+| sign | 12 | 3 | 9 | 0 | 9 | 0 |
+| float | 9 | 1 | 4 | 4 | 5 | 3 |
+| truncation | 9 | 0 | 9 | 0 | 9 | 0 |
+| rounding | 8 | 2 | 6 | 0 | 6 | 0 |
+| **total** | 67 | 9 | 52 | 6 | 53 | 5 |
+
+Mutants that survived (a):
+
+| program | mutant | kind | (b) | why it survived (a) |
 |---|---|---|---|---|
-| branch | 14 | 14 | 0 | 0 |
-| off-by-one | 15 | 10 | 3 | 2 |
-| sign | 12 | 9 | 3 | 0 |
-| float | 9 | 4 | 2 | 3 |
-| truncation | 9 | 9 | 0 | 0 |
-| rounding | 8 | 6 | 2 | 0 |
-| **total** | 67 | 52 | 10 | 5 |
-
-Surviving mutants:
-
-| program | mutant | kind | why it survived |
-|---|---|---|---|
-| classify | float-compare | equivalent | equivalent mutant: conversion to float is monotonic and every threshold (0, 1000, 10000, 50000, -500) is exactly representable, so no comparison changes |
-| ctlbreak | float-total | equivalent | equivalent while a branch has fewer than about 10**5 records: each amount is below 100000 with two decimals, so the float sum stays within 1e-6 of the exact sum and formatting to two decimals gives the exact cents; the harness generates at most 30 records, so a longer file was not tested |
-| datecalc | range-gt-ge | missed | differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with OFFSET 0); no vector has it, and whether generated inputs do depends on the sample |
-| datecalc | python-floor-division | equivalent | equivalent mutant: WS-YYYY is at least 1601 whenever DATE-TO-NUM runs, so the dividend is never negative and floor and truncating division agree |
-| datecalc | year-unsigned-ignored | equivalent | equivalent mutant: WS-YYYY - 1601 is never negative on any path, so the sign of WS-Y never matters |
-| loancalc | float-payment | missed | not detected: a double keeps about 16 significant digits; the payment is rounded to cents (at most 9 digits), so the float result differs only when the exact value is within about 1e-7 of a half-cent tie; no vector or generated input hit such a case |
-| loancalc | mrate-half-even | equivalent | equivalent mutant for this input domain: RATE/1200 with RATE in thousandths never has a tie at the 9th decimal place, so both rounding modes agree |
-| loancalc | residual-abs | equivalent | equivalent mutant: the balance can never become negative (the principal part is capped at the balance) |
-| loancalc | loop-limit-gt | equivalent | equivalent mutant: in the month equal to TERM the whole balance is paid, so the loop already ends on BALANCE <= 0 |
-| payroll | overtime-ge-40 | equivalent | equivalent mutant: at exactly 40.0 hours the overtime part is 0, so both branches give the same gross |
-| payroll | bracket-lt | equivalent | equivalent mutant: at gross 1000.00 both brackets give tax 100.00 |
-| redef | float-discount | missed | differs only when the line amount lands on a half-cent tie that the float factor moves; whether the generated inputs contain one depends on the sample |
-| sizeerr | float-divide | missed | differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample |
-| sizeerr | count-after-dispatch | missed | differs only when the first record of a file takes the size-error branch (that is, a D or Q record with amount 0, since the accumulator starts at 0); the fixed vectors have none and whether the generated inputs contain one depends on the sample |
-| tables | rank-sign | equivalent | equivalent mutant: WL-QTY (ZZ,ZZ9) has no sign position, so the edited result is the same |
+| classify | float-compare | equivalent | survived | equivalent mutant: conversion to float is monotonic and every threshold (0, 1000, 10000, 50000, -500) is exactly representable, so no comparison changes |
+| ctlbreak | float-total | missed | survived | not equivalent: once a branch total passes 9,999,999.99 (101 records of 99999.99 in one branch) COBOL truncates the total while the mutant's MOVE of the float sum is refused by the runtime; generated and boundary files have at most 30 records, so no branch total gets there. Classified as equivalent before; see docs/mutants.md |
+| datecalc | range-gt-ge | missed | survived | differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with OFFSET 0); no vector has it, and whether generated inputs do depends on the sample |
+| datecalc | python-floor-division | equivalent | survived | equivalent mutant: WS-YYYY is at least 1601 whenever DATE-TO-NUM runs, so the dividend is never negative and floor and truncating division agree |
+| datecalc | year-unsigned-ignored | equivalent | survived | equivalent mutant: WS-YYYY - 1601 is never negative on any path, so the sign of WS-Y never matters |
+| loancalc | float-payment | missed | killed by boundary 7 | not detected: a double keeps about 16 significant digits; the payment is rounded to cents (at most 9 digits), so the float result differs only when the exact value is within about 1e-7 of a half-cent tie; no vector or generated input hit such a case |
+| loancalc | mrate-half-even | equivalent | survived | equivalent mutant for this input domain: RATE/1200 with RATE in thousandths never has a tie at the 9th decimal place, so both rounding modes agree |
+| loancalc | residual-abs | equivalent | survived | equivalent mutant: the balance can never become negative (the principal part is capped at the balance) |
+| loancalc | loop-limit-gt | equivalent | survived | equivalent mutant: in the month equal to TERM the whole balance is paid, so the loop already ends on BALANCE <= 0 |
+| payroll | overtime-ge-40 | equivalent | survived | equivalent mutant: at exactly 40.0 hours the overtime part is 0, so both branches give the same gross |
+| payroll | bracket-lt | equivalent | survived | equivalent mutant: at gross 1000.00 both brackets give tax 100.00 |
+| redef | float-discount | missed | survived | differs only when the line amount lands on a half-cent tie that the float factor moves; whether the generated inputs contain one depends on the sample |
+| sizeerr | float-divide | missed | survived | differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample |
+| sizeerr | count-after-dispatch | missed | survived | differs only when the first record of a file takes the size-error branch (that is, a D or Q record with amount 0, since the accumulator starts at 0); the fixed vectors have none and whether the generated inputs contain one depends on the sample |
+| tables | rank-sign | equivalent | survived | equivalent mutant: WL-QTY (ZZ,ZZ9) has no sign position, so the edited result is the same |

@@ -32,7 +32,6 @@ MUTANTS = [
     },
     {
         "id": "float-total",
-        "equivalent": True,
         "category": "float",
         "description": "branch total accumulated in a Python float and moved at the break",
         "edits": [('        add(sl["SL-AMOUNT"], ws["WS-BRANCH-TOT"])',
@@ -42,10 +41,10 @@ MUTANTS = [
                    '    def branch_break(self):\n        ws = self.ws\n        self.ftot = 0.0\n'),
                   ('from cobol_equiv.runtime.files import', 'from cobol_equiv.runtime import dec\n'
                    'from cobol_equiv.runtime.files import')],
-        "note": "equivalent while a branch has fewer than about 10**5 records: each amount is below "
-                "100000 with two decimals, so the float sum stays within 1e-6 of the exact sum and "
-                "formatting to two decimals gives the exact cents; the harness generates at most 30 "
-                "records, so a longer file was not tested",
+        "note": "not equivalent: once a branch total passes 9,999,999.99 (101 records of 99999.99 "
+                "in one branch) COBOL truncates the total while the mutant's MOVE of the float sum is "
+                "refused by the runtime; generated and boundary files have at most 30 records, so no "
+                "branch total gets there. Classified as equivalent before; see docs/mutants.md",
     },
     {
         "id": "trailing-spaces-kept",

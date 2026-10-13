@@ -122,7 +122,8 @@ READ pads short lines with spaces; WRITE removes trailing spaces. A line
 longer than the record is truncated by GnuCOBOL 3.1.2 but returned as
 further records by 3.2. 3.2 ends the test program on a carriage return
 inside a record (the only control character tested; its NEWS says such a
-READ "may" return status 09). The corpus program `strproc` fails on 3.2 for the first reason.
+READ "may" return status 09). The corpus program `strproc` fails on 3.2
+for the first reason.
 Backed by: `tests/oracle/test_files.py`; mutant `trailing-spaces-kept`
 (ctlbreak); `results/gnucobol-3.2/corpus.csv`.
 

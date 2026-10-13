@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 from ..cobc import results_dir
-from .check import check
+from .check import check, import_hits
 from .corpus import load_mutants, load_mutated, load_spec, program_dirs
 
 DEFAULT_EXAMPLES = 200
@@ -38,7 +38,8 @@ def run(examples: int = DEFAULT_EXAMPLES, programs: list[str] | None = None) -> 
         for m in load_mutants(d):
             if m["category"] not in CATEGORIES:
                 raise ValueError(f"{d.name}/{m['id']}: unknown category {m['category']}")
-            r = check(spec, load_mutated(d, m).main, examples)
+            mod = load_mutated(d, m)
+            r = check(spec, mod.main, examples, hits_at_import=import_hits(mod))
             killed = not r.passed
             rows.append({
                 "program": spec.name, "mutant": m["id"], "category": m["category"],

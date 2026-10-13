@@ -90,7 +90,16 @@ def _caught(n: int, extra: str = "") -> Difference:
                       unsupported=True)
 
 
-def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes]) -> Difference | None:
+def import_hits(module: types.ModuleType) -> int:
+    """Unsupported errors raised while load_module / load_module_from_source
+    imported `module` (including modules it imported)."""
+    return getattr(module, IMPORT_HITS, 0)
+
+
+def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes],
+             hits_at_import: int | None = None) -> Difference | None:
+    """hits_at_import: import_hits() of the module the translation was
+    loaded from; if None, it is looked up in the globals of `main`."""
     stdin = inputs.get(STDIN, b"")
     files = {k: v for k, v in inputs.items() if k != STDIN}
     res = run_program(exe, stdin, files, spec.outputs, spec.timeout)
@@ -116,13 +125,15 @@ def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes]) -> Di
         # the translation caught an Unsupported error and carried on: its
         # output is not trusted even if it happens to match
         return _caught(unsupported_hits())
-    at_import = getattr(main, "__globals__", {}).get(IMPORT_HITS, 0)
+    at_import = (hits_at_import if hits_at_import is not None
+                 else getattr(main, "__globals__", {}).get(IMPORT_HITS, 0))
     if at_import:
         return _caught(at_import, " while its module was imported")
     return compare(res.stdout, res.files, out, out_files or {}, spec.outputs, spec.layouts)
 
 
-def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None = None) -> CheckResult:
+def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None = None,
+          hits_at_import: int | None = None) -> CheckResult:
     from hypothesis import HealthCheck, given, settings
 
     from .strategies import inputs as inputs_strategy
@@ -130,7 +141,7 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
     exe = compile_program(spec.source, build_dir or BUILD_DIR)
     result = CheckResult(spec.name, vectors=len(spec.vectors))
     for i, vec in enumerate(spec.vectors, 1):
-        d = run_once(spec, exe, main, vec)
+        d = run_once(spec, exe, main, vec, hits_at_import)
         if d:
             result.difference, result.failing_input, result.failing_source = d, vec, f"vector {i}"
             return result
@@ -146,7 +157,7 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
     @given(inputs_strategy(spec.inputs))
     def prop(inp):
         counter[0] += 1
-        d = run_once(spec, exe, main, inp)
+        d = run_once(spec, exe, main, inp, hits_at_import)
         if d:
             found["diff"], found["input"] = d, inp
             raise AssertionError(d.describe())
@@ -188,7 +199,7 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     pspec = load_module(Path(a.program_dir) / "spec.py", "program_spec").SPEC
     tr = load_module(Path(a.translation))
-    r = check(pspec, tr.main, a.examples)
+    r = check(pspec, tr.main, a.examples, hits_at_import=import_hits(tr))
     print(f"{r.program}: vectors {r.vectors_passed}/{r.vectors}, generated inputs run: {r.generated}")
     if r.passed:
         print("PASS: no difference found")

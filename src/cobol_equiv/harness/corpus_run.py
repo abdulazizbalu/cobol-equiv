@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 from ..cobc import results_dir
-from .check import check
+from .check import check, import_hits
 from .corpus import load_reference, load_spec, program_dirs
 
 DEFAULT_EXAMPLES = 200
@@ -21,7 +21,8 @@ def run(examples: int = DEFAULT_EXAMPLES) -> list[dict]:
     rows = []
     for d in program_dirs():
         spec = load_spec(d)
-        r = check(spec, load_reference(d).main, examples)
+        ref = load_reference(d)
+        r = check(spec, ref.main, examples, hits_at_import=import_hits(ref))
         rows.append({
             "program": spec.name, "area": spec.area, "vectors": f"{r.vectors_passed}/{r.vectors}",
             "generated": r.generated,

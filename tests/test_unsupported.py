@@ -122,3 +122,44 @@ def test_unsupported_then_other_error_is_unsupported(fake_cobol):
 
     d = run_once(spec, exe, main, {})
     assert d is not None and d.unsupported and "ValueError" in d.detail
+
+
+@pytest.mark.oracle
+@pytest.mark.parametrize("layout", ["helper_module", "partial"])
+def test_import_time_unsupported_when_main_is_elsewhere(tmp_path, capsys, monkeypatch, layout):
+    """main defined in another module, or wrapped in functools.partial: the
+    import-time hit is taken from the loaded module, not from main."""
+    from cobol_equiv.harness.check import main
+
+    prog = tmp_path / "prog"
+    prog.mkdir()
+    (prog / "program.cob").write_text(
+        "       IDENTIFICATION DIVISION.\n"
+        "       PROGRAM-ID. P.\n"
+        "       PROCEDURE DIVISION.\n"
+        '           DISPLAY "HELLO"\n'
+        "           STOP RUN.\n", encoding="utf-8")
+    (prog / "spec.py").write_text(
+        "from pathlib import Path\n"
+        "from cobol_equiv.harness.spec import ProgramSpec\n"
+        'SPEC = ProgramSpec("p", "test", Path(__file__).parent / "program.cob", vectors=[{}])\n',
+        encoding="utf-8")
+    hidden = (
+        "from cobol_equiv.runtime import Edited, Storage\n"
+        "try:\n"
+        '    W = Storage("W", [Edited("E", "-$$$9.99")])\n'
+        "except Exception:\n"
+        "    W = None\n")
+    tr = tmp_path / "tr.py"
+    if layout == "helper_module":
+        name = f"helper_mod_{tmp_path.name}"
+        (tmp_path / f"{name}.py").write_text(
+            hidden + "def main(stdin, files):\n    return b'HELLO\\n', {}\n", encoding="utf-8")
+        monkeypatch.syspath_prepend(str(tmp_path))
+        tr.write_text(f"from {name} import main\n", encoding="utf-8")
+    else:
+        tr.write_text(hidden + "import functools\n"
+                      "def _main(stdin, files, enc):\n    return b'HELLO\\n', {}\n"
+                      "main = functools.partial(_main, enc='x')\n", encoding="utf-8")
+    assert main([str(prog), str(tr), "--examples", "0"]) == 2
+    assert "UNSUPPORTED" in capsys.readouterr().out

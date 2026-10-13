@@ -1,7 +1,7 @@
 """Materialise the benchmark vectors of a program (docs/benchmark-protocol.md,
 section 2) and their expected outputs.
 
-    python -m cobol_equiv.benchmark.vectors [--programs a,b] [--check]
+    python -m cobol_equiv.benchmark.vectors [--programs a,b] [--track E,R]
 
 For each program of both tracks this writes
 `benchmark/vectors/<track>/<name>.json.gz` (gzip, fixed header, so the bytes
@@ -37,7 +37,7 @@ from ..cobc import version_label
 from ..harness.boundary import boundary_vectors
 from ..harness.cobol import BUILD_DIR, CobolError, compile_program, run_program
 from ..harness.spec import STDIN, ProgramSpec
-from .programs import Program, all_programs
+from .programs import Program, programs
 
 ROOT = Path(__file__).resolve().parents[3]
 VECTORS_DIR = ROOT / "benchmark" / "vectors"
@@ -191,10 +191,11 @@ def write(p: Program, doc: dict) -> None:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--programs", default="", help="comma-separated names (default: all)")
+    ap.add_argument("--track", default="E,R", help="comma-separated tracks (T: runner test program)")
     a = ap.parse_args(argv)
     names = [n for n in a.programs.split(",") if n]
     label = version_label()
-    for p in all_programs():
+    for p in [p for t in a.track.split(",") for p in programs(t)]:
         if names and p.name not in names:
             continue
         if label == PRIMARY:

@@ -1,3 +1,19 @@
+"""Track R program (corpus/classify), written for this repository.
+
+Overrides and their reasons:
+- CU-ID: "C" and three digits (readable IDs).
+- CU-TYPE: the codes the program tests (P, B) and others it does not
+  (G, H, I, J, K, F, A, space); readable codes.
+- CU-AGE, CU-DAYS-LATE: half of the values from the thresholds the program
+  compares against, half over 0 .. 120 (age) or the full PICTURE (days
+  late). The age range 0 .. 120 narrows the PICTURE (0 .. 999); it is not
+  stated by the program.
+- CU-BALANCE: half from the thresholds the program compares against, half
+  over -99999.99 .. 99999.99, which narrows the PICTURE (S9(7)V99); not
+  stated by the program.
+These overrides predate the benchmark protocol and are kept unchanged.
+"""
+
 from pathlib import Path
 
 from hypothesis import strategies as st

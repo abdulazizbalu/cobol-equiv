@@ -1,3 +1,15 @@
+"""Track R program (corpus/loancalc), written for this repository.
+
+Overrides and their reasons:
+- LN-ID: "L" and five digits (readable IDs).
+- LN-TERM: 0 .. 480 plus the edge values 0, 1, 12, 360; narrows the
+  PICTURE (0 .. 999) to keep the amortisation loop short; not stated by
+  the program (it rejects only 0).
+- LN-RATE: 0 .. 30 plus edge values up to 99.999; narrows the PICTURE for
+  realistic rates; not stated by the program.
+These overrides predate the benchmark protocol and are kept unchanged.
+"""
+
 from pathlib import Path
 
 from hypothesis import strategies as st

@@ -444,4 +444,48 @@ work, so that the work can be resumed from it.
 
 ## Deviations from protocol
 
-None so far.
+All deviations below were decided during corpus construction (step 2),
+before any translation call.
+
+- **D1 (allowed adaptations).** Adding the missing period after the
+  PROGRAM-ID paragraph is treated as an allowed adaptation. GnuCOBOL 3.1.2
+  rejects `PROGRAM-ID. CBL0001` without it (3.2 accepts it); the course
+  program CBL0001 needs it (`benchmark/corpus-e/omp-cbl0001/ADAPTATION.md`).
+- **D2 (E4 and scoring).** Besides `Unsupported`, `MoveError` and
+  `PicError`, two other runtime refusals count as "outside the runtime
+  subset" for E4: `DataError` (invalid data in a numeric item) and an
+  out-of-range subscript (`IndexError` from the runtime's storage). In both
+  cases GnuCOBOL without runtime checks continues with undefined data,
+  which the runtime does not model. Two Rosetta candidates fail E4 for
+  these reasons (`screening.csv`). In scoring, a translation that raises
+  `DataError` is reported with the runtime refusals (kind "unsupported");
+  any `IndexError` is reported as an error, because a translation's own
+  indexing cannot be told apart from the runtime's. Both are failures.
+- **D3 (where Track E adaptations are recorded).** For the Rosetta Code
+  programs, which are downloaded and not committed, the adaptations are the
+  exact edits in `adaptation.json` and the overrides, fixed vectors and
+  adaptations are described in the docstring of `spec.py`; there is no
+  `ADAPTATION.md`. The course programs have an `ADAPTATION.md`.
+- **D4 (Track R overrides).** Three of the new Track R programs (namefmt,
+  luhn, wordwrap) override an alphanumeric input with the format their
+  header comment states ("LAST,FIRST MIDDLE", card numbers, words), mixed
+  with unrestricted text; this is a domain stated by the program, but in a
+  comment rather than in its validation. Several overrides of the 10
+  existing Track R specs narrow a field without a stated domain (for
+  example balances, rates and hours to realistic ranges). The protocol
+  requires both that overrides have a stated domain and that the existing
+  generators are not changed; the generators were kept and each such
+  override is labelled "not stated by the program" in its spec docstring.
+- **D5 (vector loss as an exclusion reason).** Three Rosetta candidates
+  that meet E1-E6 are excluded because more than 10% of their HELD-OUT
+  inputs would be removed (section 2): the program does not end, exceeds
+  the time limit, or exits with an error on most inputs. They are listed
+  in `screening.csv` with criterion "vectors".
+
+Notes, not deviations: the runtime was extended before the freeze, while
+writing reference translations (ACCEPT from standard input, alphanumeric
+to numeric conversion for items, truncation of arithmetic results stored
+into edited items, reference modification). Each extension is checked
+against GnuCOBOL 3.1.2 and 3.2 (`docs/runtime.md`). Track E selection used
+the corpus as it was then; a candidate excluded for E4 is not re-screened
+after a later runtime change.

@@ -1,3 +1,8 @@
+"""Track R program (corpus/report), written for this repository.
+
+No overrides: every input item uses its full PICTURE domain.
+"""
+
 from pathlib import Path
 
 from cobol_equiv.harness.compare import columns

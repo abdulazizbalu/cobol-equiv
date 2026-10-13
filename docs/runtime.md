@@ -139,6 +139,10 @@ err = compute(ws["T"], dec(ws["BAL"]) * dec(ws["RATE"]) / 1200, rounded=True)
   value is truncated on the left (COMP-5: wraps).
 * Division by zero is a size error; the receiver is unchanged even without
   ON SIZE ERROR.
+* A numeric-edited receiver of an arithmetic statement (GIVING or
+  COMPUTE) gets the result truncated to the edited item's digit positions
+  first, then edited (rule `arith_edited_giving`). A MOVE to an edited item
+  edits the sender's digits instead.
 * `ADD x TO y` / `SUBTRACT x FROM y` with a single operand and no ON SIZE
   ERROR can be compiled by cobc to an integer fast path with different
   overflow results (rule `arith_single_operand`): an unsigned COMP-5
@@ -179,16 +183,29 @@ COUNT IN), `inspect_tallying`, `inspect_replacing`, `inspect_converting`.
 Covered forms: DELIMITED BY SIZE / literal, WITH POINTER, ON OVERFLOW;
 UNSTRING with `[ALL] d1 OR [ALL] d2`, no DELIMITED BY, TALLYING IN;
 INSPECT ALL / LEADING / FIRST / CHARACTERS with BEFORE / AFTER INITIAL,
-several phrases in one statement, CONVERTING. Two details:
+several phrases in one statement, CONVERTING. Three details:
 
 * UNSTRING without DELIMITED BY advances the pointer by the characters
   actually taken, not by the receiver size;
+* UNSTRING into a numeric or numeric-edited receiver moves each piece as
+  alphanumeric text, with the conversion described under MOVE (rule
+  `unstring_stmt`);
 * INSPECT with several phrases follows GnuCOBOL 3.1.2: each phrase scans
   the whole field in turn and marks what it matched, and later phrases skip
   marked characters. `INSPECT "ABCABC" TALLYING C1 FOR ALL "BC" C2 FOR ALL
   "AB"` gives C1=2, C2=0. GnuCOBOL tickets #991 and #992 discuss whether
   this matches the ISO rules (see `docs/findings.md`); we have not read the
   standard text and make no claim about it.
+
+## Reference modification (`tests/oracle/test_refmod.py`)
+
+`refmod(item, start, length=None)` returns an alphanumeric view of bytes
+`start .. start + length - 1` (1-based) of the item, sharing its storage,
+so it can be a sender or a receiver. Without a length it runs to the end of
+the item. A start or length that leaves the item raises `Unsupported`
+(GnuCOBOL without runtime checks would read or write outside it). Checked
+with one program of 61 MOVEs between reference-modified alphanumeric and
+numeric DISPLAY items on each compiler version, not by a generated rule.
 
 ## Sequential files
 

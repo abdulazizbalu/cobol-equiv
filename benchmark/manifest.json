@@ -34,7 +34,7 @@
   },
   "attempts": [],
   "frozen_before_first_call": {
-    "model_id": null,
+    "model_id": "claude-opus-5-5",
     "runtime_harness_commit": null,
     "python": null,
     "hypothesis": "6.169.0",

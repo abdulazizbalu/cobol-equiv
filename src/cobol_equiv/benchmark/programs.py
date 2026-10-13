@@ -12,6 +12,8 @@ ROOT = Path(__file__).resolve().parents[3]
 TRACK_DIRS = {
     "E": [ROOT / "benchmark" / "corpus-e"],
     "R": [ROOT / "corpus", ROOT / "benchmark" / "corpus-r"],
+    # outside both tracks: only for testing the translation runner
+    "T": [ROOT / "benchmark" / "runner-test"],
 }
 
 

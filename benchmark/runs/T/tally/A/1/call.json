@@ -1,0 +1,18 @@
+{
+ "calls": [
+  {
+   "model_ids": [
+    "claude-opus-5-5"
+   ],
+   "problem": "",
+   "started_utc": "2026-10-13T23:24:43+00:00"
+  }
+ ],
+ "client_version": "2.1.296 (Claude Code)",
+ "has_code": true,
+ "model_id_configured": "claude-opus-5-5",
+ "model_ids_reported": [
+  "claude-opus-5-5"
+ ],
+ "started_utc": "2026-10-13T23:24:43+00:00"
+}

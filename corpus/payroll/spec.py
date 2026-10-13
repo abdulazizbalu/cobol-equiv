@@ -1,3 +1,15 @@
+"""Track R program (corpus/payroll), written for this repository.
+
+Overrides and their reasons:
+- EMP-ID: "E" and four digits (readable IDs).
+- EMP-DED-CODE: the codes the program evaluates (A, B, C) plus two it
+  does not (X, space).
+- EMP-HOURS: 0 .. 80 plus edge values around the 40-hour threshold and
+  999.9; narrows the PICTURE for realistic hours; not stated by the
+  program.
+These overrides predate the benchmark protocol and are kept unchanged.
+"""
+
 from pathlib import Path
 
 from hypothesis import strategies as st

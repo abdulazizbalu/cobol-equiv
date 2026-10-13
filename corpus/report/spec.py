@@ -20,7 +20,9 @@ TOTAL = columns(("FILLER", 7), ("TL-AMOUNT", 17), ("FILLER", 5), ("TL-QTY", 7))
 def _select(line: bytes):
     if line.startswith(b"TOTAL  "):
         return TOTAL
-    if line.startswith(b"       "):
+    # LINE-2 has its decimal point (L2-G) in column 14; LINE-1 has L1-A's in
+    # column 15. The label can be blank, so the leading spaces do not decide.
+    if line[13:14] == b".":
         return LINE2
     return LINE1
 

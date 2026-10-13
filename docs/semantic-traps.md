@@ -87,9 +87,10 @@ oracle rule `arith_single_operand`.
   `"   0-"`.
 - `-$$$9.99` prints `-` for positive values in GnuCOBOL 3.1.2 (the runtime
   refuses this picture).
-- A Python format string reproduces some pictures by accident (mutant
-  `format-instead-of-edit` in report survives on that program's inputs) and
-  not others.
+- A Python format string is not a substitute: after high-order truncation
+  COBOL zero-suppresses what is left (1000123.45 in `ZZZ,ZZ9.99-` gives
+  `"    123.45 "`, a format string sliced to 11 characters gives
+  `"000,123.45 "`); mutant `format-instead-of-edit` in report.
 
 Backed by: `test_edit`, `test_trailing_sign_reads_next_sender_digit`,
 `test_fixed_minus_with_floating_currency_prints_minus_for_positive`; oracle
@@ -130,13 +131,15 @@ Backed by: `test_alnum_moves_and_figuratives` (the runtime refusal only).
 
 ### 15. Floating-point errors hide well
 
-A float-based translation is wrong only on rare inputs: values whose exact
-result is a half-cent tie and whose binary approximation falls below it.
-In the committed run four of the nine float mutants survived the regression
-vectors and up to 200 generated inputs without being equivalent
-(`float-payment` in loancalc, `float-gross` in payroll, `float-divide` in
-sizeerr, `float-discount` in redef). `float-gross` and `float-discount` were
-caught in other runs with different samples, which shows how much detection
+A float-based translation is right on most inputs and wrong on some: values
+near or at a half-cent tie (binary approximation on the wrong side of it, or
+Python's `round()` rounding exact ties to even), and values long enough to
+lose digits. Of the nine float mutants in the committed run, three were
+killed, two are argued equivalent, and four survived the regression vectors
+and up to 200 generated inputs without being equivalent (`float-payment` in
+loancalc, `float-gross` in payroll, `float-divide` in sizeerr,
+`float-discount` in redef). `float-gross` and `float-discount` were killed in
+runs with the earlier input generator, which shows how much detection
 depends on the sample. Random testing alone is weak against this class of
 error; vectors with deliberate ties are needed.
 Backed by: `results/mutation.csv`.

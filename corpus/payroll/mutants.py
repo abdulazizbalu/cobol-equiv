@@ -7,7 +7,8 @@ MUTANTS = [
         "description": "regular-hours gross computed in binary floating point",
         "note": "differs only when HOURS * RATE is a half-cent tie whose binary value lies below the tie "
                 "(e.g. 0.1 hours at 0.35); whether the generated inputs contain one depends on the sample: "
-                "a trial run with 150 generated inputs found one, the committed 200-input run did not",
+                "a trial run with 150 inputs from the earlier input generator found one, the committed "
+                "run did not",
         "edits": [(
             'compute(ws["WS-GROSS"], dec(e["EMP-HOURS"]) * dec(e["EMP-RATE"]), rounded=True)',
             'compute(ws["WS-GROSS"], dec(repr(float(e["EMP-HOURS"].value) * float(e["EMP-RATE"].value))),'

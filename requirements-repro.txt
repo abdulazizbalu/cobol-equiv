@@ -1,0 +1,4 @@
+# Exact versions used to produce the committed results/ (generated inputs
+# depend on the Hypothesis version).
+hypothesis==6.169.0
+pytest==9.1.1

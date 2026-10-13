@@ -3,3 +3,5 @@ cobc,cobc (GnuCOBOL) 3.1.2.0
 cobc flags,-x -std=default
 platform,Linux x86_64
 oracle seed,20261013
+hypothesis,6.169.0
+generated inputs per program and mutant (max),200

@@ -33,3 +33,24 @@ jobs:
         run: python -m pip install -e ".[dev]"
       - name: Run tests
         run: python -m pytest -q
+
+  reproduce:
+    # Regenerates results/ from scratch and fails if anything differs from
+    # the committed files.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install GnuCOBOL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnucobol3
+          cobc --version | head -1 | grep -F "cobc (GnuCOBOL) 3.1.2.0"
+      - name: Install package
+        run: python -m pip install -e ".[dev]" -r requirements-repro.txt
+      - name: Reproduce results
+        run: python -m cobol_equiv.reproduce
+      - name: Compare with committed results
+        run: git diff --exit-code -- results/ README.md

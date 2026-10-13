@@ -46,7 +46,8 @@ MUTANTS = [
         "category": "float",
         "description": "balance thresholds compared on float values",
         "edits": [('    bal = c["CU-BALANCE"].value', '    bal = float(c["CU-BALANCE"].value)')],
-        "note": "equivalent mutant: conversion to float is monotonic and every threshold (0, 1000, 10000, "
-                "50000, -500) is exactly representable, so no comparison changes",
+        "note": "equivalent mutant: the balance is only compared with 0, 1000, 10000, 50000 and "
+                "-500; its float differs from it by less than 1.2e-9 while a balance differs from a "
+                "threshold by 0.01 or more, so every comparison keeps its result (docs/mutants.md)",
     },
 ]

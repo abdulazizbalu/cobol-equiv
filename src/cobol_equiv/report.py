@@ -185,7 +185,8 @@ def corpus_section(results: Path) -> list[str]:
         r0 = next(per[v][p] for v in vs if p in per[v])
         rows.append([p, r0["area"]] + [
             (f"{per[v][p]['result']} (vectors {per[v][p]['vectors']}, generated "
-             f"{per[v][p]['generated']})") if p in per[v] else "-" for v in vs])
+             f"{per[v][p]['generated']}; boundary {per[v][p]['boundary result']}, "
+             f"{per[v][p]['boundary vectors']} vectors)") if p in per[v] else "-" for v in vs])
     out = ["## Corpus: reference translations vs GnuCOBOL", "",
            "Source: `results/gnucobol-<version>/corpus.csv`. The reference translations were "
            "written against GnuCOBOL 3.1.2.", ""]
@@ -194,7 +195,30 @@ def corpus_section(results: Path) -> list[str]:
         for p in progs:
             if p in per[v] and per[v][p]["result"] != "pass":
                 out += ["", f"{p} on GnuCOBOL {v}: {per[v][p]['difference']}"]
+            if p in per[v] and per[v][p]["boundary result"] != "pass":
+                out += ["", f"{p} on GnuCOBOL {v}, boundary vectors: "
+                        f"{per[v][p]['boundary difference']}"]
     return out + [""]
+
+
+def mutation_counts(rows: list[dict]) -> Counter:
+    """(a) fixed vectors + generated inputs; (b) the same plus the boundary
+    vectors. A mutant labelled equivalent is not counted as missed."""
+    c = Counter()
+    for r in rows:
+        eq = r["equivalence"] == "claimed"
+        c["mutants"] += 1
+        c["equivalent"] += eq
+        c["disproved"] += r["equivalence"] == "disproved"
+        for col, key in (("status", "a"), ("status_with_boundary", "b")):
+            if r[col] == "killed":
+                c[f"killed {key}"] += 1
+            elif not eq:
+                c[f"missed {key}"] += 1
+    return c
+
+
+MUTATION_COLS = ["mutants", "equivalent", "killed a", "missed a", "killed b", "missed b"]
 
 
 def mutation_section(results: Path) -> list[str]:
@@ -203,29 +227,32 @@ def mutation_section(results: Path) -> list[str]:
         return []
     v = vs[0]
     rows = _read(vdir(results, v) / "mutation.csv")
-    by_cat: "OrderedDict[str, Counter]" = OrderedDict()
+    by_cat: "OrderedDict[str, list]" = OrderedDict()
     for r in rows:
-        c = by_cat.setdefault(r["category"], Counter())
-        c[r["status"] if r["status"] == "killed" else r["survivor_kind"]] += 1
-    table = []
-    tot = Counter()
-    for cat, c in by_cat.items():
-        tot.update(c)
-        table.append([cat, sum(c.values()), c["killed"], c["equivalent"], c["missed"]])
-    table.append(["**total**", sum(tot.values()), tot["killed"], tot["equivalent"], tot["missed"]])
+        by_cat.setdefault(r["category"], []).append(r)
+    table = [[cat] + [mutation_counts(rs)[k] for k in MUTATION_COLS] for cat, rs in by_cat.items()]
+    tot = mutation_counts(rows)
+    table.append(["**total**"] + [tot[k] for k in MUTATION_COLS])
     out = ["## Mutation testing of the harness", "",
            f"Source: `results/gnucobol-{v}/mutation.csv`. A mutant is a deliberately wrong copy "
-           "of a reference translation. `killed`: the harness reported a difference against "
-           "GnuCOBOL. `equivalent`: survived, and manual analysis (in the CSV `note`) argues it "
-           "cannot change the output; a judgement, not a proof. `missed`: survived although it "
-           "can change the output.", ""]
-    out += _table(["category", "mutants", "killed", "survived, equivalent", "survived, missed"], table)
+           "of a reference translation; it is killed when the harness reports a difference "
+           "against GnuCOBOL. Two measurements: (a) the fixed regression vectors and the "
+           "generated inputs; (b) the same plus the boundary vectors derived from the PICTURE "
+           "clauses only (`harness/boundary.py`). `equivalent`: labelled as unable to change the "
+           "output, with the argument or exhaustive check in `docs/mutants.md`; not counted as "
+           "missed. `missed`: survived and not labelled equivalent.", ""]
+    out += _table(["category", "mutants", "equivalent", "killed (a)", "missed (a)", "killed (b)",
+                   "missed (b)"], table)
+    if tot["disproved"]:
+        out += ["", f"Equivalence labels contradicted by a kill: {tot['disproved']}."]
     surv = [r for r in rows if r["status"] == "survived"]
     if surv:
-        out += ["", "Surviving mutants:", ""]
-        out += _table(["program", "mutant", "kind", "why it survived"],
-                      [[r["program"], r["mutant"], r["survivor_kind"], r["note"] or "(not analysed)"]
-                       for r in surv])
+        out += ["", "Mutants that survived (a):", ""]
+        out += _table(["program", "mutant", "kind", "(b)", "why it survived"],
+                      [[r["program"], r["mutant"], r["survivor_kind"],
+                        (f"killed by {r['detected_by_with_boundary']}"
+                         if r["status_with_boundary"] == "killed" else "survived"),
+                        r["note"] or "(not analysed)"] for r in surv])
     return out + [""]
 
 
@@ -252,15 +279,17 @@ def readme_block(results: Path) -> str:
         rows.append([f"GnuCOBOL {v}", "corpus",
                      f"{sum(r['result'] == 'pass' for r in corpus)} of {len(corpus)} reference "
                      f"translations pass (regression vectors plus up to "
-                     f"{env.get('generated inputs per program and mutant (max)', '?')} generated inputs)"])
+                     f"{env.get('generated inputs per program and mutant (max)', '?')} generated inputs); "
+                     f"{sum(r.get('boundary result') == 'pass' for r in corpus)} of {len(corpus)} "
+                     f"pass the PICTURE boundary vectors"])
         mut = _read(d / "mutation.csv")
         if mut:
-            k = sum(r["status"] == "killed" for r in mut)
-            e = sum(r["survivor_kind"] == "equivalent" for r in mut)
-            m = sum(r["survivor_kind"] == "missed" for r in mut)
+            c = mutation_counts(mut)
             rows.append([f"GnuCOBOL {v}", "mutation",
-                         f"{len(mut)} mutants: {k} killed, {e} survived as equivalent (manual "
-                         f"judgement), {m} survived and missed"])
+                         f"{c['mutants']} mutants, {c['equivalent']} labelled equivalent "
+                         f"(docs/mutants.md); fixed and generated inputs: {c['killed a']} killed, "
+                         f"{c['missed a']} missed; plus PICTURE boundary vectors: "
+                         f"{c['killed b']} killed, {c['missed b']} missed"])
     diff = version_diff_rows(results)
     if diff:
         vs = versions(results)

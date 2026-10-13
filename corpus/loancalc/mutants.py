@@ -5,9 +5,10 @@ MUTANTS = [
         "id": "float-payment",
         "category": "float",
         "description": "payment formula evaluated in binary floating point",
-        "note": "not detected: a double keeps about 16 significant digits; the payment is rounded to cents "
+        "note": "not detected by the fixed or generated inputs: a double keeps about 16 significant digits; the payment is rounded to cents "
                 "(at most 9 digits), so the float result differs only when the exact value is within about "
-                "1e-7 of a half-cent tie; no vector or generated input hit such a case",
+                "1e-7 of a half-cent tie; no vector or generated input hit such a case (see (b) for "
+                "the boundary vectors)",
         "edits": [(
             '        f = dec(ws["WS-FACTOR"])\n'
             '        if compute(ws["WS-PAYMENT"], dec(ln["LN-PRINCIPAL"]) * dec(ws["WS-MRATE"]) * f / (f - 1),',

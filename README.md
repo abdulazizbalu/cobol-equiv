@@ -38,10 +38,10 @@ It is:
 | compiler | what | result |
 |---|---|---|
 | GnuCOBOL 3.1.2 | oracle | 7967 generated cases in 31 rules: 7850 agree, 0 disagree, 117 refused as unsupported, 0 single-case GnuCOBOL crashes; 0 multi-case oracle programs aborted (their cases were rerun alone) |
-| GnuCOBOL 3.1.2 | corpus | 10 of 10 reference translations pass (regression vectors plus up to 200 generated inputs) |
-| GnuCOBOL 3.1.2 | mutation | 67 mutants: 52 killed, 10 survived as equivalent (manual judgement), 5 survived and missed |
+| GnuCOBOL 3.1.2 | corpus | 10 of 10 reference translations pass (regression vectors plus up to 200 generated inputs); 10 of 10 pass the PICTURE boundary vectors |
+| GnuCOBOL 3.1.2 | mutation | 67 mutants, 9 labelled equivalent (docs/mutants.md); fixed and generated inputs: 52 killed, 6 missed; plus PICTURE boundary vectors: 53 killed, 5 missed |
 | GnuCOBOL 3.2 | oracle | 7967 generated cases in 31 rules: 7753 agree, 97 disagree, 117 refused as unsupported, 0 single-case GnuCOBOL crashes; 1 multi-case oracle programs aborted (their cases were rerun alone) |
-| GnuCOBOL 3.2 | corpus | 9 of 10 reference translations pass (regression vectors plus up to 200 generated inputs) |
+| GnuCOBOL 3.2 | corpus | 9 of 10 reference translations pass (regression vectors plus up to 200 generated inputs); 10 of 10 pass the PICTURE boundary vectors |
 | 3.1.2 vs 3.2 | oracle | GnuCOBOL output differs in 104 cases (move_num_to_num 31, inspect_stmt 9, arith_single_operand 1, arith_rounded_single_operand 62, inspect_iso_example 1) |
 
 Details: [results/SUMMARY.md](results/SUMMARY.md).
@@ -142,8 +142,10 @@ behaviour was checked on 3.1.2 and 3.2 is in [docs/findings.md](docs/findings.md
 - The harness compares stdout and output files only; the exit status and
   stderr are not compared.
 - The mutation results measure the harness on these programs and these
-  mutants only. Which mutants count as "equivalent" is a manual judgement,
-  written down for each one in `results/gnucobol-3.1.2/mutation.csv`.
+  mutants only. Each mutant labelled "equivalent" is justified in
+  [docs/mutants.md](docs/mutants.md), by an exhaustive check over a bounded
+  input domain, an argument, or both; the ones resting on an argument alone
+  are listed there.
 
 ## Repository layout
 
@@ -153,7 +155,7 @@ src/cobol_equiv/oracle/    generated GnuCOBOL programs per runtime rule
 src/cobol_equiv/harness/   compile, run, generate inputs, compare, mutation run
 corpus/<program>/          program.cob, reference.py, spec.py, mutants.py
 results/                   committed CSV files and the generated SUMMARY.md
-docs/                      runtime subset, harness, semantic traps
+docs/                      runtime subset, harness, findings, mutants, semantic traps
 ```
 
 ## License

@@ -39,7 +39,8 @@ MUTANTS = [
         "category": "float",
         "description": "discount factor computed in floating point",
         "note": "differs only when the line amount lands on a half-cent tie that the float factor "
-                "moves; whether the generated inputs contain one depends on the sample",
+                "moves; whether the generated inputs contain one depends on the sample. Boundary "
+                "vectors: the tie is in the computed amount, not in an input value",
         "edits": [('* (1 - dec(r["ID-DISC"]))', '* dec(repr(1 - float(r["ID-DISC"].value)))')],
     },
 ]

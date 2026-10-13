@@ -173,13 +173,13 @@ def _region(data: bytes, ph: Phrase) -> tuple[int, int]:
 def _scan(data: bytes, phrases: list[Phrase]):
     """Matches as (phrase index, position, length).
 
-    GnuCOBOL 3.1.2 (libcob/strings.c) handles the phrases one after another,
-    not position by position as the COBOL standard describes: each phrase
-    scans its whole region left to right and marks the characters it
-    matched; a later phrase cannot match a marked character. So
-    INSPECT "ABCABC" TALLYING C1 FOR ALL "BC" C2 FOR ALL "AB" gives C1=2,
-    C2=0 (the standard would give C1=0, C2=2). Searches always see the
-    original data; replacements are applied afterwards.
+    GnuCOBOL 3.1.2 behaviour (libcob/strings.c): the phrases are handled one
+    after another; each phrase scans its whole region left to right and
+    marks the characters it matched, and a later phrase cannot match a
+    marked character. So INSPECT "ABCABC" TALLYING C1 FOR ALL "BC" C2 FOR
+    ALL "AB" gives C1=2, C2=0. GnuCOBOL tickets #991 and #992 discuss this
+    processing order against the ISO rules; see docs/findings.md. Searches
+    always see the original data; replacements are applied afterwards.
     """
     marks = [False] * len(data)
     hits = []

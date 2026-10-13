@@ -16,7 +16,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from ..cobc import COBC_FLAGS, clean_env, cobc_path, cobc_version
+from ..cobc import COBC_FLAGS, clean_env, cobc_path, cobc_version, results_dir
 from ..runtime.display import display_bytes
 from ..runtime.errors import Unsupported
 from ..runtime.storage import Group, Item, Storage
@@ -119,7 +119,7 @@ def python_line(i: int, c: Case) -> str:
         return f"{case_tag(i)} PYTHON-ERROR {type(e).__name__}: {e}"
 
 
-def run_chunk(name: str, chunk, build: Path) -> dict[int, str]:
+def _compile_run(name: str, chunk, build: Path) -> tuple[dict[int, str], int, str]:
     src = cobol_for_chunk(name, chunk)
     key = cobc_version() + "\0" + " ".join(COBC_FLAGS) + "\0" + src
     digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
@@ -132,16 +132,40 @@ def run_chunk(name: str, chunk, build: Path) -> dict[int, str]:
         if r.returncode != 0:
             err = r.stderr.decode("utf-8", "replace")
             errs = [ln for ln in err.splitlines() if "error" in ln][:5]
-            return {i: f"{case_tag(i)} COMPILE-ERROR {' / '.join(errs)}" for i, _ in chunk}
+            return {i: f"{case_tag(i)} COMPILE-ERROR {' / '.join(errs)}" for i, _ in chunk}, 0, ""
     r = subprocess.run([str(exe)], capture_output=True, env=clean_env(), timeout=120)
     out: dict[int, str] = {}
     for line in r.stdout.decode("latin-1").split("\n"):
         if line.startswith("C") and line[1:6].isdigit():
             out[int(line[1:6])] = line
-    for i, _ in chunk:
-        out.setdefault(i, f"{case_tag(i)} NO-OUTPUT rc={r.returncode} "
-                          f"{r.stderr.decode('latin-1', 'replace').strip()[:200]}")
-    return out
+    stderr = " ".join(r.stderr.decode("latin-1", "replace").split())[:200]
+    return out, r.returncode, stderr
+
+
+ABORTS: list[dict] = []  # chunk programs that did not exit normally (filled by run_chunk)
+
+
+def run_chunk(name: str, chunk, build: Path) -> dict[int, str]:
+    """Run a chunk of cases in one program. If the program does not exit
+    normally, its output cannot be trusted (an abort may follow memory
+    corruption that already changed earlier cases), so every case of the
+    chunk is run again in a program of its own; a case whose own program
+    fails is recorded as CRASH."""
+    out, rc, stderr = _compile_run(name, chunk, build)
+    if rc == 0:
+        for i, _ in chunk:
+            out.setdefault(i, f"{case_tag(i)} NO-OUTPUT")
+        return out
+    ABORTS.append({"program": name, "first case": case_tag(chunk[0][0]),
+                   "last case": case_tag(chunk[-1][0]), "exit status": rc, "stderr": stderr})
+    isolated: dict[int, str] = {}
+    for i, c in chunk:
+        o, rc1, err1 = _compile_run(f"{name}-{case_tag(i)}", [(i, c)], build)
+        if rc1 != 0:
+            isolated[i] = f"{case_tag(i)} CRASH rc={rc1} {err1}"
+        else:
+            isolated[i] = o.get(i, f"{case_tag(i)} NO-OUTPUT")
+    return isolated
 
 
 def run(rules: list[str] | None = None, build: Path = BUILD_DIR, jobs: int = 4) -> list[dict]:
@@ -153,6 +177,7 @@ def run(rules: list[str] | None = None, build: Path = BUILD_DIR, jobs: int = 4) 
     build.mkdir(parents=True, exist_ok=True)
     chunks = [indexed[k:k + CHUNK] for k in range(0, len(indexed), CHUNK)]
     cobol_out: dict[int, str] = {}
+    ABORTS.clear()
     with ThreadPoolExecutor(max_workers=jobs) as ex:
         futs = [ex.submit(run_chunk, f"ORC{n:03d}", ch, build) for n, ch in enumerate(chunks)]
         for fu in futs:
@@ -163,6 +188,8 @@ def run(rules: list[str] | None = None, build: Path = BUILD_DIR, jobs: int = 4) 
         act = python_line(i, c)
         if exp == act:
             outcome = "agree"
+        elif exp.startswith(f"{case_tag(i)} CRASH"):
+            outcome = "gnucobol-crash"
         elif act.startswith(f"{case_tag(i)} UNSUPPORTED"):
             outcome = "unsupported"
         else:
@@ -182,16 +209,22 @@ def write_csv(rows: list[dict], path: Path) -> None:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default="results")
+    ap.add_argument("--out", default=None, help="default: results/gnucobol-<version>")
     ap.add_argument("--rules", default="")
     ap.add_argument("--jobs", type=int, default=4)
     a = ap.parse_args(argv)
     rows = run([r for r in a.rules.split(",") if r] or None, jobs=a.jobs)
-    write_csv(rows, Path(a.out) / "oracle_cases.csv")
+    out = Path(a.out or results_dir())
+    write_csv(rows, out / "oracle_cases.csv")
+    with (out / "oracle_aborts.csv").open("w", encoding="utf-8", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=["program", "first case", "last case", "exit status", "stderr"])
+        w.writeheader()
+        w.writerows(sorted(ABORTS, key=lambda r: r["program"]))
     bad = [r for r in rows if r["outcome"] == "disagree"]
     uns = [r for r in rows if r["outcome"] == "unsupported"]
-    print(f"{len(rows)} cases, {len(rows) - len(bad) - len(uns)} agree, "
-          f"{len(bad)} disagree, {len(uns)} unsupported")
+    crash = [r for r in rows if r["outcome"] == "gnucobol-crash"]
+    print(f"{len(rows)} cases, {len(rows) - len(bad) - len(uns) - len(crash)} agree, "
+          f"{len(bad)} disagree, {len(uns)} unsupported, {len(crash)} GnuCOBOL crashes")
     for r in bad[:20]:
         print(f"  {r['rule']} {r['params']}\n    gnucobol: {r['gnucobol']}\n    python:   {r['python']}")
     return 0 if not bad else 1

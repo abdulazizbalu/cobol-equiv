@@ -1,0 +1,6 @@
+category,description,3.1.2,3.2
+binary-ge-2^63,value of 2**63 or more stored into a binary item without ON SIZE ERROR,39,39
+edit-fixed-plus-floating,edited picture combining a fixed sign or $ with a floating string,28,28
+single-op-comp5-negative,"single-operand ADD/SUBTRACT, negative result in an unsigned COMP-5 item",25,25
+single-op-comp3-even-overflow,"single-operand ADD/SUBTRACT, overflow of a COMP-3 item with an even digit count",25,25
+total,,117,117

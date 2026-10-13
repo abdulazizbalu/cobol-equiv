@@ -8,7 +8,9 @@
 
 The first difference is reported as stream, line and field name (when the
 spec has an output layout), with the expected (GnuCOBOL) and actual bytes.
-An exception or a timeout in the translation counts as a difference.
+An exception or a timeout in the translation counts as a difference. A
+translation that triggers the runtime's Unsupported error (even if it catches
+it) is reported as UNSUPPORTED, exit status 2: never as a pass.
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ import types
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from ..runtime.errors import Unsupported, reset_unsupported_hits, unsupported_hits
 from .cobol import BUILD_DIR, CobolError, compile_program, run_program
 from .compare import Difference, compare
 from .spec import STDIN, ProgramSpec
@@ -67,6 +70,14 @@ class CheckResult:
     def passed(self) -> bool:
         return self.difference is None
 
+    @property
+    def status(self) -> str:
+        """'pass', 'fail', or 'unsupported' (the translation hit a runtime
+        feature outside the supported subset; never counted as a pass)."""
+        if self.difference is None:
+            return "pass"
+        return "unsupported" if self.difference.unsupported else "fail"
+
 
 def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes]) -> Difference | None:
     stdin = inputs.get(STDIN, b"")
@@ -75,6 +86,7 @@ def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes]) -> Di
     if res.returncode != 0:
         raise CobolError(f"COBOL program exited with {res.returncode}: "
                          f"{res.stderr.decode('utf-8', 'replace')[:500]}")
+    reset_unsupported_hits()
     try:
         with time_limit(spec.timeout):
             out, out_files = main(stdin, dict(files))
@@ -82,8 +94,17 @@ def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes]) -> Di
         return Difference("<translation>", 0, 0, None, b"", b"", f"timed out after {spec.timeout}s")
     except KeyboardInterrupt:
         raise
+    except Unsupported as e:
+        return Difference("<translation>", 0, 0, None, b"", b"",
+                          f"hit an unsupported runtime feature: {e}", unsupported=True)
     except BaseException as e:  # any crash, including sys.exit(), is a detected difference
         return Difference("<translation>", 0, 0, None, b"", b"", f"raised {type(e).__name__}: {e}")
+    if unsupported_hits():
+        # the translation caught an Unsupported error and carried on: its
+        # output is not trusted even if it happens to match
+        return Difference("<translation>", 0, 0, None, b"", b"",
+                          f"hit an unsupported runtime feature {unsupported_hits()} time(s) "
+                          "and caught the error", unsupported=True)
     return compare(res.stdout, res.files, out, out_files or {}, spec.outputs, spec.layouts)
 
 
@@ -154,11 +175,12 @@ def main(argv=None) -> int:
     if r.passed:
         print("PASS: no difference found")
         return 0
-    print(f"FAIL ({r.failing_source}): {r.difference.describe()}")
+    label = "UNSUPPORTED" if r.status == "unsupported" else "FAIL"
+    print(f"{label} ({r.failing_source}): {r.difference.describe()}")
     if r.failing_input is not None:
         for k, v in r.failing_input.items():
             print(f"  input {k}: {v!r}")
-    return 1
+    return 2 if r.status == "unsupported" else 1
 
 
 if __name__ == "__main__":

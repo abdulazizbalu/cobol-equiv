@@ -37,11 +37,15 @@ class CobolError(RuntimeError):
     pass
 
 
-def check_deterministic(source: str) -> None:
+def check_deterministic(source: str, free: bool = False) -> None:
     """Search the code area of all non-comment lines joined together, so a
     construct split over two lines is still found."""
     code = []
     for line in source.splitlines():
+        if free:
+            if not line.lstrip().startswith("*>"):
+                code.append(line.split("*>")[0])
+            continue
         area = line[6:72] if len(line) > 6 else ""
         if area[:1] not in ("*", "/"):
             code.append(area[1:])
@@ -51,24 +55,34 @@ def check_deterministic(source: str) -> None:
 
 
 def check_fixed_format(source: str) -> None:
-    """Fixed-format COBOL ignores columns 73-80; text there is silently lost."""
-    long = [n for n, line in enumerate(source.splitlines(), 1) if len(line) > 72]
+    """Fixed-format COBOL ignores columns 73-80; text there is silently lost.
+    Allowed only where it is part of a comment anyway: a comment line
+    (indicator `*` or `/`) or an inline `*>` comment that starts before
+    column 73."""
+    def lost(line: str) -> bool:
+        if len(line) <= 72 or line[6:7] in ("*", "/"):
+            return False
+        return "*>" not in line[7:72]
+    long = [n for n, line in enumerate(source.splitlines(), 1) if lost(line)]
     if long:
         raise CobolError(f"lines longer than 72 columns (fixed format): {long}")
 
 
-def compile_program(source: Path, build_dir: Path = BUILD_DIR) -> Path:
+def compile_program(source: Path, build_dir: Path = BUILD_DIR, free: bool = False) -> Path:
+    """free: the source is in free format (compiled with `cobc -free`)."""
     text = source.read_text(encoding="utf-8")
-    check_fixed_format(text)
-    check_deterministic(text)
-    key = cobc_version() + "\0" + " ".join(COBC_FLAGS) + "\0" + text
+    if not free:
+        check_fixed_format(text)
+    check_deterministic(text, free)
+    flags = (*COBC_FLAGS, "-free") if free else COBC_FLAGS
+    key = cobc_path() + "\0" + cobc_version() + "\0" + " ".join(flags) + "\0" + text
     digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
     build_dir.mkdir(parents=True, exist_ok=True)
     exe = build_dir / f"{source.stem}-{digest}"
     if exe.exists():
         return exe
     tmp = exe.with_suffix(".tmp")
-    r = subprocess.run([cobc_path(), *COBC_FLAGS, "-o", str(tmp), str(source)],
+    r = subprocess.run([cobc_path(), *flags, "-o", str(tmp), str(source)],
                        capture_output=True, env=clean_env())
     if r.returncode != 0:
         raise CobolError(f"cobc failed for {source}:\n{r.stderr.decode('utf-8', 'replace')}")

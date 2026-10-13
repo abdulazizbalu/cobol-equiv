@@ -10,15 +10,21 @@ Implemented MOVE categories (anything else raises MoveError):
                                      editing (see edit.py)
   numeric-edited -> alphanumeric     byte copy, alphanumeric rules
   numeric int    -> alphanumeric     the unsigned digits, then alphanumeric rules
-  alphanumeric   -> numeric          only when the sending value is all digits:
-                                     treated as an unsigned integer
+  alphanumeric   -> numeric          from an item: GnuCOBOL's conversion of the
+                                     text (libcob cob_move_alphanum_to_display):
+                                     leading spaces, an optional sign, digits,
+                                     one decimal point, spaces and commas; any
+                                     other character makes the result zero.
+                                     From a literal: only when it is all digits
+                                     (treated as an unsigned integer)
   alphanumeric/group -> alphanumeric/group
                                      left-justified, space padded, truncated
                                      on the right (a group receiver also takes
                                      any sender as bytes)
 
-Refused with Unsupported: alphanumeric to numeric-edited and numeric-edited
-to numeric or numeric-edited (GnuCOBOL converts these numerically).
+Refused with Unsupported: an alphanumeric literal to numeric-edited, and
+numeric-edited to numeric or numeric-edited (GnuCOBOL converts these
+numerically).
   figuratives    SPACES, ZEROS, HIGH-VALUES, LOW-VALUES, ALL "lit"
 
 Binary truncation (GnuCOBOL default -fbinary-truncate): a COMP item is
@@ -248,10 +254,8 @@ def _move1(src, dst: FieldRef) -> None:
             raise MoveError(f"MOVE numeric {src.name} to alphabetic {dst.name}")
         return
     if scat in (ALPHANUMERIC, ALPHABETIC):
-        if dcat == NUMERIC:
-            _alnum_to_numeric(src.raw, dst)
-        elif dcat == NUMERIC_EDITED:
-            raise Unsupported(_TO_EDITED.format(dst.name))
+        if dcat in (NUMERIC, NUMERIC_EDITED):
+            alnum_text_to_numeric(src.raw, dst)
         else:
             _alnum_store(dst, src.raw)
         return
@@ -275,6 +279,65 @@ def _alnum_to_numeric(data: bytes, dst: FieldRef) -> None:
             "result is implementation-specific in GnuCOBOL and not modelled"
         )
     store_numeric(dst, False, int(data), 0)
+
+
+def parse_alnum_number(text: bytes, int_digits: int, scale: int):
+    """libcob `cob_move_alphanum_to_display` into a DISPLAY item with
+    int_digits integer and `scale` decimal digits. Returns (negative, digits
+    as int) or None when the text is not a number (the result is then zero).
+
+    Leading white space is skipped, then an optional + or -. The digits
+    before the decimal point are right-aligned to the integer places (excess
+    leading digits are dropped); digits after it fill the decimal places
+    (excess dropped). Spaces and commas are skipped; a second decimal point
+    or any other character makes the text invalid, but only if it is reached
+    before the receiver is full."""
+    s, e = 0, len(text)
+    while s < e and chr(text[s]).isspace():
+        s += 1
+    sign = 0
+    if s < e and text[s] in (0x2B, 0x2D):
+        sign = 1 if text[s] == 0x2B else -1
+        s += 1
+    count = sum(1 for c in text[s:].split(b".")[0] if 0x30 <= c <= 0x39)
+    out = bytearray(b"0" * (int_digits + scale))
+    o = int_digits - count if count < int_digits else 0
+    while count > int_digits:
+        while not 0x30 <= text[s] <= 0x39:
+            s += 1
+        s += 1
+        count -= 1
+    dots = 0
+    while s < e and o < len(out):
+        c = text[s]
+        if 0x30 <= c <= 0x39:
+            out[o] = c
+            o += 1
+        elif c == 0x2E:
+            dots += 1
+            if dots > 1:
+                return None
+        elif not (chr(c).isspace() or c == 0x2C):
+            return None
+        s += 1
+    return sign < 0, int(out)
+
+
+def alnum_text_to_numeric(text: bytes, dst: FieldRef) -> None:
+    """MOVE of an alphanumeric item to a numeric or numeric-edited item.
+    A USAGE DISPLAY receiver gets the conversion directly (the sign of a
+    zero result is kept). Other receivers get it through a signed DISPLAY
+    temporary of 38 integer and 38 decimal digits, then a numeric MOVE."""
+    p = dst.pic
+    if dst.category == NUMERIC and dst.usage == enc.DISPLAY:
+        r = parse_alnum_number(text, p.digits - p.scale, p.scale)
+        neg, mag = r if r is not None else (False, 0)
+        store_numeric(dst, neg, mag, p.scale, sign_mode="sender")
+        return
+    r = parse_alnum_number(text, 38, 38)
+    neg, mag = r if r is not None else (False, 0)
+    keep = dst.usage in (enc.DISPLAY, enc.COMP3)
+    store_numeric(dst, neg, mag, 38, sign_mode="sender" if keep else "arith", edit_extra=True)
 
 
 def apply_value(value, f: FieldRef) -> None:

@@ -7,3 +7,7 @@ __pycache__/
 build/
 dist/
 .cobol-build/
+# Track E programs downloaded by cobol_equiv.benchmark.fetch (not redistributed)
+benchmark/corpus-e/rc-*/original.cob
+benchmark/corpus-e/rc-*/program.cob
+benchmark/corpus-e/rc-*/task.txt

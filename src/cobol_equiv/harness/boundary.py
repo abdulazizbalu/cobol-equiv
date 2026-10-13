@@ -1,7 +1,7 @@
 """General boundary vectors, derived from PICTURE clauses only.
 
-For every input file of a program spec this builds LINE SEQUENTIAL files
-whose records take boundary values item by item. The values depend only on
+For every input file of a program spec this builds sequential files (in
+the spec's organization) whose records take boundary values item by item. The values depend only on
 each elementary item's PICTURE and USAGE; nothing here looks at mutants,
 reference translations, spec overrides or the program's logic, so the set is
 the same for any translation of the same record layout.
@@ -37,7 +37,7 @@ from ..runtime.move import move
 from ..runtime.pic import NUMERIC
 from ..runtime.storage import Item, Storage
 from .spec import InputSpec
-from .strategies import elementary_slots
+from .strategies import elementary_slots, file_bytes
 
 NEG_ZERO = "negative zero"
 
@@ -114,7 +114,7 @@ def boundary_files(spec: InputSpec) -> list[bytes]:
         chunk = recs[i:i + size]
         if spec.finalize is not None:
             chunk = spec.finalize(chunk)
-        files.append(b"".join(bytes(r.area).rstrip(b" ") + b"\n" for r in chunk))
+        files.append(file_bytes(spec, chunk))
     return files
 
 

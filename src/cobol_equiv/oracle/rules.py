@@ -215,6 +215,46 @@ def rule_move_alnum_num(rng):
     return cases
 
 
+NUMBER_TEXTS = [
+    "", " ", "0", "7", "-0", "+0", "-123", "+45", "12.5", "-1.239", "0.005", ".5", "-.25",
+    "1,234.56", "1,5", " 42 ", "  -7", "9 9", "123456789", "99999.999", "-99999.999",
+    "abc", "1x2", "12-", "1.2.3", "- 5", "+-1", "3.", "00012", "1e5", "\t8", "12 a",
+]
+
+
+def rule_move_alnum_text_num(rng):
+    """MOVE of alphanumeric items holding number-like text to numeric and
+    numeric-edited items (and the cut to the receiver length that ACCEPT
+    applies first is not part of this rule)."""
+    cases = []
+    texts = NUMBER_TEXTS + ["".join(rng.choice("0123456789 .,+-a") for _ in range(rng.randint(1, 9)))
+                            for _ in range(20)]
+    tpics = ["9(4)", "S9(4)", "9(3)V99", "S9(3)V99", "S9(5)V9(3)", "S9", "9(12)"]
+    for txt in texts:
+        lit_text = txt.replace("\t", "\x09")
+        n = max(1, len(txt))
+        for tp in tpics:
+            for tu in usages_for(tp):
+                s, t = Alnum("S", f"X({n})"), Num("T", tp, usage=tu)
+                if "\t" in txt:
+                    continue  # a tab cannot be written as an alphanumeric literal here
+                lit = alnum_literal(txt.encode()) if txt else "SPACES"
+                cases.append(Case(
+                    "move_alnum_text_to_num", f'"{lit_text}" X({n}) -> {fmt_item(t)}', [s, t],
+                    [f"MOVE {lit} TO {{S}}", "MOVE {S} TO {T}"],
+                    (lambda f, x=txt: (move(x, f["S"]), move(f["S"], f["T"]))), [("hex", "T")]))
+        for ep in ("ZZZ9.99-", "-(5)9", "$$,$$9.99", "ZZ9"):
+            s, t = Alnum("S", f"X({n})"), Edited("T", ep)
+            if "\t" in txt:
+                continue
+            lit = alnum_literal(txt.encode()) if txt else "SPACES"
+            cases.append(Case(
+                "move_alnum_text_to_num", f'"{lit_text}" X({n}) -> {ep}', [s, t],
+                [f"MOVE {lit} TO {{S}}", "MOVE {S} TO {T}"],
+                (lambda f, x=txt: (move(x, f["S"]), move(f["S"], f["T"]))), [("hex", "T")]))
+    return cases
+
+
 def rule_move_alnum_alnum(rng):
     cases = []
     texts = ["A", "ABC", "HELLO WORLD", "  LEAD", "TRAIL  ", "12345678901234567890"]
@@ -450,6 +490,7 @@ RULES = {
     "move_num_to_num": rule_move_num_num,
     "move_num_to_alnum": rule_move_num_alnum,
     "move_alnum_to_num": rule_move_alnum_num,
+    "move_alnum_text_to_num": rule_move_alnum_text_num,
     "move_alnum_to_alnum": rule_move_alnum_alnum,
     "edit": rule_edit,
     "arith": rule_arith,

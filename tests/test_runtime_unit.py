@@ -185,10 +185,14 @@ def test_literal_truncated_to_zero_keeps_sign():
     assert f.raw == b"00p"
 
 
-def test_alnum_to_edited_refused():
+def test_alnum_item_to_edited_converts_and_literal_is_refused():
+    # GnuCOBOL converts the item's text to a number, then edits it
+    # (oracle rule move_alnum_text_to_num)
     st = Storage("W", [Alnum("A", "X(3)", value="123"), Edited("E", "ZZZ9")])
+    move(st["A"], st["E"])
+    assert st["E"].raw == b" 123"
     with pytest.raises(Unsupported):
-        move(st["A"], st["E"])
+        move("123", st["E"])
 
 
 def test_value_clause_on_edited_item():

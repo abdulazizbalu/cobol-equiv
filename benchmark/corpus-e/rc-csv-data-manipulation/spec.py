@@ -5,6 +5,11 @@ Input csv.txt, lines X(64); output new.csv.txt. Override (domain stated by
 the task: CSV data whose fields contain no commas; the task's file has five
 numeric columns): five comma-separated unsigned integers of 1-5 digits.
 Fixed vector: the CSV file given in the task statement (task.txt).
+
+On GnuCOBOL 3.2 the program ends with file status 71 on every input
+(WRITE of a LINE SEQUENTIAL record that still holds the binary zeros of
+the initial record area), so it has no 3.2 expected outputs; the
+secondary-oracle comparison does not apply to it.
 """
 
 import re

@@ -29,7 +29,7 @@ A record or WORKING-STORAGE area. `items`: list of Item from Num, Alnum, Edited,
 
 Group item. `children`: list of Item. `occurs`: OCCURS n. `redefines`: name of an earlier sibling.
 
-### Num(name, pic, usage=DISPLAY, value=None, occurs=None, redefines=None) -> Item
+### Num(name, pic, usage='DISPLAY', value=None, occurs=None, redefines=None) -> Item
 
 Numeric item, e.g. Num("BAL", "S9(5)V99", usage=COMP3, value="0"). usage: DISPLAY (default), COMP, COMP3, COMP5. value: VALUE clause (number, numeric string or figurative constant).
 
@@ -207,9 +207,9 @@ Raised when an item holds bytes that are not valid for its USAGE.
 
 ## cobol_equiv.runtime.files
 
-### LineSequentialReader(data: bytes, record_size: int, long_lines: str = truncate)
+### LineSequentialReader(data: bytes, record_size: int, long_lines: str = 'truncate')
 
-LINE SEQUENTIAL input file: LineSequentialReader(data, record_size). read(into) reads the next record into the FieldRef `into` and returns its bytes, or returns None at end of file.
+LINE SEQUENTIAL input file: LineSequentialReader(data, record_size), record_size being the record length in bytes; leave long_lines at its default. read(into) reads the next record into the FieldRef `into` and returns its bytes, or returns None at end of file.
 
 ### LineSequentialWriter()
 

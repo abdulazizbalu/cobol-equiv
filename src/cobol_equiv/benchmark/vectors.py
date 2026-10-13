@@ -205,11 +205,29 @@ def write(p: Program, doc: dict) -> None:
     path.write_bytes(gzip.compress(data, compresslevel=9, mtime=0))
 
 
+def compare_dirs(old: Path, new: Path) -> int:
+    """1 if the two vector directories differ in their files or in the
+    decompressed content of any file (gzip bytes depend on the zlib build)."""
+    names = {p.relative_to(old) for p in old.rglob("*.json.gz")}
+    names_new = {p.relative_to(new) for p in new.rglob("*.json.gz")}
+    bad = sorted(str(n) for n in names ^ names_new)
+    for n in sorted(names & names_new):
+        if gzip.decompress((old / n).read_bytes()) != gzip.decompress((new / n).read_bytes()):
+            bad.append(str(n))
+    for n in bad:
+        print(f"differs: {n}")
+    return 1 if bad else 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--programs", default="", help="comma-separated names (default: all)")
     ap.add_argument("--track", default="E,R", help="comma-separated tracks (T: runner test program)")
+    ap.add_argument("--compare", metavar="DIR",
+                    help="compare the decompressed vector files with those in DIR and exit")
     a = ap.parse_args(argv)
+    if a.compare:
+        return compare_dirs(Path(a.compare), VECTORS_DIR)
     names = [n for n in a.programs.split(",") if n]
     label = version_label()
     for p in [p for t in a.track.split(",") for p in programs(t)]:

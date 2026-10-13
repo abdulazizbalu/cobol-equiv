@@ -39,11 +39,20 @@ SYSTEM_PROMPT = "You are a careful software engineer."
 CALL_TIMEOUT = 1800
 MAX_RETRIES = 5
 REPAIR_ROUNDS = 3
-# Variables of the session that starts this script; the translator must not
-# see or join that session.
-DROP_ENV = ("CLAUDE_CODE_SESSION_ID", "CLAUDE_CODE_CHILD_SESSION", "CLAUDE_CODE_REMOTE_SESSION_ID",
-            "CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT", "CLAUDE_CODE_MESSAGING_SOCKET",
-            "CLAUDE_CODE_MESSAGING_TOKEN")
+# The only environment variables passed to the client: the executable
+# path, the locale, the network proxy and its certificates, and the API
+# endpoint. Everything else (session, effort, extra directories, skills,
+# plugins) is left out, so a call does not depend on the session that starts
+# this script and runs with the client's default settings.
+ENV_ALLOWLIST = ("PATH", "LANG", "LC_ALL", "HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy",
+                 "NO_PROXY", "no_proxy", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS", "REQUESTS_CA_BUNDLE",
+                 "CURL_CA_BUNDLE", "ANTHROPIC_BASE_URL")
+
+
+def client_env(home: str) -> dict:
+    env = {k: os.environ[k] for k in ENV_ALLOWLIST if k in os.environ}
+    env["HOME"] = home
+    return env
 
 
 class RunStopped(RuntimeError):
@@ -68,10 +77,9 @@ def client_version() -> str:
 
 def call_once(prompt: str, model: str) -> tuple[str, dict | None, str]:
     """One client run. Returns (raw stdout, parsed JSON or None, problem)."""
-    env = {k: v for k, v in os.environ.items() if k not in DROP_ENV}
     with tempfile.TemporaryDirectory(prefix="translate-cwd-") as cwd, \
             tempfile.TemporaryDirectory(prefix="translate-home-") as home:
-        env["HOME"] = home
+        env = client_env(home)
         try:
             r = subprocess.run(client_command(model), input=prompt.encode("utf-8"), cwd=cwd, env=env,
                                capture_output=True, timeout=CALL_TIMEOUT)
@@ -147,7 +155,8 @@ def make_call(d: Path, prompt: str, model: str, version: str) -> str | None:
         (d / "translation.py").write_text(code, encoding="utf-8")
     meta = {"started_utc": res["started_utc"], "model_id_configured": model,
             "model_ids_reported": res["model_ids"], "client_version": version,
-            "calls": res["calls"], "has_code": code is not None}
+            "calls": res["calls"], "has_code": code is not None,
+            "environment_variables": sorted(client_env("").keys())}
     record.write_text(json.dumps(meta, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     return code
 
@@ -188,7 +197,8 @@ def run_repair(p: Program, attempt: int, model: str, version: str) -> None:
         code_text = current.read_text(encoding="utf-8") if current else ""
         d = b_dir / f"round-{k}"
         code = make_call(d, prompt_repair(p, code_text, feedback(inp, verdict)), model, version)
-        current = d / "translation.py" if code is not None else None
+        if code is not None:  # a reply without code leaves the current version
+            current = d / "translation.py"
     final = None if current is None else current.relative_to(ROOT).as_posix()
     b_dir.mkdir(parents=True, exist_ok=True)
     (b_dir / "final.json").write_text(json.dumps({"final": final, "rounds": rounds}, indent=1) + "\n",

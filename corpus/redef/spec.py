@@ -3,7 +3,8 @@
 Records come from a record strategy, because the record body is
 interpreted according to the type code (H, D, T, or another code): each
 variant is generated from its own layout. Within a variant: IH-NAME from
-uppercase letters, digits and spaces; IH-MM and IH-DD with edge values
+uppercase letters, digits and spaces (narrows the PICTURE; not stated by
+the program); IH-MM and IH-DD with edge values
 plus 0 .. 99; ID-ITEM five characters from a short alphabet (readable
 IDs); IT-COUNT-X a count 0 .. 3 written as five digits (the trailer's
 count field is alphanumeric). These overrides predate the benchmark

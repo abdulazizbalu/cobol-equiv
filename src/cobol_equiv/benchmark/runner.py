@@ -62,7 +62,7 @@ def run_translation(path: Path, inputs: list[dict], timeout: float, condition: s
 @dataclass
 class Verdict:
     passed: bool
-    kind: str  # "pass", "difference", "unsupported", "error", "timeout"
+    kind: str  # "pass", "difference", "unsupported", "error", "timeout", "no expected output"
     detail: str = ""
     difference: Difference | None = None
 
@@ -71,6 +71,8 @@ UNSUPPORTED_ERRORS = ("Unsupported:", "MoveError:", "PicError:", "DataError:")
 
 
 def judge(spec: ProgramSpec, expected: dict, result: dict) -> Verdict:
+    if "error" in expected:  # the COBOL program failed on this input (secondary compiler only)
+        return Verdict(False, "no expected output", expected["error"])
     if "error" in result and result["error"].startswith(UNSUPPORTED_ERRORS):
         return Verdict(False, "unsupported", result["error"])
     if result.get("unsupported"):

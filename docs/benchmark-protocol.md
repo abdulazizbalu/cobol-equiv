@@ -494,10 +494,30 @@ before any translation call.
   docstrings state GnuCOBOL behaviours. Internal helpers (`edit`,
   `store_numeric`, `store_cobdec`, `Pic`, `parse_pic`) are left out.
 
+- **D8 (repair rounds).** A repair reply without a code block leaves the
+  current version unchanged; the next round shows that version again (the
+  round still counts). Feedback for a translation that raised `Unsupported`
+  and caught it reads "The translation hit an unsupported runtime feature
+  N time(s) (Unsupported was raised and caught)."
+- **D9 (client environment).** The client gets only an allowlist of
+  environment variables (path, locale, proxy and certificates, API
+  endpoint; `ENV_ALLOWLIST` in `benchmark/translate.py`) besides the empty
+  home directory, so that no setting of the session that starts the runs
+  (for example an effort level) reaches the translator. Each call records
+  the names of the variables passed.
+- **D10 (secondary oracle).** rc-csv-data-manipulation ends with file
+  status 71 on every input under GnuCOBOL 3.2 (see its spec), so it has no
+  3.2 expected outputs and is left out of the 3.2 re-run.
+
 Notes, not deviations: the runtime was extended before the freeze, while
 writing reference translations (ACCEPT from standard input, alphanumeric
 to numeric conversion for items, truncation of arithmetic results stored
 into edited items, reference modification). Each extension is checked
 against GnuCOBOL 3.1.2 and 3.2 (`docs/runtime.md`). Track E selection used
 the corpus as it was then; a candidate excluded for E4 is not re-screened
-after a later runtime change.
+after a later runtime change. The child process that runs a translation is
+not sandboxed from the file system: a translation could read the committed
+vectors or write its own result file; the committed translations are
+checked for file access when they are analysed. A condition C translation
+that defines an exception class named like a runtime refusal (for example
+`DataError`) is classed as "unsupported" rather than as a crash.

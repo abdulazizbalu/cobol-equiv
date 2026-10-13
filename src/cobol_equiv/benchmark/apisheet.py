@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import inspect
+import re
 import sys
 from pathlib import Path
 
@@ -125,7 +126,8 @@ ENTRIES = [
     ("DataError", "Raised when an item holds bytes that are not valid for its USAGE."),
 ]
 FILES = [
-    ("LineSequentialReader", "LINE SEQUENTIAL input file: LineSequentialReader(data, record_size)."
+    ("LineSequentialReader", "LINE SEQUENTIAL input file: LineSequentialReader(data, record_size), "
+     "record_size being the record length in bytes; leave long_lines at its default."
      " read(into) reads the next record into the FieldRef `into` and returns its bytes, or "
      "returns None at end of file."),
     ("LineSequentialWriter", "LINE SEQUENTIAL output file. write(record) with a FieldRef or "
@@ -143,9 +145,9 @@ def _signature(obj) -> str:
     if not callable(obj):
         return ""
     try:
+        return re.sub(r"\bcobol_equiv(\.\w+)*\.(?=\w+\b)", "", str(inspect.signature(obj, eval_str=True)))
+    except (TypeError, ValueError, NameError):
         return str(inspect.signature(obj)).replace("'", "")
-    except (TypeError, ValueError):
-        return ""
 
 
 def generate() -> str:

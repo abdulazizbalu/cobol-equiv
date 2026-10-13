@@ -52,8 +52,8 @@
     "hypothesis": "6.169.0",
     "gnucobol_primary": "3.1.2",
     "gnucobol_secondary": "3.2",
-    "client_version": "2.1.296",
-    "api_sheet_sha256": "1d5221be650f590140842594252cc06a05067fa37d69de75ab7f0118e4a902c8"
+    "client_version": "2.1.296 (Claude Code)",
+    "api_sheet_sha256": "1eb55df1cb52b10b8e5853ac2a5facef2311e7d4b36613e621d5a94dde965e6e"
   },
   "corpus": {
     "track_E": [

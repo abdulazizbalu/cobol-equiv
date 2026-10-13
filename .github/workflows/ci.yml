@@ -141,13 +141,13 @@ jobs:
         run: python -m cobol_equiv.benchmark.fetch
       - name: API sheet is the committed one
         run: python -m cobol_equiv.benchmark.apisheet --check
+      - name: Keep the committed vectors
+        run: cp -r benchmark/vectors "$RUNNER_TEMP/committed-vectors"
       - name: Vectors, GnuCOBOL 3.1.2
         run: python -m cobol_equiv.benchmark.vectors --track E,R,T
       - name: Vectors, GnuCOBOL 3.2
         run: COBC=$HOME/gnucobol-3.2/bin/cobc python -m cobol_equiv.benchmark.vectors --track E,R,T
-      - name: Compare with committed vectors
-        run: |
-          git diff --exit-code -- benchmark/vectors
-          test -z "$(git status --porcelain -- benchmark/vectors)"
+      - name: Compare with committed vectors (decompressed content)
+        run: python -m cobol_equiv.benchmark.vectors --compare "$RUNNER_TEMP/committed-vectors"
       - name: Reference translations pass all vectors (E4)
         run: python -m cobol_equiv.benchmark.refcheck

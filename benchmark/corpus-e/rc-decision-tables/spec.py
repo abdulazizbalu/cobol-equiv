@@ -4,6 +4,11 @@
 Three ACCEPTs of one character each. Override (domain stated by the
 program's prompts "(Y or N)"): Y or N. Three lines per input. No fixed
 vectors.
+
+The Y/N domain has 8 inputs, so VISIBLE and DEV use all of them and
+HELD-OUT holds only the boundary vectors (inputs outside Y/N). The program
+also accepts lower-case y and n (FUNCTION UPPER-CASE); the override leaves
+them out.
 """
 
 from pathlib import Path

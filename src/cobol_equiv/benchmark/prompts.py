@@ -106,24 +106,25 @@ def shown_source(text: str, free: bool) -> str:
 
 # ---- examples and feedback ---------------------------------------------------
 
-def _literal(data: bytes) -> str:
+def _literal(data: bytes, cut: bool = True) -> str:
     text = repr(bytes(data))
-    if len(text) > LITERAL_LIMIT:
+    if cut and len(text) > LITERAL_LIMIT:
         text = text[:LITERAL_LIMIT] + "...(cut)"
     return text
 
 
-def _files_literal(files: dict) -> str:
+def _files_literal(files: dict, cut: bool = True) -> str:
     items = []
     for name in sorted(files):
         v = files[name]
-        items.append(f"{name!r}: {'None' if v is None else _literal(v)}")
+        items.append(f"{name!r}: {'None' if v is None else _literal(v, cut)}")
     return "{" + ", ".join(items) + "}"
 
 
-def input_lines(inp: dict) -> str:
+def input_lines(inp: dict, cut: bool = True) -> str:
+    """Input literals; cut at LITERAL_LIMIT characters only in feedback."""
     files = {k: v for k, v in inp.items() if k != STDIN}
-    return f"stdin = {_literal(inp.get(STDIN, b''))}\ninput_files = {_files_literal(files)}"
+    return f"stdin = {_literal(inp.get(STDIN, b''), cut)}\ninput_files = {_files_literal(files, cut)}"
 
 
 def examples(doc: dict) -> str:
@@ -131,9 +132,9 @@ def examples(doc: dict) -> str:
     for k, v in enumerate(doc["sets"]["visible"], 1):
         exp = v["expected"][PRIMARY]
         files = {n: (None if b is None else unb64(b)) for n, b in exp["files"].items()}
-        parts.append(f"### Example {k}\n{input_lines(decode_input(v['input']))}\n"
-                     f"expected stdout = {_literal(unb64(exp['stdout']))}\n"
-                     f"expected output_files = {_files_literal(files)}")
+        parts.append(f"### Example {k}\n{input_lines(decode_input(v['input']), cut=False)}\n"
+                     f"expected stdout = {_literal(unb64(exp['stdout']), cut=False)}\n"
+                     f"expected output_files = {_files_literal(files, cut=False)}")
     return "\n\n".join(parts)
 
 
@@ -149,7 +150,8 @@ def feedback(inp: dict, verdict) -> str:
     msg = verdict.detail
     if verdict.kind == "unsupported" and not msg.startswith(("Unsupported", "MoveError", "PicError",
                                                              "DataError")):
-        msg = f"Unsupported: {msg}"
+        # Unsupported was raised and caught inside the translation
+        return f"{head}\nThe translation {msg} (Unsupported was raised and caught)."
     if len(msg) > MESSAGE_LIMIT:
         msg = msg[:MESSAGE_LIMIT]
     return f"{head}\nThe translation raised {msg}"

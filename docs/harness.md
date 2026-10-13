@@ -44,8 +44,11 @@ Each program has fixed regression vectors and Hypothesis-generated inputs
 - inputs are LINE SEQUENTIAL files with trailing spaces removed, so the
   READ padding is exercised.
 
-Generation is derandomized and uses no example database, so a run is
-deterministic for a given Hypothesis version. When a generated input fails,
+Generation is seeded from the program name and uses no example database,
+so a run is deterministic for a given Hypothesis version, and every
+translation of a program (reference or mutant) sees the same inputs. A
+different seed or Hypothesis version gives different inputs, which can change
+which mutants a generated input kills. When a generated input fails,
 Hypothesis shrinks it and the harness reports the smallest failing input it
 found.
 

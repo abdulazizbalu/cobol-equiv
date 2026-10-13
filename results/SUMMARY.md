@@ -116,9 +116,9 @@ Source: `results/gnucobol-3.1.2/mutation.csv`. A mutant is a deliberately wrong 
 | category | mutants | killed | survived, equivalent | survived, missed |
 |---|---|---|---|---|
 | branch | 14 | 14 | 0 | 0 |
-| off-by-one | 15 | 11 | 3 | 1 |
+| off-by-one | 15 | 10 | 3 | 2 |
 | sign | 12 | 9 | 3 | 0 |
-| float | 9 | 3 | 2 | 4 |
+| float | 9 | 4 | 2 | 3 |
 | truncation | 9 | 9 | 0 | 0 |
 | rounding | 8 | 6 | 2 | 0 |
 | **total** | 67 | 52 | 10 | 5 |
@@ -136,9 +136,9 @@ Surviving mutants:
 | loancalc | mrate-half-even | equivalent | equivalent mutant for this input domain: RATE/1200 with RATE in thousandths never has a tie at the 9th decimal place, so both rounding modes agree |
 | loancalc | residual-abs | equivalent | equivalent mutant: the balance can never become negative (the principal part is capped at the balance) |
 | loancalc | loop-limit-gt | equivalent | equivalent mutant: in the month equal to TERM the whole balance is paid, so the loop already ends on BALANCE <= 0 |
-| payroll | float-gross | missed | differs only when HOURS * RATE is a half-cent tie whose binary value lies below the tie (e.g. 0.1 hours at 0.35); whether the generated inputs contain one depends on the sample: a trial run with 150 inputs from the earlier input generator found one, the committed run did not |
 | payroll | overtime-ge-40 | equivalent | equivalent mutant: at exactly 40.0 hours the overtime part is 0, so both branches give the same gross |
 | payroll | bracket-lt | equivalent | equivalent mutant: at gross 1000.00 both brackets give tax 100.00 |
-| redef | float-discount | missed | differs only when the line amount lands on a half-cent tie that the float factor moves; it was killed by a generated input in a run with the earlier input generator and survived this one, so detection depends on the sample |
+| redef | float-discount | missed | differs only when the line amount lands on a half-cent tie that the float factor moves; whether the generated inputs contain one depends on the sample |
 | sizeerr | float-divide | missed | differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample |
+| sizeerr | count-after-dispatch | missed | differs only when the first record of a file takes the size-error branch (that is, a D or Q record with amount 0, since the accumulator starts at 0); the fixed vectors have none and whether the generated inputs contain one depends on the sample |
 | tables | rank-sign | equivalent | equivalent mutant: WL-QTY (ZZ,ZZ9) has no sign position, so the edited result is the same |

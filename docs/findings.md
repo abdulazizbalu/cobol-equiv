@@ -18,8 +18,8 @@ How the entries were checked, and the limits of that check:
   only that.
 - **Not consulted:** the GnuCOBOL Programmer's Guide and anything on
   gnu.org (not reachable from the machine used for this check), and the
-  text of the COBOL standard (ISO/IEC 1989), which we do not have. So nothing here claims that GnuCOBOL deviates from the
-  standard. Where a ticket quotes the standard or argues from it, the
+  text of the COBOL standard (ISO/IEC 1989), which we do not have. So
+  nothing here claims that GnuCOBOL deviates from the standard. Where a ticket quotes the standard or argues from it, the
   entry says so and attributes the statement to the ticket.
 - **3.2 tarball provenance:** SHA-256
   `3bb48af46ced4779facf41fdc2ee60e4ccb86eaa99d010b36685315df39c2ee2`,

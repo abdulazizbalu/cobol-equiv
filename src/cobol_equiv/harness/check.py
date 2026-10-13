@@ -3,8 +3,11 @@
     python -m cobol_equiv.harness.check corpus/loancalc path/to/translation.py [--examples N]
 
 1. Every fixed regression vector of the program spec is run.
-2. Then N inputs are generated with Hypothesis (deterministic: derandomized,
-   no example database) and run; a failing input is shrunk to a smaller one.
+2. Then N inputs are generated with Hypothesis and run; a failing input is
+   shrunk to a smaller one. The generation is seeded from the program name
+   only (no example database), so every translation of a program, and every
+   run, gets the same inputs, independent of the harness code and of what ran
+   earlier in the process.
 
 The first difference is reported as stream, line and field name (when the
 spec has an output layout), with the expected (GnuCOBOL) and actual bytes.
@@ -23,6 +26,7 @@ import importlib.util
 import signal
 import sys
 import types
+import zlib
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -134,7 +138,7 @@ def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes],
 
 def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None = None,
           hits_at_import: int | None = None) -> CheckResult:
-    from hypothesis import HealthCheck, given, settings
+    from hypothesis import HealthCheck, given, seed, settings
 
     from .strategies import inputs as inputs_strategy
 
@@ -152,7 +156,8 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
     found: dict = {}
     counter = [0]
 
-    @settings(max_examples=examples, derandomize=True, database=None, deadline=None,
+    @seed(zlib.crc32(spec.name.encode("utf-8")))
+    @settings(max_examples=examples, database=None, deadline=None,
               suppress_health_check=list(HealthCheck), print_blob=False)
     @given(inputs_strategy(spec.inputs))
     def prop(inp):

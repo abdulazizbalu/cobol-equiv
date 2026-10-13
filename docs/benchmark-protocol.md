@@ -501,10 +501,11 @@ before any translation call.
   N time(s) (Unsupported was raised and caught)."
 - **D9 (client environment).** The client gets only an allowlist of
   environment variables (path, locale, proxy and certificates, API
-  endpoint; `ENV_ALLOWLIST` in `benchmark/translate.py`) besides the empty
+  endpoint, credentials; `ENV_ALLOWLIST` in `benchmark/translate.py`) besides the empty
   home directory, so that no setting of the session that starts the runs
   (for example an effort level) reaches the translator. Each call records
-  the names of the variables passed.
+  the names of the variables passed. A call that fails authentication
+  stops the run instead of counting as a call without code.
 - **D10 (secondary oracle).** rc-csv-data-manipulation ends with file
   status 71 on every input under GnuCOBOL 3.2 (see its spec), so it has no
   3.2 expected outputs and is left out of the 3.2 re-run.

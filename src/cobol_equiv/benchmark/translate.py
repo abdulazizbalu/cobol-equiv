@@ -41,12 +41,14 @@ MAX_RETRIES = 5
 REPAIR_ROUNDS = 3
 # The only environment variables passed to the client: the executable
 # path, the locale, the network proxy and its certificates, and the API
-# endpoint. Everything else (session, effort, extra directories, skills,
+# endpoint, and the credentials. Everything else (session, effort, extra directories, skills,
 # plugins) is left out, so a call does not depend on the session that starts
 # this script and runs with the client's default settings.
 ENV_ALLOWLIST = ("PATH", "LANG", "LC_ALL", "HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy",
                  "NO_PROXY", "no_proxy", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS", "REQUESTS_CA_BUNDLE",
-                 "CURL_CA_BUNDLE", "ANTHROPIC_BASE_URL")
+                 "CURL_CA_BUNDLE", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN",
+                 "CLAUDE_CODE_OAUTH_TOKEN")
+AUTH_FAILURE = re.compile(r"\b401\b|authenticat|api key|oauth token|log ?in", re.I)
 
 
 def client_env(home: str) -> dict:
@@ -91,7 +93,7 @@ def call_once(prompt: str, model: str) -> tuple[str, dict | None, str]:
     except json.JSONDecodeError:
         return raw, None, f"no JSON result (exit status {r.returncode}): " + r.stderr.decode("utf-8", "replace")[:300]
     if doc.get("is_error") or doc.get("subtype") != "success":
-        return raw, doc, f"client reported an error: {doc.get('subtype')}"
+        return raw, doc, f"client reported an error: {doc.get('subtype')}: {str(doc.get('result'))[:300]}"
     return raw, doc, ""
 
 
@@ -112,6 +114,9 @@ def call(prompt: str, model: str) -> dict:
                 raise RunStopped(entry["problem"])
             continue
         attempts.append(entry)
+        if problem and AUTH_FAILURE.search(problem):
+            # not a failure of the translator: stop instead of scoring "no code"
+            raise RunStopped(f"authentication failed: {problem}")
         if not problem:
             return {"raw": raw, "result": doc.get("result", ""), "model_ids": models,
                     "started_utc": started, "calls": attempts}

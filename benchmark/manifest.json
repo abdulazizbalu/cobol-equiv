@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "protocol": {
+    "file": "docs/benchmark-protocol.md",
+    "status": "draft under review; not merged"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "name": "protocol",
+      "status": "in progress"
+    },
+    {
+      "id": 2,
+      "name": "corpus tracks, specs, vector split, API sheet, runner",
+      "status": "not started"
+    },
+    {
+      "id": 3,
+      "name": "translation runs and artifacts",
+      "status": "not started"
+    },
+    {
+      "id": 4,
+      "name": "analysis, taxonomy, report and documentation",
+      "status": "not started"
+    }
+  ],
+  "next": "merge the protocol PR before any translation is generated",
+  "sources_pinned": {
+    "omp_course_commit": "1f037d24326124f4f2c5cd2d31e5220ceb549580",
+    "rosettacodedata_commit": "1d475861d7141ef2fafff293d9339f56e4b0f5db",
+    "nist_newcob_val_tar_gz_sha256": "e4513f26a9b38911f7bf882fe3d3339a80b45cabc2caf85eb3055b0f5ce87ee0"
+  },
+  "attempts": [],
+  "frozen_before_first_call": {
+    "model_id": null,
+    "runtime_harness_commit": null,
+    "python": null,
+    "hypothesis": "6.169.0",
+    "gnucobol_primary": "3.1.2",
+    "gnucobol_secondary": "3.2",
+    "client_version": null,
+    "api_sheet_sha256": null
+  }
+}

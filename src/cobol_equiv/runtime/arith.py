@@ -144,10 +144,10 @@ def divide_remainder(dividend, divisor, quotient: FieldRef, remainder: FieldRef,
     As in GnuCOBOL (cob_div_quotient / cob_div_remainder): the remainder is
     dividend - divisor * q, where q is the quotient truncated to the
     quotient item's decimal places (not rounded, not high-order truncated).
-    GnuCOBOL 3.1.2 computes and stores the remainder even when the quotient
-    had a size error under ON SIZE ERROR (the quotient itself is then left
-    unchanged). The COBOL standard says the remainder is left unchanged too;
-    this runtime follows GnuCOBOL, the oracle.
+    GnuCOBOL 3.1.2 and 3.2 behaviour: the remainder is computed and stored
+    even when the quotient had a size error under ON SIZE ERROR (the
+    quotient itself is then left unchanged). This runtime follows GnuCOBOL.
+    We have not checked this against the text of the COBOL standard.
     """
     a = dec(dividend)
     b = dec(divisor)

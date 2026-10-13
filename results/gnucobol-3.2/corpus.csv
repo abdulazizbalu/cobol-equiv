@@ -1,0 +1,11 @@
+program,area,vectors,generated,result,difference
+classify,EVALUATE and nested IF classification,2/2,200,pass,
+ctlbreak,sequential file with control break,3/3,200,pass,
+datecalc,date arithmetic without the system clock,2/2,200,pass,
+loancalc,fixed-point interest and loan calculation with ROUNDED,2/2,200,pass,
+payroll,COMP-3 payroll with signed values,2/2,200,pass,
+redef,REDEFINES and variant records,2/2,200,pass,
+report,numeric-edited report lines,2/2,200,pass,
+sizeerr,ON SIZE ERROR handling and truncation,2/2,200,pass,
+strproc,STRING / UNSTRING / INSPECT,1/2,0,FAIL,"vector 2: <stdout> line 4, field WS-COMMAS: expected b'01', got b'03'"
+tables,"OCCURS tables, SEARCH, PERFORM VARYING",4/4,200,pass,

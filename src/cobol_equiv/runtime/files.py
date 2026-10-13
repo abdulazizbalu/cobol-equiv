@@ -1,11 +1,15 @@
 """Sequential files as byte strings, matching GnuCOBOL 3.1.2 behaviour.
 
 LINE SEQUENTIAL (ORGANIZATION IS LINE SEQUENTIAL), checked against GnuCOBOL
-by tests/oracle/test_files.py:
-  * READ: one record per line; a short line is padded with spaces, a long
-    line is truncated (the rest of that line is skipped); carriage returns
-    are dropped (also inside a line); a last line without newline is still
-    read.
+3.1.2 and 3.2 by tests/oracle/test_files.py:
+  * READ: one record per line; a short line is padded with spaces;
+    carriage returns are dropped (on 3.1.2 also inside a line; 3.2 rejects
+    a carriage return inside a line, which this module does not model);
+    a last line without newline is still read;
+  * a line longer than the record: GnuCOBOL 3.1.2 truncates it and skips
+    the rest of the line (long_lines="truncate", the default here);
+    GnuCOBOL 3.2 by default returns the rest as further records
+    (long_lines="split"; 3.2 NEWS: COB_LS_SPLIT, file status 06).
   * WRITE: trailing spaces of the record are removed, then a newline is added.
 
 RECORD SEQUENTIAL (ORGANIZATION IS SEQUENTIAL, fixed-length records): the
@@ -20,11 +24,19 @@ from .storage import FieldRef
 
 
 class LineSequentialReader:
-    def __init__(self, data: bytes, record_size: int):
+    def __init__(self, data: bytes, record_size: int, long_lines: str = "truncate"):
+        if long_lines not in ("truncate", "split"):
+            raise ValueError("long_lines must be 'truncate' or 'split'")
         self.size = record_size
         lines = data.split(b"\n")
         if lines and lines[-1] == b"":
             lines.pop()
+        if long_lines == "split":
+            parts: list[bytes] = []
+            for line in lines:
+                line = line.replace(b"\r", b"")
+                parts += [line[i:i + record_size] for i in range(0, len(line), record_size)] or [b""]
+            lines = parts
         self._lines: Iterator[bytes] = iter(lines)
 
     def read(self, into: FieldRef | None = None) -> bytes | None:

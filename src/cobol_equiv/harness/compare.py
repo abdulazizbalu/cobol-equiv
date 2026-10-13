@@ -17,6 +17,7 @@ class Difference:
     expected: bytes  # GnuCOBOL
     actual: bytes  # translation
     detail: str = ""
+    unsupported: bool = False  # the translation used a feature the runtime refuses
 
     def describe(self) -> str:
         if self.detail:

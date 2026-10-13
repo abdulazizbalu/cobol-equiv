@@ -4,7 +4,7 @@
 Python, modelled on GnuCOBOL 3.1.2 with `cobc -std=default`. The behaviour
 below is checked by generated oracle cases (`src/cobol_equiv/oracle/rules.py`)
 that are compiled and run with GnuCOBOL and compared byte for byte with the
-runtime. Results: `results/oracle_cases.csv`, summary in `results/SUMMARY.md`.
+runtime. Results: `results/gnucobol-<version>/oracle_cases.csv`, summary in `results/SUMMARY.md`.
 Each section names the oracle rules that cover it.
 
 Coverage limits, stated plainly:
@@ -99,8 +99,8 @@ an alphanumeric literal is stored as written (rule `value_clause`).
 ## Numeric editing (rule `edit`)
 
 `Z`, `*`, `9`, fixed and floating `$`, `+`, `-`, `CR`, `DB`, `.`, `,`, `B`,
-`0`, `/`. Details in the docstring of `runtime/edit.py`. Two behaviours that
-differ from a naive reading of the standard:
+`0`, `/`. Details in the docstring of `runtime/edit.py`. Two GnuCOBOL 3.1.2
+behaviours worth knowing:
 
 * the first symbol of a floating string consumes one high-order digit; if it
   is non-zero, suppression ends: `1000` edited with `---9` gives `" 000"`;
@@ -109,7 +109,7 @@ differ from a naive reading of the standard:
   `-0.5` edited with `ZZZ9-` gives `"   0-"` (rule `edit_trailing_sign`);
 * a fixed leading sign or currency symbol combined with a floating string
   (e.g. `-$$$9.99`) is not supported: GnuCOBOL 3.1.2 prints `-` for positive
-  values there (pinned by `tests/oracle/test_gnucobol_quirks.py`).
+  values there, as does 3.2 (pinned by `tests/oracle/test_findings.py`).
 
 ## Arithmetic (rules `arith_*`, `compute_intermediate`)
 
@@ -172,11 +172,12 @@ several phrases in one statement, CONVERTING. Two details:
 
 * UNSTRING without DELIMITED BY advances the pointer by the characters
   actually taken, not by the receiver size;
-* INSPECT with several phrases follows GnuCOBOL, not the standard: each
-  phrase scans the whole field in turn and marks what it matched, and later
-  phrases skip marked characters. `INSPECT "ABCABC" TALLYING C1 FOR ALL "BC"
-  C2 FOR ALL "AB"` gives C1=2, C2=0; the standard's position-by-position
-  rule gives C1=0, C2=2.
+* INSPECT with several phrases follows GnuCOBOL 3.1.2: each phrase scans
+  the whole field in turn and marks what it matched, and later phrases skip
+  marked characters. `INSPECT "ABCABC" TALLYING C1 FOR ALL "BC" C2 FOR ALL
+  "AB"` gives C1=2, C2=0. GnuCOBOL tickets #991 and #992 discuss whether
+  this matches the ISO rules (see `docs/findings.md`); we have not read the
+  standard text and make no claim about it.
 
 ## Sequential files
 
@@ -199,4 +200,6 @@ A negative zero is shown with `+`. COMP-5 items show 3/5/10/20 digits for
 A rule is validated for the PICTUREs, USAGEs and values that the generator
 produces (boundaries: zero, one unit in the last place, maximum, negative
 maximum, ties ending in 5, plus seeded random values). It is evidence, not a
-proof, and it is evidence about GnuCOBOL 3.1.2 only.
+proof. The runtime models GnuCOBOL 3.1.2; the same oracle cases are also
+run with GnuCOBOL 3.2, and `results/SUMMARY.md` shows per rule where 3.2
+gives other results (`docs/findings.md` explains each group).

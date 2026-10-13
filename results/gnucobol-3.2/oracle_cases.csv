@@ -1145,7 +1145,7 @@ move_num_to_num,C01142,1.77 9(3)V99 COMP-5 -> 9(3)V99,C01142 3030313737|,C01142 
 move_num_to_num,C01143,9 99 -> S9(9) COMP-3,C01143 000000009C|,C01143 000000009C|,agree
 move_num_to_num,C01144,4999999999 9(10) -> S9(9) COMP-5,C01144 FFF1052A|,C01144 FFF1052A|,agree
 move_num_to_num,C01145,0.50 9(3)V99 COMP-3 -> 9(3)V99,C01145 3030303530|,C01145 3030303530|,agree
-move_num_to_num,C01146,499999999.9999 S9(9)V9(4) COMP -> S9(4) COMP-3,C01146 09999C|,C01146 09999C|,agree
+move_num_to_num,C01146,499999999.9999 S9(9)V9(4) COMP -> S9(4) COMP-3,C01146 99999C|,C01146 09999C|,disagree
 move_num_to_num,C01147,-1.005 S9(15)V9(3) -> 9(3)V99 COMP-5,C01147 64000000|,C01147 64000000|,agree
 move_num_to_num,C01148,0.000887 9V9(6) -> S99V9(9),C01148 3030303030383837303030|,C01148 3030303030383837303030|,agree
 move_num_to_num,C01149,9999999998 9(10) COMP -> S9(5)V9(3),C01149 3939393938303030|,C01149 3939393938303030|,agree
@@ -1153,7 +1153,7 @@ move_num_to_num,C01150,-0.500 S9(5)V9(3) -> 9(10) COMP-5,C01150 0000000000000000
 move_num_to_num,C01151,9 9 COMP-3 -> S9(18) COMP,C01151 0000000000000009|,C01151 0000000000000009|,agree
 move_num_to_num,C01152,9.999998 9V9(6) COMP -> 9(4) COMP-3,C01152 00009F|,C01152 00009F|,agree
 move_num_to_num,C01153,499999999.9999 S9(9)V9(4) COMP-3 -> S9(31),C01153 30303030303030303030303030303030303030303030343939393939393939|,C01153 30303030303030303030303030303030303030303030343939393939393939|,agree
-move_num_to_num,C01154,0.500000 9(25)V9(6) COMP-3 -> S9(18) COMP-3,C01154 0000000000000000000C|,C01154 0000000000000000000C|,agree
+move_num_to_num,C01154,0.500000 9(25)V9(6) COMP-3 -> S9(18) COMP-3,C01154 0000000000000000000F|,C01154 0000000000000000000C|,disagree
 move_num_to_num,C01155,999999999999999.998 S9(15)V9(3) COMP-5 -> S9(15)V9(3) COMP-3,C01155 0999999999999999998C|,C01155 0999999999999999998C|,agree
 move_num_to_num,C01156,8 9 COMP-3 -> S99V9(9) COMP-5,C01156 0050D6DC01000000|,C01156 0050D6DC01000000|,agree
 move_num_to_num,C01157,-13429331685267457793 S9(31) -> S9(5)V9(3),C01157 3537373933303070|,C01157 3537373933303070|,agree
@@ -1163,7 +1163,7 @@ move_num_to_num,C01160,1 9(4) COMP -> S9(31) COMP-3,C01160 000000000000000000000
 move_num_to_num,C01161,31.51 9(3)V99 COMP-5 -> S9(18) COMP-5,C01161 1F00000000000000|,C01161 1F00000000000000|,agree
 move_num_to_num,C01162,0.500000 9V9(6) COMP -> 9(4),C01162 30303030|,C01162 30303030|,agree
 move_num_to_num,C01163,99999999999999999 S9(18) COMP-5 -> 99 COMP-3,C01163 099F|,C01163 099F|,agree
-move_num_to_num,C01164,4999 9(4) COMP-3 -> S9(20)V9(10) COMP-3,C01164 0000000000000000049990000000000C|,C01164 0000000000000000049990000000000C|,agree
+move_num_to_num,C01164,4999 9(4) COMP-3 -> S9(20)V9(10) COMP-3,C01164 0000000000000000049990000000000F|,C01164 0000000000000000049990000000000C|,disagree
 move_num_to_num,C01165,1 9(10) COMP-3 -> S9(15)V9(3),C01165 303030303030303030303030303031303030|,C01165 303030303030303030303030303031303030|,agree
 move_num_to_num,C01166,7 9(4) COMP -> S9(18),C01166 303030303030303030303030303030303037|,C01166 303030303030303030303030303030303037|,agree
 move_num_to_num,C01167,1 9(4) COMP-5 -> 9(4) COMP-3,C01167 00001F|,C01167 00001F|,agree
@@ -1189,7 +1189,7 @@ move_num_to_num,C01186,99999999999999999 S9(18) -> S9(4),C01186 39393939|,C01186
 move_num_to_num,C01187,0.50 9(3)V99 -> S9(18) COMP,C01187 0000000000000000|,C01187 0000000000000000|,agree
 move_num_to_num,C01188,6 9 -> 9(3)V99 COMP-5,C01188 58020000|,C01188 58020000|,agree
 move_num_to_num,C01189,21798.993 S9(5)V9(3) COMP -> S9(18) COMP-3,C01189 0000000000000021798C|,C01189 0000000000000021798C|,agree
-move_num_to_num,C01190,999.99 9(3)V99 COMP-3 -> S9(18) COMP-3,C01190 0000000000000000999C|,C01190 0000000000000000999C|,agree
+move_num_to_num,C01190,999.99 9(3)V99 COMP-3 -> S9(18) COMP-3,C01190 0000000000000000999F|,C01190 0000000000000000999C|,disagree
 move_num_to_num,C01191,-1248104658656620181682201272 S9(31) COMP-3 -> S9(9) COMP-3,C01191 682201272D|,C01191 682201272D|,agree
 move_num_to_num,C01192,0.500000000 S99V9(9) COMP-5 -> S9(4),C01192 30303030|,C01192 30303030|,agree
 move_num_to_num,C01193,0.000042 9V9(6) COMP-5 -> 9(4),C01193 30303030|,C01193 30303030|,agree
@@ -1219,11 +1219,11 @@ move_num_to_num,C01216,0.36 S9(3)V99 COMP -> S9(9),C01216 303030303030303030|,C0
 move_num_to_num,C01217,1 S9(31) COMP-3 -> S9(4),C01217 30303031|,C01217 30303031|,agree
 move_num_to_num,C01218,-1.000 S9(5)V9(3) COMP-5 -> 9(4) COMP-5,C01218 0100|,C01218 0100|,agree
 move_num_to_num,C01219,-8313 S9(4) COMP -> 9,C01219 33|,C01219 33|,agree
-move_num_to_num,C01220,4999999999 9(10) COMP-3 -> S9(18) COMP-3,C01220 0000000004999999999C|,C01220 0000000004999999999C|,agree
+move_num_to_num,C01220,4999999999 9(10) COMP-3 -> S9(18) COMP-3,C01220 0000000004999999999F|,C01220 0000000004999999999C|,disagree
 move_num_to_num,C01221,9.999998 9V9(6) COMP -> 9,C01221 39|,C01221 39|,agree
 move_num_to_num,C01222,0.50 9(3)V99 COMP-5 -> 9(25)V9(6),C01222 30303030303030303030303030303030303030303030303030353030303030|,C01222 30303030303030303030303030303030303030303030303030353030303030|,agree
 move_num_to_num,C01223,-5.182 S9(5)V9(3) COMP-5 -> S9(9) COMP-5,C01223 FBFFFFFF|,C01223 FBFFFFFF|,agree
-move_num_to_num,C01224,0.500000 9V9(6) COMP-3 -> S9(9)V9(4) COMP-3,C01224 0000000005000C|,C01224 0000000005000C|,agree
+move_num_to_num,C01224,0.500000 9V9(6) COMP-3 -> S9(9)V9(4) COMP-3,C01224 0000000005000F|,C01224 0000000005000C|,disagree
 move_num_to_num,C01225,-99.99 S9(3)V99 -> S9(20)V9(10) COMP-3,C01225 0000000000000000000999900000000D|,C01225 0000000000000000000999900000000D|,agree
 move_num_to_num,C01226,-3517272052228349777.9141370556 S9(20)V9(10) -> S9(5)V9(3),C01226 3439373737393174|,C01226 3439373737393174|,agree
 move_num_to_num,C01227,999999999999999998 S9(18) COMP-5 -> 9(25)V9(6) COMP-3,C01227 0000000999999999999999998000000F|,C01227 0000000999999999999999998000000F|,agree
@@ -1232,8 +1232,8 @@ move_num_to_num,C01229,9999999999999999999999999.999999 9(25)V9(6) COMP-3 -> S9(
 move_num_to_num,C01230,9999999998 9(10) COMP-5 -> S9(4) COMP,C01230 270E|,C01230 270E|,agree
 move_num_to_num,C01231,-0.0001 S9(9)V9(4) COMP-3 -> 9(3)V99,C01231 3030303030|,C01231 3030303030|,agree
 move_num_to_num,C01232,34 9(4) COMP -> 9 COMP-3,C01232 4F|,C01232 4F|,agree
-move_num_to_num,C01233,4.999999 9V9(6) COMP-3 -> S9(3)V99 COMP-3,C01233 00499C|,C01233 00499C|,agree
-move_num_to_num,C01234,-0.427 S9(5)V9(3) COMP-3 -> S9(4) COMP-3,C01234 00000C|,C01234 00000C|,agree
+move_num_to_num,C01233,4.999999 9V9(6) COMP-3 -> S9(3)V99 COMP-3,C01233 00499F|,C01233 00499C|,disagree
+move_num_to_num,C01234,-0.427 S9(5)V9(3) COMP-3 -> S9(4) COMP-3,C01234 00000D|,C01234 00000C|,disagree
 move_num_to_num,C01235,9999999999999999999999999999998 S9(31) -> S9(31),C01235 39393939393939393939393939393939393939393939393939393939393938|,C01235 39393939393939393939393939393939393939393939393939393939393938|,agree
 move_num_to_num,C01236,0.000000001 S99V9(9) COMP -> S9(3)V99 COMP-3,C01236 00000C|,C01236 00000C|,agree
 move_num_to_num,C01237,6 9 -> S9(18) COMP-5,C01237 0600000000000000|,C01237 0600000000000000|,agree
@@ -1250,7 +1250,7 @@ move_num_to_num,C01247,999999999.9999 S9(9)V9(4) -> S9(15)V9(3) COMP-5,C01247 FF
 move_num_to_num,C01248,4999 S9(4) COMP-5 -> 9(4) COMP-3,C01248 04999F|,C01248 04999F|,agree
 move_num_to_num,C01249,999.99 9(3)V99 COMP -> 99 COMP-5,C01249 E7|,C01249 E7|,agree
 move_num_to_num,C01250,76373873050426447123 S9(31) -> S99V9(9) COMP-3,C01250 23000000000C|,C01250 23000000000C|,agree
-move_num_to_num,C01251,91766 9(10) COMP-5 -> 99 COMP-3,C01251 066F|,C01251 066F|,agree
+move_num_to_num,C01251,91766 9(10) COMP-5 -> 99 COMP-3,C01251 766F|,C01251 066F|,disagree
 move_num_to_num,C01252,-5.99 S9(3)V99 COMP-3 -> 99,C01252 3035|,C01252 3035|,agree
 move_num_to_num,C01253,4999999999 9(10) -> S99V9(9) COMP-5,C01253 0036590982916345|,C01253 0036590982916345|,agree
 move_num_to_num,C01254,6109792223006585339011 S9(31) COMP-3 -> S9(31) COMP-3,C01254 0000000006109792223006585339011C|,C01254 0000000006109792223006585339011C|,agree
@@ -1293,7 +1293,7 @@ move_num_to_num,C01290,4 9 COMP-5 -> 99 COMP-5,C01290 04|,C01290 04|,agree
 move_num_to_num,C01291,864.13 S9(3)V99 -> 9V9(6) COMP-5,C01291 D0938133|,C01291 D0938133|,agree
 move_num_to_num,C01292,1 9(10) COMP -> S9(18) COMP,C01292 0000000000000001|,C01292 0000000000000001|,agree
 move_num_to_num,C01293,9999999999999999999999999.999999 9(25)V9(6) COMP-3 -> S9(5)V9(3) COMP,C01293 05F5E0FF|,C01293 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
-move_num_to_num,C01294,0.500000 9(25)V9(6) COMP-3 -> S9(20)V9(10) COMP-3,C01294 0000000000000000000005000000000C|,C01294 0000000000000000000005000000000C|,agree
+move_num_to_num,C01294,0.500000 9(25)V9(6) COMP-3 -> S9(20)V9(10) COMP-3,C01294 0000000000000000000005000000000F|,C01294 0000000000000000000005000000000C|,disagree
 move_num_to_num,C01295,1 S9(18) -> 9(25)V9(6) COMP-3,C01295 0000000000000000000000001000000F|,C01295 0000000000000000000000001000000F|,agree
 move_num_to_num,C01296,0 S9(9) -> 9V9(6) COMP,C01296 00000000|,C01296 00000000|,agree
 move_num_to_num,C01297,-9999999999999999999999999999998 S9(31) COMP-3 -> 9(4) COMP,C01297 270E|,C01297 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
@@ -1304,7 +1304,7 @@ move_num_to_num,C01301,9 99 -> S9(9) COMP,C01301 00000009|,C01301 00000009|,agre
 move_num_to_num,C01302,4999 S9(4) COMP-3 -> S9(3)V99 COMP,C01302 0001863C|,C01302 0001863C|,agree
 move_num_to_num,C01303,2123764 9(10) COMP-5 -> S9(3)V99 COMP,C01303 00012A70|,C01303 00012A70|,agree
 move_num_to_num,C01304,8 99 COMP-3 -> S9(20)V9(10),C01304 303030303030303030303030303030303030303830303030303030303030|,C01304 303030303030303030303030303030303030303830303030303030303030|,agree
-move_num_to_num,C01305,1.000005 9(25)V9(6) COMP-3 -> S9(31) COMP-3,C01305 0000000000000000000000000000001C|,C01305 0000000000000000000000000000001C|,agree
+move_num_to_num,C01305,1.000005 9(25)V9(6) COMP-3 -> S9(31) COMP-3,C01305 0000000000000000000000000000001F|,C01305 0000000000000000000000000000001C|,disagree
 move_num_to_num,C01306,-2.194983305 S99V9(9) COMP-3 -> S9(31),C01306 30303030303030303030303030303030303030303030303030303030303072|,C01306 30303030303030303030303030303030303030303030303030303030303072|,agree
 move_num_to_num,C01307,99 99 COMP -> S9(20)V9(10) COMP-3,C01307 0000000000000000000990000000000C|,C01307 0000000000000000000990000000000C|,agree
 move_num_to_num,C01308,441073652708476471 S9(18) COMP-5 -> 99,C01308 3731|,C01308 3731|,agree
@@ -1331,7 +1331,7 @@ move_num_to_num,C01328,21583 9(10) -> S9(20)V9(10),C01328 3030303030303030303030
 move_num_to_num,C01329,499999999 S9(9) COMP -> S9(18),C01329 303030303030303030343939393939393939|,C01329 303030303030303030343939393939393939|,agree
 move_num_to_num,C01330,-99.687 S9(5)V9(3) COMP -> 9(3)V99 COMP,C01330 000026F0|,C01330 000026F0|,agree
 move_num_to_num,C01331,4999999999 9(10) COMP-5 -> S99V9(9),C01331 3939303030303030303030|,C01331 3939303030303030303030|,agree
-move_num_to_num,C01332,672866540959419509826127810 S9(31) -> S9(9)V9(4) COMP,C01332 0000058337DFEA20|,C01332 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
+move_num_to_num,C01332,672866540959419509826127810 S9(31) -> S9(9)V9(4) COMP,C01332 000007837A8BEA20|,C01332 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
 move_num_to_num,C01333,9999 S9(4) -> 9 COMP-5,C01333 0F|,C01333 0F|,agree
 move_num_to_num,C01334,0.999999 9V9(6) COMP -> S9(9)V9(4),C01334 30303030303030303039393939|,C01334 30303030303030303039393939|,agree
 move_num_to_num,C01335,4999999999999999999999999999999 S9(31) -> 99 COMP-3,C01335 099F|,C01335 099F|,agree
@@ -1345,7 +1345,7 @@ move_num_to_num,C01342,0.000975 9(25)V9(6) -> S9(18) COMP-3,C01342 0000000000000
 move_num_to_num,C01343,9999999999 9(10) COMP -> S9(4) COMP-3,C01343 09999C|,C01343 09999C|,agree
 move_num_to_num,C01344,4999 9(4) COMP-5 -> S99V9(9) COMP-5,C01344 00869EEB8B040000|,C01344 00869EEB8B040000|,agree
 move_num_to_num,C01345,-4384112443338 S9(31) COMP-3 -> S9(4) COMP-5,C01345 3600|,C01345 3600|,agree
-move_num_to_num,C01346,-49999999999999999999.9999999999 S9(20)V9(10) -> S9(18) COMP,C01346 FE859808CE8C0001|,C01346 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
+move_num_to_num,C01346,-49999999999999999999.9999999999 S9(20)V9(10) -> S9(18) COMP,C01346 F21F494C589C0001|,C01346 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
 move_num_to_num,C01347,999 S9(4) COMP-5 -> 9(25)V9(6),C01347 30303030303030303030303030303030303030303030393939303030303030|,C01347 30303030303030303030303030303030303030303030393939303030303030|,agree
 move_num_to_num,C01348,-1.000 S9(5)V9(3) COMP-5 -> 99 COMP-3,C01348 001F|,C01348 001F|,agree
 move_num_to_num,C01349,-526809903389051288483 S9(31) -> S9(15)V9(3),C01349 393033333839303531323838343833303070|,C01349 393033333839303531323838343833303070|,agree
@@ -1362,7 +1362,7 @@ move_num_to_num,C01359,-6648488 S9(9) COMP-3 -> 9(25)V9(6) COMP-3,C01359 0000000
 move_num_to_num,C01360,0 9(4) COMP-3 -> 9V9(6) COMP,C01360 00000000|,C01360 00000000|,agree
 move_num_to_num,C01361,999999999999999.998 S9(15)V9(3) COMP-3 -> S9(18) COMP-3,C01361 0000999999999999999C|,C01361 0000999999999999999C|,agree
 move_num_to_num,C01362,7 99 COMP-3 -> S9(20)V9(10),C01362 303030303030303030303030303030303030303730303030303030303030|,C01362 303030303030303030303030303030303030303730303030303030303030|,agree
-move_num_to_num,C01363,51 99 COMP-3 -> S9(3)V99 COMP-3,C01363 05100C|,C01363 05100C|,agree
+move_num_to_num,C01363,51 99 COMP-3 -> S9(3)V99 COMP-3,C01363 05100F|,C01363 05100C|,disagree
 move_num_to_num,C01364,999.99 9(3)V99 COMP-5 -> S9(9),C01364 303030303030393939|,C01364 303030303030393939|,agree
 move_num_to_num,C01365,0.000068 9V9(6) COMP -> S9(5)V9(3) COMP-3,C01365 000000000C|,C01365 000000000C|,agree
 move_num_to_num,C01366,99999999999999999 S9(18) COMP-5 -> 9(4) COMP,C01366 270F|,C01366 270F|,agree
@@ -1372,7 +1372,7 @@ move_num_to_num,C01369,999999999 S9(9) COMP -> S9(9) COMP-3,C01369 999999999C|,C
 move_num_to_num,C01370,0.000000 9(25)V9(6) COMP-3 -> 9(25)V9(6),C01370 30303030303030303030303030303030303030303030303030303030303030|,C01370 30303030303030303030303030303030303030303030303030303030303030|,agree
 move_num_to_num,C01371,-999999999999999.999 S9(15)V9(3) COMP-5 -> 9(25)V9(6),C01371 30303030303030303030393939393939393939393939393939393939303030|,C01371 30303030303030303030393939393939393939393939393939393939303030|,agree
 move_num_to_num,C01372,99.999999998 S99V9(9) COMP-5 -> 9(10),C01372 30303030303030303939|,C01372 30303030303030303939|,agree
-move_num_to_num,C01373,-717747025688814796469896 S9(31) -> S9(18) COMP,C01373 F6D558260F370978|,C01373 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
+move_num_to_num,C01373,-717747025688814796469896 S9(31) -> S9(18) COMP,C01373 FFA4BC28B75B0978|,C01373 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
 move_num_to_num,C01374,4999 9(4) COMP-5 -> 9(25)V9(6),C01374 30303030303030303030303030303030303030303034393939303030303030|,C01374 30303030303030303030303030303030303030303034393939303030303030|,agree
 move_num_to_num,C01375,-5651725946401280226050080193 S9(31) -> S9(15)V9(3) COMP-5,C01375 18C64458DCFDB0F3|,C01375 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
 move_num_to_num,C01376,7 9 COMP-5 -> 9(25)V9(6) COMP-3,C01376 0000000000000000000000007000000F|,C01376 0000000000000000000000007000000F|,agree
@@ -1464,16 +1464,16 @@ move_num_to_num,C01461,0 99 COMP -> S99V9(9) COMP,C01461 0000000000000000|,C0146
 move_num_to_num,C01462,4999999999999999999999999.999999 9(25)V9(6) COMP-3 -> S9(18) COMP-5,C01462 FFFFFF24A4000A8B|,C01462 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
 move_num_to_num,C01463,0.000000007 S99V9(9) COMP-5 -> S9(9),C01463 303030303030303030|,C01463 303030303030303030|,agree
 move_num_to_num,C01464,-99.999999998 S99V9(9) -> 9(3)V99,C01464 3039393939|,C01464 3039393939|,agree
-move_num_to_num,C01465,-4999999999999999999999999999999 S9(31) -> S9(4) COMP,C01465 E6C1|,C01465 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
+move_num_to_num,C01465,-4999999999999999999999999999999 S9(31) -> S9(4) COMP,C01465 D8F1|,C01465 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
 move_num_to_num,C01466,74061 S9(9) -> S99V9(9) COMP-3,C01466 61000000000C|,C01466 61000000000C|,agree
 move_num_to_num,C01467,0 9(4) -> 9(4) COMP-3,C01467 00000F|,C01467 00000F|,agree
 move_num_to_num,C01468,24 9(4) COMP -> S9(9)V9(4) COMP-3,C01468 0000000240000C|,C01468 0000000240000C|,agree
-move_num_to_num,C01469,4999999999999999999999999.999999 9(25)V9(6) -> 9V9(6) COMP,C01469 00673F7F|,C01469 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
+move_num_to_num,C01469,4999999999999999999999999.999999 9(25)V9(6) -> 9V9(6) COMP,C01469 0098967F|,C01469 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
 move_num_to_num,C01470,-1.0000 S9(9)V9(4) COMP -> S9(3)V99 COMP,C01470 FFFFFF9C|,C01470 FFFFFF9C|,agree
 move_num_to_num,C01471,4 9 -> S9(3)V99 COMP,C01471 00000190|,C01471 00000190|,agree
 move_num_to_num,C01472,999999999999999.999 S9(15)V9(3) COMP -> S99V9(9),C01472 3939393939303030303030|,C01472 3939393939303030303030|,agree
 move_num_to_num,C01473,-999999999.9998 S9(9)V9(4) -> S9(4),C01473 39393979|,C01473 39393979|,agree
-move_num_to_num,C01474,999999999 9(10) COMP-3 -> S9(4) COMP-3,C01474 09999C|,C01474 09999C|,agree
+move_num_to_num,C01474,999999999 9(10) COMP-3 -> S9(4) COMP-3,C01474 09999F|,C01474 09999C|,disagree
 move_num_to_num,C01475,99999.999 S9(5)V9(3) COMP -> 9 COMP-3,C01475 9F|,C01475 9F|,agree
 move_num_to_num,C01476,8 9 -> S9(5)V9(3) COMP,C01476 00001F40|,C01476 00001F40|,agree
 move_num_to_num,C01477,1 9 -> 9(3)V99,C01477 3030313030|,C01477 3030313030|,agree
@@ -1500,7 +1500,7 @@ move_num_to_num,C01497,-43421.414 S9(15)V9(3) COMP -> 9V9(6) COMP,C01497 0015937
 move_num_to_num,C01498,0 S9(4) COMP -> 9,C01498 30|,C01498 30|,agree
 move_num_to_num,C01499,999999999 9(10) COMP-5 -> S9(9),C01499 393939393939393939|,C01499 393939393939393939|,agree
 move_num_to_num,C01500,6362.526 S9(15)V9(3) COMP -> S99V9(9) COMP-5,C01500 80231A64C9050000|,C01500 80231A64C9050000|,agree
-move_num_to_num,C01501,0 9(10) COMP-3 -> S9(31) COMP-3,C01501 0000000000000000000000000000000C|,C01501 0000000000000000000000000000000C|,agree
+move_num_to_num,C01501,0 9(10) COMP-3 -> S9(31) COMP-3,C01501 0000000000000000000000000000000F|,C01501 0000000000000000000000000000000C|,disagree
 move_num_to_num,C01502,-0.000000006 S99V9(9) COMP-3 -> S9(4),C01502 30303070|,C01502 30303070|,agree
 move_num_to_num,C01503,0.0000000001 S9(20)V9(10) COMP-3 -> S9(4) COMP,C01503 0000|,C01503 0000|,agree
 move_num_to_num,C01504,-4177588416015919404.9328502093 S9(20)V9(10) COMP-3 -> S9(9),C01504 303135393139343074|,C01504 303135393139343074|,agree
@@ -1516,7 +1516,7 @@ move_num_to_num,C01513,0.000001 9(25)V9(6) COMP-3 -> 9(3)V99 COMP-5,C01513 00000
 move_num_to_num,C01514,50.66 9(3)V99 COMP -> S9(4),C01514 30303530|,C01514 30303530|,agree
 move_num_to_num,C01515,-8 S9(4) COMP-5 -> 9,C01515 38|,C01515 38|,agree
 move_num_to_num,C01516,9 99 COMP-5 -> S9(9)V9(4) COMP-5,C01516 905F010000000000|,C01516 905F010000000000|,agree
-move_num_to_num,C01517,495574.354412 9(25)V9(6) COMP-3 -> S9(9) COMP-3,C01517 000495574C|,C01517 000495574C|,agree
+move_num_to_num,C01517,495574.354412 9(25)V9(6) COMP-3 -> S9(9) COMP-3,C01517 000495574F|,C01517 000495574C|,disagree
 move_num_to_num,C01518,-9999.999 S9(5)V9(3) COMP-5 -> S9(15)V9(3),C01518 303030303030303030303039393939393979|,C01518 303030303030303030303039393939393979|,agree
 move_num_to_num,C01519,0.0001 S9(9)V9(4) COMP-5 -> S9(5)V9(3) COMP-3,C01519 000000000C|,C01519 000000000C|,agree
 move_num_to_num,C01520,591.2464 S9(9)V9(4) COMP-5 -> S9(9)V9(4) COMP-3,C01520 0000005912464C|,C01520 0000005912464C|,agree
@@ -1562,7 +1562,7 @@ move_num_to_num,C01559,-0.000000568 S99V9(9) COMP -> S9(20)V9(10),C01559 3030303
 move_num_to_num,C01560,-1.000000005 S99V9(9) COMP-3 -> S9(15)V9(3) COMP-3,C01560 0000000000000001000D|,C01560 0000000000000001000D|,agree
 move_num_to_num,C01561,-499999999999999999 S9(18) -> 99 COMP-3,C01561 099F|,C01561 099F|,agree
 move_num_to_num,C01562,0.000002049 S99V9(9) -> 9(3)V99,C01562 3030303030|,C01562 3030303030|,agree
-move_num_to_num,C01563,-5900347395011813362537471247612 S9(31) -> S9(9)V9(4) COMP,C01563 FFFFF73FAE7D8C40|,C01563 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
+move_num_to_num,C01563,-5900347395011813362537471247612 S9(31) -> S9(9)V9(4) COMP,C01563 FFFFFBB6CA88EC40|,C01563 UNSUPPORTED store of a value >= 2**63 into binary item T,unsupported
 move_num_to_num,C01564,98 99 -> S9(18) COMP-5,C01564 6200000000000000|,C01564 6200000000000000|,agree
 move_num_to_num,C01565,72 S9(4) -> 99 COMP-5,C01565 48|,C01565 48|,agree
 move_num_to_num,C01566,36102039587 S9(18) COMP -> S9(20)V9(10),C01566 303030303030303030333631303230333935383730303030303030303030|,C01566 303030303030303030333631303230333935383730303030303030303030|,agree
@@ -1570,7 +1570,7 @@ move_num_to_num,C01567,0.999999 9V9(6) COMP-3 -> 99,C01567 3030|,C01567 3030|,ag
 move_num_to_num,C01568,9.999999 9V9(6) COMP -> S9(5)V9(3) COMP,C01568 0000270F|,C01568 0000270F|,agree
 move_num_to_num,C01569,-9.999999999 S99V9(9) COMP-5 -> S9(18) COMP-3,C01569 0000000000000000009D|,C01569 0000000000000000009D|,agree
 move_num_to_num,C01570,0.50 S9(3)V99 COMP-3 -> 99 COMP-5,C01570 00|,C01570 00|,agree
-move_num_to_num,C01571,45508705702334554449513.992448 9(25)V9(6) COMP-3 -> S9(31) COMP-3,C01571 0000000045508705702334554449513C|,C01571 0000000045508705702334554449513C|,agree
+move_num_to_num,C01571,45508705702334554449513.992448 9(25)V9(6) COMP-3 -> S9(31) COMP-3,C01571 0000000045508705702334554449513F|,C01571 0000000045508705702334554449513C|,disagree
 move_num_to_num,C01572,0.000004 9V9(6) COMP -> S9(18) COMP-3,C01572 0000000000000000000C|,C01572 0000000000000000000C|,agree
 move_num_to_num,C01573,3.56 9(3)V99 COMP-5 -> S9(4) COMP-3,C01573 00003C|,C01573 00003C|,agree
 move_num_to_num,C01574,256780555047281071145847.160501 9(25)V9(6) COMP-3 -> S9(9),C01574 303731313435383437|,C01574 303731313435383437|,agree
@@ -1627,7 +1627,7 @@ move_num_to_num,C01624,-5000.01 S9(6)V99 -> S9(3)V9 COMP-5 (zero sign),C01624 B0
 move_num_to_num,C01625,-0.004 S9V999 COMP-3 -> S9V99 (zero sign),C01625 303070|,C01625 303070|,agree
 move_num_to_num,C01626,-10000 S9(6) COMP-3 -> S9(4) (zero sign),C01626 30303070|,C01626 30303070|,agree
 move_num_to_num,C01627,-5000.01 S9(6)V99 COMP-3 -> S9(3)V9 (zero sign),C01627 30303070|,C01627 30303070|,agree
-move_num_to_num,C01628,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 (zero sign),C01628 000C|,C01628 000C|,agree
+move_num_to_num,C01628,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 (zero sign),C01628 000D|,C01628 000C|,disagree
 move_num_to_num,C01629,-10000 S9(6) COMP-3 -> S9(4) COMP-3 (zero sign),C01629 00000D|,C01629 00000D|,agree
 move_num_to_num,C01630,-5000.01 S9(6)V99 COMP-3 -> S9(3)V9 COMP-3 (zero sign),C01630 00000D|,C01630 00000D|,agree
 move_num_to_num,C01631,-0.004 S9V999 COMP-3 -> S9V99 COMP (zero sign),C01631 0000|,C01631 0000|,agree
@@ -1640,8 +1640,8 @@ move_num_to_num,C01637,-0.004 S9V999 COMP -> S9V99 (zero sign),C01637 303070|,C0
 move_num_to_num,C01638,-10000 S9(6) COMP -> S9(4) (zero sign),C01638 30303070|,C01638 30303070|,agree
 move_num_to_num,C01639,-5000.01 S9(6)V99 COMP -> S9(3)V9 (zero sign),C01639 30303070|,C01639 30303070|,agree
 move_num_to_num,C01640,-0.004 S9V999 COMP -> S9V99 COMP-3 (zero sign),C01640 000C|,C01640 000C|,agree
-move_num_to_num,C01641,-10000 S9(6) COMP -> S9(4) COMP-3 (zero sign),C01641 00000D|,C01641 00000D|,agree
-move_num_to_num,C01642,-5000.01 S9(6)V99 COMP -> S9(3)V9 COMP-3 (zero sign),C01642 00000D|,C01642 00000D|,agree
+move_num_to_num,C01641,-10000 S9(6) COMP -> S9(4) COMP-3 (zero sign),C01641 10000D|,C01641 00000D|,disagree
+move_num_to_num,C01642,-5000.01 S9(6)V99 COMP -> S9(3)V9 COMP-3 (zero sign),C01642 50000D|,C01642 00000D|,disagree
 move_num_to_num,C01643,-0.004 S9V999 COMP -> S9V99 COMP (zero sign),C01643 0000|,C01643 0000|,agree
 move_num_to_num,C01644,-10000 S9(6) COMP -> S9(4) COMP (zero sign),C01644 0000|,C01644 0000|,agree
 move_num_to_num,C01645,-5000.01 S9(6)V99 COMP -> S9(3)V9 COMP (zero sign),C01645 0000|,C01645 0000|,agree
@@ -1652,8 +1652,8 @@ move_num_to_num,C01649,-0.004 S9V999 COMP-5 -> S9V99 (zero sign),C01649 303070|,
 move_num_to_num,C01650,-10000 S9(6) COMP-5 -> S9(4) (zero sign),C01650 30303070|,C01650 30303070|,agree
 move_num_to_num,C01651,-5000.01 S9(6)V99 COMP-5 -> S9(3)V9 (zero sign),C01651 30303070|,C01651 30303070|,agree
 move_num_to_num,C01652,-0.004 S9V999 COMP-5 -> S9V99 COMP-3 (zero sign),C01652 000C|,C01652 000C|,agree
-move_num_to_num,C01653,-10000 S9(6) COMP-5 -> S9(4) COMP-3 (zero sign),C01653 00000D|,C01653 00000D|,agree
-move_num_to_num,C01654,-5000.01 S9(6)V99 COMP-5 -> S9(3)V9 COMP-3 (zero sign),C01654 00000D|,C01654 00000D|,agree
+move_num_to_num,C01653,-10000 S9(6) COMP-5 -> S9(4) COMP-3 (zero sign),C01653 10000D|,C01653 00000D|,disagree
+move_num_to_num,C01654,-5000.01 S9(6)V99 COMP-5 -> S9(3)V9 COMP-3 (zero sign),C01654 50000D|,C01654 00000D|,disagree
 move_num_to_num,C01655,-0.004 S9V999 COMP-5 -> S9V99 COMP (zero sign),C01655 0000|,C01655 0000|,agree
 move_num_to_num,C01656,-10000 S9(6) COMP-5 -> S9(4) COMP (zero sign),C01656 0000|,C01656 0000|,agree
 move_num_to_num,C01657,-5000.01 S9(6)V99 COMP-5 -> S9(3)V9 COMP (zero sign),C01657 0000|,C01657 0000|,agree
@@ -1664,10 +1664,10 @@ move_num_to_num,C01661,-0.004 S9V999 -> S9V99 -> S9(3)V9,C01661 303070 30303070|
 move_num_to_num,C01662,-0.004 S9V999 -> S9V99 -> S9(3)V9 COMP-3,C01662 303070 00000D|,C01662 303070 00000D|,agree
 move_num_to_num,C01663,-0.004 S9V999 -> S9V99 -> S9(3)V9 COMP,C01663 303070 0000|,C01663 303070 0000|,agree
 move_num_to_num,C01664,-0.004 S9V999 -> S9V99 -> S9(3)V9 COMP-5,C01664 303070 0000|,C01664 303070 0000|,agree
-move_num_to_num,C01665,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 -> S9(3)V9,C01665 000C 30303030|,C01665 000C 30303030|,agree
-move_num_to_num,C01666,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 -> S9(3)V9 COMP-3,C01666 000C 00000C|,C01666 000C 00000C|,agree
-move_num_to_num,C01667,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 -> S9(3)V9 COMP,C01667 000C 0000|,C01667 000C 0000|,agree
-move_num_to_num,C01668,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 -> S9(3)V9 COMP-5,C01668 000C 0000|,C01668 000C 0000|,agree
+move_num_to_num,C01665,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 -> S9(3)V9,C01665 000D 30303070|,C01665 000C 30303030|,disagree
+move_num_to_num,C01666,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 -> S9(3)V9 COMP-3,C01666 000D 00000D|,C01666 000C 00000C|,disagree
+move_num_to_num,C01667,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 -> S9(3)V9 COMP,C01667 000D 0000|,C01667 000C 0000|,disagree
+move_num_to_num,C01668,-0.004 S9V999 COMP-3 -> S9V99 COMP-3 -> S9(3)V9 COMP-5,C01668 000D 0000|,C01668 000C 0000|,disagree
 move_num_to_alnum,C01669,8 9 -> X(1),C01669 38|,C01669 38|,agree
 move_num_to_alnum,C01670,8 9 -> X(3),C01670 382020|,C01670 382020|,agree
 move_num_to_alnum,C01671,2 9 -> X(6),C01671 322020202020|,C01671 322020202020|,agree
@@ -2618,34 +2618,34 @@ edit,C02615,10000 -> ZZ,C02615 2020|,C02615 2020|,agree
 edit,C02616,-10000 -> ZZ,C02616 2020|,C02616 2020|,agree
 edit,C02617,100000 -> ZZ,C02617 2020|,C02617 2020|,agree
 edit,C02618,20000.5 -> ZZ,C02618 2020|,C02618 2020|,agree
-edit,C02619,0 -> -$$$9.99,C02619 2D202024302E3030|,C02619 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02620,0.001 -> -$$$9.99,C02620 2D202024302E3030|,C02620 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02621,0.005 -> -$$$9.99,C02621 2D202024302E3030|,C02621 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02622,0.05 -> -$$$9.99,C02622 2D202024302E3035|,C02622 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02623,0.5 -> -$$$9.99,C02623 2D202024302E3530|,C02623 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02624,1 -> -$$$9.99,C02624 2D202024312E3030|,C02624 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02625,-1 -> -$$$9.99,C02625 2D202024312E3030|,C02625 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02626,5 -> -$$$9.99,C02626 2D202024352E3030|,C02626 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02627,12.34 -> -$$$9.99,C02627 2D202431322E3334|,C02627 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02628,-12.34 -> -$$$9.99,C02628 2D202431322E3334|,C02628 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02629,100 -> -$$$9.99,C02629 2D243130302E3030|,C02629 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02630,999.99 -> -$$$9.99,C02630 2D243939392E3939|,C02630 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02631,-999.99 -> -$$$9.99,C02631 2D243939392E3939|,C02631 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02632,1000 -> -$$$9.99,C02632 20313030302E3030|,C02632 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02633,1234.5 -> -$$$9.99,C02633 20313233342E3530|,C02633 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02634,-1234.5 -> -$$$9.99,C02634 2D313233342E3530|,C02634 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02635,9999.999 -> -$$$9.99,C02635 20393939392E3939|,C02635 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02636,-9999.999 -> -$$$9.99,C02636 2D393939392E3939|,C02636 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02637,12345.67 -> -$$$9.99,C02637 20323334352E3637|,C02637 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02638,-12345.67 -> -$$$9.99,C02638 2D323334352E3637|,C02638 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02639,1000000 -> -$$$9.99,C02639 2D202024302E3030|,C02639 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02640,-0.01 -> -$$$9.99,C02640 2D202024302E3031|,C02640 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02641,9999999.999 -> -$$$9.99,C02641 20393939392E3939|,C02641 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02642,-9999999.999 -> -$$$9.99,C02642 2D393939392E3939|,C02642 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02643,10000 -> -$$$9.99,C02643 20303030302E3030|,C02643 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02644,-10000 -> -$$$9.99,C02644 2D303030302E3030|,C02644 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02645,100000 -> -$$$9.99,C02645 2D202024302E3030|,C02645 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
-edit,C02646,20000.5 -> -$$$9.99,C02646 20303030302E3530|,C02646 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py),unsupported
+edit,C02619,0 -> -$$$9.99,C02619 2D202024302E3030|,C02619 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02620,0.001 -> -$$$9.99,C02620 2D202024302E3030|,C02620 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02621,0.005 -> -$$$9.99,C02621 2D202024302E3030|,C02621 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02622,0.05 -> -$$$9.99,C02622 2D202024302E3035|,C02622 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02623,0.5 -> -$$$9.99,C02623 2D202024302E3530|,C02623 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02624,1 -> -$$$9.99,C02624 2D202024312E3030|,C02624 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02625,-1 -> -$$$9.99,C02625 2D202024312E3030|,C02625 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02626,5 -> -$$$9.99,C02626 2D202024352E3030|,C02626 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02627,12.34 -> -$$$9.99,C02627 2D202431322E3334|,C02627 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02628,-12.34 -> -$$$9.99,C02628 2D202431322E3334|,C02628 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02629,100 -> -$$$9.99,C02629 2D243130302E3030|,C02629 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02630,999.99 -> -$$$9.99,C02630 2D243939392E3939|,C02630 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02631,-999.99 -> -$$$9.99,C02631 2D243939392E3939|,C02631 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02632,1000 -> -$$$9.99,C02632 20313030302E3030|,C02632 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02633,1234.5 -> -$$$9.99,C02633 20313233342E3530|,C02633 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02634,-1234.5 -> -$$$9.99,C02634 2D313233342E3530|,C02634 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02635,9999.999 -> -$$$9.99,C02635 20393939392E3939|,C02635 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02636,-9999.999 -> -$$$9.99,C02636 2D393939392E3939|,C02636 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02637,12345.67 -> -$$$9.99,C02637 20323334352E3637|,C02637 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02638,-12345.67 -> -$$$9.99,C02638 2D323334352E3637|,C02638 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02639,1000000 -> -$$$9.99,C02639 2D202024302E3030|,C02639 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02640,-0.01 -> -$$$9.99,C02640 2D202024302E3031|,C02640 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02641,9999999.999 -> -$$$9.99,C02641 20393939392E3939|,C02641 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02642,-9999999.999 -> -$$$9.99,C02642 2D393939392E3939|,C02642 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02643,10000 -> -$$$9.99,C02643 20303030302E3030|,C02643 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02644,-10000 -> -$$$9.99,C02644 2D303030302E3030|,C02644 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02645,100000 -> -$$$9.99,C02645 2D202024302E3030|,C02645 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
+edit,C02646,20000.5 -> -$$$9.99,C02646 20303030302E3530|,C02646 UNSUPPORTED PICTURE -$$$9.99: a fixed leading sign or currency symbol combined with a floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values (tests/oracle/findings/edit_minus.cob),unsupported
 edit,C02647,0 -> Z(5)9.99-,C02647 2020202020302E303020|,C02647 2020202020302E303020|,agree
 edit,C02648,0.001 -> Z(5)9.99-,C02648 2020202020302E303020|,C02648 2020202020302E303020|,agree
 edit,C02649,0.005 -> Z(5)9.99-,C02649 2020202020302E303020|,C02649 2020202020302E303020|,agree
@@ -6440,20 +6440,20 @@ inspect_stmt,C06437,"""C "" TALLYING C1 FOR ALL ""A"" C2 FOR LEADING ""0""",C064
 inspect_stmt,C06438,"""CA *A*B A"" TALLYING C1 FOR ALL ""A"" C2 FOR LEADING ""0""",C06438 4341202A412A422041 303035 303030|,C06438 4341202A412A422041 303035 303030|,agree
 inspect_stmt,C06439,"""0  *A*CAA*"" TALLYING C1 FOR ALL ""A"" C2 FOR LEADING ""0""",C06439 3020202A412A4341412A 303035 303031|,C06439 3020202A412A4341412A 303035 303031|,agree
 inspect_stmt,C06440,"""00C*CAAC*C"" TALLYING C1 FOR ALL ""A"" C2 FOR LEADING ""0""",C06440 3030432A434141432A43 303034 303032|,C06440 3030432A434141432A43 303034 303032|,agree
-inspect_stmt,C06441,"""0000"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06441 30303030 303036 303030|,C06441 30303030 303036 303030|,agree
-inspect_stmt,C06442,"""0A"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06442 3041 303033 303031|,C06442 3041 303033 303031|,agree
-inspect_stmt,C06443,"""000C"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06443 30303043 303035 303031|,C06443 30303043 303035 303031|,agree
-inspect_stmt,C06444,"""00AAC B0*C"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06444 30304141432042302A43 303034 303038|,C06444 30304141432042302A43 303034 303038|,agree
+inspect_stmt,C06441,"""0000"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06441 30303030 303036 303031|,C06441 30303030 303036 303030|,disagree
+inspect_stmt,C06442,"""0A"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06442 3041 303033 303032|,C06442 3041 303033 303031|,disagree
+inspect_stmt,C06443,"""000C"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06443 30303043 303035 303032|,C06443 30303043 303035 303031|,disagree
+inspect_stmt,C06444,"""00AAC B0*C"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06444 30304141432042302A43 303034 303039|,C06444 30304141432042302A43 303034 303038|,disagree
 inspect_stmt,C06445,"""BC0"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06445 424330 303032 303033|,C06445 424330 303032 303033|,agree
-inspect_stmt,C06446,"""00BB A C* BAA"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06446 30304242204120432A20424141 303034 303131|,C06446 30304242204120432A20424141 303034 303131|,agree
-inspect_stmt,C06447,"""000BABA   C"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06447 3030304241424120202043 303035 303038|,C06447 3030304241424120202043 303035 303038|,agree
+inspect_stmt,C06446,"""00BB A C* BAA"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06446 30304242204120432A20424141 303034 303132|,C06446 30304242204120432A20424141 303034 303131|,disagree
+inspect_stmt,C06447,"""000BABA   C"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06447 3030304241424120202043 303035 303039|,C06447 3030304241424120202043 303035 303038|,disagree
 inspect_stmt,C06448,"""CCB"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06448 434342 303032 303033|,C06448 434342 303032 303033|,agree
-inspect_stmt,C06449,"""00000BAC*BB"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06449 30303030304241432A4242 303037 303036|,C06449 30303030304241432A4242 303037 303036|,agree
+inspect_stmt,C06449,"""00000BAC*BB"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06449 30303030304241432A4242 303037 303037|,C06449 30303030304241432A4242 303037 303036|,disagree
 inspect_stmt,C06450,"""*A*C"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06450 2A412A43 303032 303034|,C06450 2A412A43 303032 303034|,agree
 inspect_stmt,C06451,"""AA0B0BA  0*"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06451 414130423042412020302A 303032 303131|,C06451 414130423042412020302A 303032 303131|,agree
 inspect_stmt,C06452,"""AAAAB B"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06452 41414141422042 303032 303037|,C06452 41414141422042 303032 303037|,agree
-inspect_stmt,C06453,"""00*A*0AC "" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06453 30302A412A30414320 303034 303037|,C06453 30302A412A30414320 303034 303037|,agree
-inspect_stmt,C06454,"""00 0AC B*BA"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06454 30302030414320422A4241 303034 303039|,C06454 30302030414320422A4241 303034 303039|,agree
+inspect_stmt,C06453,"""00*A*0AC "" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06453 30302A412A30414320 303034 303038|,C06453 30302A412A30414320 303034 303037|,disagree
+inspect_stmt,C06454,"""00 0AC B*BA"" TALLYING C1 FOR LEADING ""0"" C2 FOR CHARACTERS",C06454 30302030414320422A4241 303034 303130|,C06454 30302030414320422A4241 303034 303039|,disagree
 inspect_stmt,C06455,""" "" REPLACING ALL ""A"" BY ""Z""",C06455 20 303032 303030|,C06455 20 303032 303030|,agree
 inspect_stmt,C06456,"""*0 B A C 0AC"" REPLACING ALL ""A"" BY ""Z""",C06456 2A302042205A204320305A43 303032 303030|,C06456 2A302042205A204320305A43 303032 303030|,agree
 inspect_stmt,C06457,"""A * "" REPLACING ALL ""A"" BY ""Z""",C06457 5A202A20 303032 303030|,C06457 5A202A20 303032 303030|,agree
@@ -7482,7 +7482,7 @@ arith_single_operand,C07479,SUBTRACT 1 9(10) FROM 1 S9(4) COMP-3,C07479 N 00000C
 arith_single_operand,C07480,SUBTRACT 1 9(10) FROM 0 S9(4) COMP-3 SIZE-ERROR,C07480 N 00001D|,C07480 N 00001D|,agree
 arith_single_operand,C07481,ADD -2 S9(4) TO 9999 S9(4) COMP-3,C07481 N 09997C|,C07481 N 09997C|,agree
 arith_single_operand,C07482,ADD -2 S9(4) TO 0 S9(4) COMP-3 SIZE-ERROR,C07482 N 00002D|,C07482 N 00002D|,agree
-arith_single_operand,C07483,SUBTRACT -2 S9(4) FROM 9999 S9(4) COMP-3,C07483 N 00001C|,C07483 UNSUPPORTED single-operand ADD/SUBTRACT overflowing even-digit COMP-3 T,unsupported
+arith_single_operand,C07483,SUBTRACT -2 S9(4) FROM 9999 S9(4) COMP-3,C07483 N 10001C|,C07483 UNSUPPORTED single-operand ADD/SUBTRACT overflowing even-digit COMP-3 T,unsupported
 arith_single_operand,C07484,SUBTRACT -2 S9(4) FROM 0 S9(4) COMP-3 SIZE-ERROR,C07484 N 00002C|,C07484 N 00002C|,agree
 arith_single_operand,C07485,ADD 1.0 9V9 TO 5 S9(4) COMP-3,C07485 N 00006C|,C07485 N 00006C|,agree
 arith_single_operand,C07486,ADD 1.0 9V9 TO 9998 S9(4) COMP-3 SIZE-ERROR,C07486 N 09999C|,C07486 N 09999C|,agree
@@ -7805,3 +7805,164 @@ value_clause,C07802,S9(3)V99 VALUE 0,C07802 3030303030|,C07802 3030303030|,agree
 value_clause,C07803,9(4) VALUE ZERO,C07803 30303030|,C07803 30303030|,agree
 value_clause,C07804,9(4) VALUE 5,C07804 30303035|,C07804 30303035|,agree
 value_clause,C07805,9(4) VALUE 0,C07805 30303030|,C07805 30303030|,agree
+arith_rounded_single_operand,C07806,ADD 0.005 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED,C07806 N 0000100C|,C07806 N 0000101C|,disagree
+arith_rounded_single_operand,C07807,ADD 0.005 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07807 N 0000100C|,C07807 N 0000101C|,disagree
+arith_rounded_single_operand,C07808,SUBTRACT 0.005 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED,C07808 N 0000099C|,C07808 N 0000100C|,disagree
+arith_rounded_single_operand,C07809,SUBTRACT 0.005 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07809 N 0000099C|,C07809 N 0000100C|,disagree
+arith_rounded_single_operand,C07810,ADD -0.005 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED,C07810 N 0000099C|,C07810 N 0000100C|,disagree
+arith_rounded_single_operand,C07811,ADD -0.005 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07811 N 0000099C|,C07811 N 0000100C|,disagree
+arith_rounded_single_operand,C07812,SUBTRACT -0.005 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED,C07812 N 0000100C|,C07812 N 0000101C|,disagree
+arith_rounded_single_operand,C07813,SUBTRACT -0.005 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07813 N 0000100C|,C07813 N 0000101C|,disagree
+arith_rounded_single_operand,C07814,ADD 0.015 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED,C07814 N 0000101C|,C07814 N 0000102C|,disagree
+arith_rounded_single_operand,C07815,ADD 0.015 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07815 N 0000101C|,C07815 N 0000102C|,disagree
+arith_rounded_single_operand,C07816,SUBTRACT 0.015 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED,C07816 N 0000098C|,C07816 N 0000099C|,disagree
+arith_rounded_single_operand,C07817,SUBTRACT 0.015 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07817 N 0000098C|,C07817 N 0000099C|,disagree
+arith_rounded_single_operand,C07818,ADD 1.235 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED,C07818 N 0000223C|,C07818 N 0000224C|,disagree
+arith_rounded_single_operand,C07819,ADD 1.235 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07819 N 0000223C|,C07819 N 0000224C|,disagree
+arith_rounded_single_operand,C07820,SUBTRACT 1.235 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED,C07820 N 0000023D|,C07820 N 0000024D|,disagree
+arith_rounded_single_operand,C07821,SUBTRACT 1.235 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07821 N 0000023D|,C07821 N 0000024D|,disagree
+arith_rounded_single_operand,C07822,ADD 12.3450 S99V9(4) TO 1.00 S9(5)V99 COMP-3 ROUNDED,C07822 N 0001334C|,C07822 N 0001335C|,disagree
+arith_rounded_single_operand,C07823,ADD 12.3450 S99V9(4) TO 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07823 N 0001334C|,C07823 N 0001335C|,disagree
+arith_rounded_single_operand,C07824,SUBTRACT 12.3450 S99V9(4) FROM 1.00 S9(5)V99 COMP-3 ROUNDED,C07824 N 0001134D|,C07824 N 0001135D|,disagree
+arith_rounded_single_operand,C07825,SUBTRACT 12.3450 S99V9(4) FROM 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07825 N 0001134D|,C07825 N 0001135D|,disagree
+arith_rounded_single_operand,C07826,ADD -0.0450 S99V9(4) TO 1.00 S9(5)V99 COMP-3 ROUNDED,C07826 N 0000095C|,C07826 N 0000096C|,disagree
+arith_rounded_single_operand,C07827,ADD -0.0450 S99V9(4) TO 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07827 N 0000095C|,C07827 N 0000096C|,disagree
+arith_rounded_single_operand,C07828,SUBTRACT -0.0450 S99V9(4) FROM 1.00 S9(5)V99 COMP-3 ROUNDED,C07828 N 0000104C|,C07828 N 0000105C|,disagree
+arith_rounded_single_operand,C07829,SUBTRACT -0.0450 S99V9(4) FROM 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07829 N 0000104C|,C07829 N 0000105C|,disagree
+arith_rounded_single_operand,C07830,ADD 0.5 9V9 TO 1.00 S9(5)V99 COMP-3 ROUNDED,C07830 N 0000150C|,C07830 N 0000150C|,agree
+arith_rounded_single_operand,C07831,ADD 0.5 9V9 TO 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07831 N 0000150C|,C07831 N 0000150C|,agree
+arith_rounded_single_operand,C07832,SUBTRACT 0.5 9V9 FROM 1.00 S9(5)V99 COMP-3 ROUNDED,C07832 N 0000050C|,C07832 N 0000050C|,agree
+arith_rounded_single_operand,C07833,SUBTRACT 0.5 9V9 FROM 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07833 N 0000050C|,C07833 N 0000050C|,agree
+arith_rounded_single_operand,C07834,ADD 0.004 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED,C07834 N 0000100C|,C07834 N 0000100C|,agree
+arith_rounded_single_operand,C07835,ADD 0.004 S9V999 TO 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07835 N 0000100C|,C07835 N 0000100C|,agree
+arith_rounded_single_operand,C07836,SUBTRACT 0.004 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED,C07836 N 0000099C|,C07836 N 0000100C|,disagree
+arith_rounded_single_operand,C07837,SUBTRACT 0.004 S9V999 FROM 1.00 S9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07837 N 0000099C|,C07837 N 0000100C|,disagree
+arith_rounded_single_operand,C07838,ADD 0.005 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED,C07838 N 00010C|,C07838 N 00010C|,agree
+arith_rounded_single_operand,C07839,ADD 0.005 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07839 N 00010C|,C07839 N 00010C|,agree
+arith_rounded_single_operand,C07840,SUBTRACT 0.005 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED,C07840 N 00009C|,C07840 N 00010C|,disagree
+arith_rounded_single_operand,C07841,SUBTRACT 0.005 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07841 N 00009C|,C07841 N 00010C|,disagree
+arith_rounded_single_operand,C07842,ADD -0.005 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED,C07842 N 00009C|,C07842 N 00010C|,disagree
+arith_rounded_single_operand,C07843,ADD -0.005 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07843 N 00009C|,C07843 N 00010C|,disagree
+arith_rounded_single_operand,C07844,SUBTRACT -0.005 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED,C07844 N 00010C|,C07844 N 00010C|,agree
+arith_rounded_single_operand,C07845,SUBTRACT -0.005 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07845 N 00010C|,C07845 N 00010C|,agree
+arith_rounded_single_operand,C07846,ADD 0.015 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED,C07846 N 00010C|,C07846 N 00010C|,agree
+arith_rounded_single_operand,C07847,ADD 0.015 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07847 N 00010C|,C07847 N 00010C|,agree
+arith_rounded_single_operand,C07848,SUBTRACT 0.015 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED,C07848 N 00009C|,C07848 N 00010C|,disagree
+arith_rounded_single_operand,C07849,SUBTRACT 0.015 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07849 N 00009C|,C07849 N 00010C|,disagree
+arith_rounded_single_operand,C07850,ADD 1.235 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED,C07850 N 00022C|,C07850 N 00022C|,agree
+arith_rounded_single_operand,C07851,ADD 1.235 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07851 N 00022C|,C07851 N 00022C|,agree
+arith_rounded_single_operand,C07852,SUBTRACT 1.235 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED,C07852 N 00002D|,C07852 N 00002D|,agree
+arith_rounded_single_operand,C07853,SUBTRACT 1.235 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07853 N 00002D|,C07853 N 00002D|,agree
+arith_rounded_single_operand,C07854,ADD 12.3450 S99V9(4) TO 1.0 S9(4)V9 COMP-3 ROUNDED,C07854 N 00133C|,C07854 N 00133C|,agree
+arith_rounded_single_operand,C07855,ADD 12.3450 S99V9(4) TO 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07855 N 00133C|,C07855 N 00133C|,agree
+arith_rounded_single_operand,C07856,SUBTRACT 12.3450 S99V9(4) FROM 1.0 S9(4)V9 COMP-3 ROUNDED,C07856 N 00113D|,C07856 N 00113D|,agree
+arith_rounded_single_operand,C07857,SUBTRACT 12.3450 S99V9(4) FROM 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07857 N 00113D|,C07857 N 00113D|,agree
+arith_rounded_single_operand,C07858,ADD -0.0450 S99V9(4) TO 1.0 S9(4)V9 COMP-3 ROUNDED,C07858 N 00009C|,C07858 N 00010C|,disagree
+arith_rounded_single_operand,C07859,ADD -0.0450 S99V9(4) TO 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07859 N 00009C|,C07859 N 00010C|,disagree
+arith_rounded_single_operand,C07860,SUBTRACT -0.0450 S99V9(4) FROM 1.0 S9(4)V9 COMP-3 ROUNDED,C07860 N 00010C|,C07860 N 00010C|,agree
+arith_rounded_single_operand,C07861,SUBTRACT -0.0450 S99V9(4) FROM 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07861 N 00010C|,C07861 N 00010C|,agree
+arith_rounded_single_operand,C07862,ADD 0.5 9V9 TO 1.0 S9(4)V9 COMP-3 ROUNDED,C07862 N 00015C|,C07862 N 00015C|,agree
+arith_rounded_single_operand,C07863,ADD 0.5 9V9 TO 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07863 N 00015C|,C07863 N 00015C|,agree
+arith_rounded_single_operand,C07864,SUBTRACT 0.5 9V9 FROM 1.0 S9(4)V9 COMP-3 ROUNDED,C07864 N 00005C|,C07864 N 00005C|,agree
+arith_rounded_single_operand,C07865,SUBTRACT 0.5 9V9 FROM 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07865 N 00005C|,C07865 N 00005C|,agree
+arith_rounded_single_operand,C07866,ADD 0.004 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED,C07866 N 00010C|,C07866 N 00010C|,agree
+arith_rounded_single_operand,C07867,ADD 0.004 S9V999 TO 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07867 N 00010C|,C07867 N 00010C|,agree
+arith_rounded_single_operand,C07868,SUBTRACT 0.004 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED,C07868 N 00009C|,C07868 N 00010C|,disagree
+arith_rounded_single_operand,C07869,SUBTRACT 0.004 S9V999 FROM 1.0 S9(4)V9 COMP-3 ROUNDED SIZE-ERROR,C07869 N 00009C|,C07869 N 00010C|,disagree
+arith_rounded_single_operand,C07870,ADD 0.005 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED,C07870 N 0000100F|,C07870 N 0000101F|,disagree
+arith_rounded_single_operand,C07871,ADD 0.005 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07871 N 0000100F|,C07871 N 0000101F|,disagree
+arith_rounded_single_operand,C07872,SUBTRACT 0.005 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED,C07872 N 0000099F|,C07872 N 0000100F|,disagree
+arith_rounded_single_operand,C07873,SUBTRACT 0.005 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07873 N 0000099F|,C07873 N 0000100F|,disagree
+arith_rounded_single_operand,C07874,ADD -0.005 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED,C07874 N 0000099F|,C07874 N 0000100F|,disagree
+arith_rounded_single_operand,C07875,ADD -0.005 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07875 N 0000099F|,C07875 N 0000100F|,disagree
+arith_rounded_single_operand,C07876,SUBTRACT -0.005 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED,C07876 N 0000100F|,C07876 N 0000101F|,disagree
+arith_rounded_single_operand,C07877,SUBTRACT -0.005 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07877 N 0000100F|,C07877 N 0000101F|,disagree
+arith_rounded_single_operand,C07878,ADD 0.015 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED,C07878 N 0000101F|,C07878 N 0000102F|,disagree
+arith_rounded_single_operand,C07879,ADD 0.015 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07879 N 0000101F|,C07879 N 0000102F|,disagree
+arith_rounded_single_operand,C07880,SUBTRACT 0.015 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED,C07880 N 0000098F|,C07880 N 0000099F|,disagree
+arith_rounded_single_operand,C07881,SUBTRACT 0.015 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07881 N 0000098F|,C07881 N 0000099F|,disagree
+arith_rounded_single_operand,C07882,ADD 1.235 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED,C07882 N 0000223F|,C07882 N 0000224F|,disagree
+arith_rounded_single_operand,C07883,ADD 1.235 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07883 N 0000223F|,C07883 N 0000224F|,disagree
+arith_rounded_single_operand,C07884,SUBTRACT 1.235 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED,C07884 N 0000023F|,C07884 N 0000024F|,disagree
+arith_rounded_single_operand,C07885,SUBTRACT 1.235 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07885 N 0000023F|,C07885 N 0000024F|,disagree
+arith_rounded_single_operand,C07886,ADD 12.3450 S99V9(4) TO 1.00 9(5)V99 COMP-3 ROUNDED,C07886 N 0001334F|,C07886 N 0001335F|,disagree
+arith_rounded_single_operand,C07887,ADD 12.3450 S99V9(4) TO 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07887 N 0001334F|,C07887 N 0001335F|,disagree
+arith_rounded_single_operand,C07888,SUBTRACT 12.3450 S99V9(4) FROM 1.00 9(5)V99 COMP-3 ROUNDED,C07888 N 0001134F|,C07888 N 0001135F|,disagree
+arith_rounded_single_operand,C07889,SUBTRACT 12.3450 S99V9(4) FROM 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07889 N 0001134F|,C07889 N 0001135F|,disagree
+arith_rounded_single_operand,C07890,ADD -0.0450 S99V9(4) TO 1.00 9(5)V99 COMP-3 ROUNDED,C07890 N 0000095F|,C07890 N 0000096F|,disagree
+arith_rounded_single_operand,C07891,ADD -0.0450 S99V9(4) TO 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07891 N 0000095F|,C07891 N 0000096F|,disagree
+arith_rounded_single_operand,C07892,SUBTRACT -0.0450 S99V9(4) FROM 1.00 9(5)V99 COMP-3 ROUNDED,C07892 N 0000104F|,C07892 N 0000105F|,disagree
+arith_rounded_single_operand,C07893,SUBTRACT -0.0450 S99V9(4) FROM 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07893 N 0000104F|,C07893 N 0000105F|,disagree
+arith_rounded_single_operand,C07894,ADD 0.5 9V9 TO 1.00 9(5)V99 COMP-3 ROUNDED,C07894 N 0000150F|,C07894 N 0000150F|,agree
+arith_rounded_single_operand,C07895,ADD 0.5 9V9 TO 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07895 N 0000150F|,C07895 N 0000150F|,agree
+arith_rounded_single_operand,C07896,SUBTRACT 0.5 9V9 FROM 1.00 9(5)V99 COMP-3 ROUNDED,C07896 N 0000050F|,C07896 N 0000050F|,agree
+arith_rounded_single_operand,C07897,SUBTRACT 0.5 9V9 FROM 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07897 N 0000050F|,C07897 N 0000050F|,agree
+arith_rounded_single_operand,C07898,ADD 0.004 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED,C07898 N 0000100F|,C07898 N 0000100F|,agree
+arith_rounded_single_operand,C07899,ADD 0.004 S9V999 TO 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07899 N 0000100F|,C07899 N 0000100F|,agree
+arith_rounded_single_operand,C07900,SUBTRACT 0.004 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED,C07900 N 0000099F|,C07900 N 0000100F|,disagree
+arith_rounded_single_operand,C07901,SUBTRACT 0.004 S9V999 FROM 1.00 9(5)V99 COMP-3 ROUNDED SIZE-ERROR,C07901 N 0000099F|,C07901 N 0000100F|,disagree
+arith_rounded_single_operand,C07902,ADD 0.005 S9V999 TO 1.00 S9(5)V99 ROUNDED,C07902 N 30303030313031|,C07902 N 30303030313031|,agree
+arith_rounded_single_operand,C07903,ADD 0.005 S9V999 TO 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07903 N 30303030313031|,C07903 N 30303030313031|,agree
+arith_rounded_single_operand,C07904,SUBTRACT 0.005 S9V999 FROM 1.00 S9(5)V99 ROUNDED,C07904 N 30303030313030|,C07904 N 30303030313030|,agree
+arith_rounded_single_operand,C07905,SUBTRACT 0.005 S9V999 FROM 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07905 N 30303030313030|,C07905 N 30303030313030|,agree
+arith_rounded_single_operand,C07906,ADD -0.005 S9V999 TO 1.00 S9(5)V99 ROUNDED,C07906 N 30303030313030|,C07906 N 30303030313030|,agree
+arith_rounded_single_operand,C07907,ADD -0.005 S9V999 TO 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07907 N 30303030313030|,C07907 N 30303030313030|,agree
+arith_rounded_single_operand,C07908,SUBTRACT -0.005 S9V999 FROM 1.00 S9(5)V99 ROUNDED,C07908 N 30303030313031|,C07908 N 30303030313031|,agree
+arith_rounded_single_operand,C07909,SUBTRACT -0.005 S9V999 FROM 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07909 N 30303030313031|,C07909 N 30303030313031|,agree
+arith_rounded_single_operand,C07910,ADD 0.015 S9V999 TO 1.00 S9(5)V99 ROUNDED,C07910 N 30303030313032|,C07910 N 30303030313032|,agree
+arith_rounded_single_operand,C07911,ADD 0.015 S9V999 TO 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07911 N 30303030313032|,C07911 N 30303030313032|,agree
+arith_rounded_single_operand,C07912,SUBTRACT 0.015 S9V999 FROM 1.00 S9(5)V99 ROUNDED,C07912 N 30303030303939|,C07912 N 30303030303939|,agree
+arith_rounded_single_operand,C07913,SUBTRACT 0.015 S9V999 FROM 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07913 N 30303030303939|,C07913 N 30303030303939|,agree
+arith_rounded_single_operand,C07914,ADD 1.235 S9V999 TO 1.00 S9(5)V99 ROUNDED,C07914 N 30303030323234|,C07914 N 30303030323234|,agree
+arith_rounded_single_operand,C07915,ADD 1.235 S9V999 TO 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07915 N 30303030323234|,C07915 N 30303030323234|,agree
+arith_rounded_single_operand,C07916,SUBTRACT 1.235 S9V999 FROM 1.00 S9(5)V99 ROUNDED,C07916 N 30303030303274|,C07916 N 30303030303274|,agree
+arith_rounded_single_operand,C07917,SUBTRACT 1.235 S9V999 FROM 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07917 N 30303030303274|,C07917 N 30303030303274|,agree
+arith_rounded_single_operand,C07918,ADD 12.3450 S99V9(4) TO 1.00 S9(5)V99 ROUNDED,C07918 N 30303031333335|,C07918 N 30303031333335|,agree
+arith_rounded_single_operand,C07919,ADD 12.3450 S99V9(4) TO 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07919 N 30303031333335|,C07919 N 30303031333335|,agree
+arith_rounded_single_operand,C07920,SUBTRACT 12.3450 S99V9(4) FROM 1.00 S9(5)V99 ROUNDED,C07920 N 30303031313375|,C07920 N 30303031313375|,agree
+arith_rounded_single_operand,C07921,SUBTRACT 12.3450 S99V9(4) FROM 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07921 N 30303031313375|,C07921 N 30303031313375|,agree
+arith_rounded_single_operand,C07922,ADD -0.0450 S99V9(4) TO 1.00 S9(5)V99 ROUNDED,C07922 N 30303030303936|,C07922 N 30303030303936|,agree
+arith_rounded_single_operand,C07923,ADD -0.0450 S99V9(4) TO 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07923 N 30303030303936|,C07923 N 30303030303936|,agree
+arith_rounded_single_operand,C07924,SUBTRACT -0.0450 S99V9(4) FROM 1.00 S9(5)V99 ROUNDED,C07924 N 30303030313035|,C07924 N 30303030313035|,agree
+arith_rounded_single_operand,C07925,SUBTRACT -0.0450 S99V9(4) FROM 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07925 N 30303030313035|,C07925 N 30303030313035|,agree
+arith_rounded_single_operand,C07926,ADD 0.5 9V9 TO 1.00 S9(5)V99 ROUNDED,C07926 N 30303030313530|,C07926 N 30303030313530|,agree
+arith_rounded_single_operand,C07927,ADD 0.5 9V9 TO 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07927 N 30303030313530|,C07927 N 30303030313530|,agree
+arith_rounded_single_operand,C07928,SUBTRACT 0.5 9V9 FROM 1.00 S9(5)V99 ROUNDED,C07928 N 30303030303530|,C07928 N 30303030303530|,agree
+arith_rounded_single_operand,C07929,SUBTRACT 0.5 9V9 FROM 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07929 N 30303030303530|,C07929 N 30303030303530|,agree
+arith_rounded_single_operand,C07930,ADD 0.004 S9V999 TO 1.00 S9(5)V99 ROUNDED,C07930 N 30303030313030|,C07930 N 30303030313030|,agree
+arith_rounded_single_operand,C07931,ADD 0.004 S9V999 TO 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07931 N 30303030313030|,C07931 N 30303030313030|,agree
+arith_rounded_single_operand,C07932,SUBTRACT 0.004 S9V999 FROM 1.00 S9(5)V99 ROUNDED,C07932 N 30303030313030|,C07932 N 30303030313030|,agree
+arith_rounded_single_operand,C07933,SUBTRACT 0.004 S9V999 FROM 1.00 S9(5)V99 ROUNDED SIZE-ERROR,C07933 N 30303030313030|,C07933 N 30303030313030|,agree
+arith_rounded_single_operand,C07934,ADD 0.005 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED,C07934 N 00000065|,C07934 N 00000065|,agree
+arith_rounded_single_operand,C07935,ADD 0.005 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07935 N 00000065|,C07935 N 00000065|,agree
+arith_rounded_single_operand,C07936,SUBTRACT 0.005 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED,C07936 N 00000064|,C07936 N 00000064|,agree
+arith_rounded_single_operand,C07937,SUBTRACT 0.005 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07937 N 00000064|,C07937 N 00000064|,agree
+arith_rounded_single_operand,C07938,ADD -0.005 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED,C07938 N 00000064|,C07938 N 00000064|,agree
+arith_rounded_single_operand,C07939,ADD -0.005 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07939 N 00000064|,C07939 N 00000064|,agree
+arith_rounded_single_operand,C07940,SUBTRACT -0.005 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED,C07940 N 00000065|,C07940 N 00000065|,agree
+arith_rounded_single_operand,C07941,SUBTRACT -0.005 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07941 N 00000065|,C07941 N 00000065|,agree
+arith_rounded_single_operand,C07942,ADD 0.015 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED,C07942 N 00000066|,C07942 N 00000066|,agree
+arith_rounded_single_operand,C07943,ADD 0.015 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07943 N 00000066|,C07943 N 00000066|,agree
+arith_rounded_single_operand,C07944,SUBTRACT 0.015 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED,C07944 N 00000063|,C07944 N 00000063|,agree
+arith_rounded_single_operand,C07945,SUBTRACT 0.015 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07945 N 00000063|,C07945 N 00000063|,agree
+arith_rounded_single_operand,C07946,ADD 1.235 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED,C07946 N 000000E0|,C07946 N 000000E0|,agree
+arith_rounded_single_operand,C07947,ADD 1.235 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07947 N 000000E0|,C07947 N 000000E0|,agree
+arith_rounded_single_operand,C07948,SUBTRACT 1.235 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED,C07948 N FFFFFFE8|,C07948 N FFFFFFE8|,agree
+arith_rounded_single_operand,C07949,SUBTRACT 1.235 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07949 N FFFFFFE8|,C07949 N FFFFFFE8|,agree
+arith_rounded_single_operand,C07950,ADD 12.3450 S99V9(4) TO 1.00 S9(5)V99 COMP ROUNDED,C07950 N 00000537|,C07950 N 00000537|,agree
+arith_rounded_single_operand,C07951,ADD 12.3450 S99V9(4) TO 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07951 N 00000537|,C07951 N 00000537|,agree
+arith_rounded_single_operand,C07952,SUBTRACT 12.3450 S99V9(4) FROM 1.00 S9(5)V99 COMP ROUNDED,C07952 N FFFFFB91|,C07952 N FFFFFB91|,agree
+arith_rounded_single_operand,C07953,SUBTRACT 12.3450 S99V9(4) FROM 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07953 N FFFFFB91|,C07953 N FFFFFB91|,agree
+arith_rounded_single_operand,C07954,ADD -0.0450 S99V9(4) TO 1.00 S9(5)V99 COMP ROUNDED,C07954 N 00000060|,C07954 N 00000060|,agree
+arith_rounded_single_operand,C07955,ADD -0.0450 S99V9(4) TO 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07955 N 00000060|,C07955 N 00000060|,agree
+arith_rounded_single_operand,C07956,SUBTRACT -0.0450 S99V9(4) FROM 1.00 S9(5)V99 COMP ROUNDED,C07956 N 00000069|,C07956 N 00000069|,agree
+arith_rounded_single_operand,C07957,SUBTRACT -0.0450 S99V9(4) FROM 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07957 N 00000069|,C07957 N 00000069|,agree
+arith_rounded_single_operand,C07958,ADD 0.5 9V9 TO 1.00 S9(5)V99 COMP ROUNDED,C07958 N 00000096|,C07958 N 00000096|,agree
+arith_rounded_single_operand,C07959,ADD 0.5 9V9 TO 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07959 N 00000096|,C07959 N 00000096|,agree
+arith_rounded_single_operand,C07960,SUBTRACT 0.5 9V9 FROM 1.00 S9(5)V99 COMP ROUNDED,C07960 N 00000032|,C07960 N 00000032|,agree
+arith_rounded_single_operand,C07961,SUBTRACT 0.5 9V9 FROM 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07961 N 00000032|,C07961 N 00000032|,agree
+arith_rounded_single_operand,C07962,ADD 0.004 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED,C07962 N 00000064|,C07962 N 00000064|,agree
+arith_rounded_single_operand,C07963,ADD 0.004 S9V999 TO 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07963 N 00000064|,C07963 N 00000064|,agree
+arith_rounded_single_operand,C07964,SUBTRACT 0.004 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED,C07964 N 00000064|,C07964 N 00000064|,agree
+arith_rounded_single_operand,C07965,SUBTRACT 0.004 S9V999 FROM 1.00 S9(5)V99 COMP ROUNDED SIZE-ERROR,C07965 N 00000064|,C07965 N 00000064|,agree
+inspect_iso_example,C07966,"ticket #991 / ISO D.25: ""EFABDBCGABEFGG""",C07966 3033 3031 3031 3030 3036|,C07966 3033 3031 3031 3030 3035|,disagree

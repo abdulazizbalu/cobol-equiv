@@ -62,7 +62,8 @@ def _check_supported(pic: Pic) -> None:
     if fixed_lead and floating:
         raise Unsupported(
             f"PICTURE {pic.text}: a fixed leading sign or currency symbol combined with a "
-            "floating string gives non-standard results in GnuCOBOL 3.1.2 (pinned by tests/oracle/test_gnucobol_quirks.py)")
+            "floating string: GnuCOBOL 3.1.2 and 3.2 print '-' for positive values "
+            "(tests/oracle/findings/edit_minus.cob)")
     if len(floating) > 1:
         raise Unsupported(f"PICTURE {pic.text}: two floating strings")
     for c in ("$", "+", "-"):

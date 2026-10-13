@@ -814,3 +814,70 @@ def rule_value_clause(rng):
 
 
 RULES["value_clause"] = rule_value_clause
+
+
+# ---- rules added for the GnuCOBOL 3.1.2 / 3.2 comparison --------------------
+
+def rule_rounded_single(rng):
+    """ADD x TO y ROUNDED / SUBTRACT x FROM y ROUNDED with one operand that has
+    more decimal places than the receiver. GnuCOBOL ticket #934 reports that
+    3.2 drops the default ROUNDED mode when the receiver is COMP-3."""
+    cases = []
+    targets = [("S9(5)V99", enc.COMP3), ("S9(4)V9", enc.COMP3), ("9(5)V99", enc.COMP3),
+               ("S9(5)V99", enc.DISPLAY), ("S9(5)V99", enc.COMP)]
+    operands = [("S9V999", "0.005"), ("S9V999", "-0.005"), ("S9V999", "0.015"), ("S9V999", "1.235"),
+                ("S99V9(4)", "12.3450"), ("S99V9(4)", "-0.0450"), ("9V9", "0.5"), ("S9V999", "0.004")]
+    for tp, tu in targets:
+        for opic, oval in operands:
+            if Decimal(oval) < 0 and not parse_pic(opic).signed:
+                continue
+            for verb in ("ADD", "SUBTRACT"):
+                for se in (False, True):
+                    tv = "1.00" if parse_pic(tp).scale == 2 else "1.0"
+                    t, o = Num("T", tp, usage=tu), Num("O", opic)
+                    st = f"ADD {{O}} TO {{T}} ROUNDED" if verb == "ADD" else f"SUBTRACT {{O}} FROM {{T}} ROUNDED"
+                    if se:
+                        st += f' ON SIZE ERROR MOVE "Y" TO SE-FLAG END-{verb}'
+
+                    def py(f, tv=tv, oval=oval, verb=verb, se=se):
+                        move(Decimal(tv), f["T"]); move(Decimal(oval), f["O"])
+                        fn = arith.add if verb == "ADD" else arith.subtract
+                        return fn(f["O"], f["T"], rounded=True, on_size_error=se) and se
+
+                    cases.append(Case(
+                        "arith_rounded_single_operand",
+                        f"{verb} {oval} {opic} {'TO' if verb == 'ADD' else 'FROM'} {tv} {fmt_item(t)} ROUNDED"
+                        f"{' SIZE-ERROR' if se else ''}",
+                        [t, o], [f"MOVE {tv} TO {{T}}", f"MOVE {oval} TO {{O}}", st], py,
+                        [("flag", ""), ("hex", "T")]))
+    return cases
+
+
+def rule_inspect_iso_example(rng):
+    """The INSPECT TALLYING example that GnuCOBOL ticket #991 quotes from
+    ISO/IEC 1989:2023 appendix D.25 (the ticket gives 03 01 01 00 05 as the
+    expected counts). We have not read the standard text itself."""
+    from ..runtime import text
+
+    items = [Alnum("X", "X(14)")] + [Num(f"C{k}", "99") for k in range(5)]
+
+    def py(f):
+        move("EFABDBCGABEFGG", f["X"])
+        text.inspect_tallying(f["X"], [
+            _P("ALL", "AB", counter=f["C0"]), _P("ALL", "D", counter=f["C0"]),
+            _P("ALL", "BC", counter=f["C1"]), _P("LEADING", "EF", counter=f["C2"]),
+            _P("LEADING", "B", counter=f["C3"]), _P("CHARACTERS", counter=f["C4"])])
+        return False
+
+    return [Case(
+        "inspect_iso_example", 'ticket #991 / ISO D.25: "EFABDBCGABEFGG"', items,
+        ['MOVE "EFABDBCGABEFGG" TO {X}',
+         'INSPECT {X} TALLYING {C0} FOR ALL "AB" ALL "D" {C1} FOR ALL "BC" '
+         '{C2} FOR LEADING "EF" {C3} FOR LEADING "B" {C4} FOR CHARACTERS'],
+        py, [("hex", f"C{k}") for k in range(5)])]
+
+
+RULES.update({
+    "arith_rounded_single_operand": rule_rounded_single,
+    "inspect_iso_example": rule_inspect_iso_example,
+})

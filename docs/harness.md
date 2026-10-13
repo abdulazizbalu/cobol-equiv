@@ -44,8 +44,11 @@ Each program has fixed regression vectors and Hypothesis-generated inputs
 - inputs are LINE SEQUENTIAL files with trailing spaces removed, so the
   READ padding is exercised.
 
-Generation is derandomized and uses no example database, so a run is
-deterministic for a given Hypothesis version. When a generated input fails,
+Generation is seeded from the program name and uses no example database,
+so a run is deterministic for a given Hypothesis version, and every
+translation of a program (reference or mutant) sees the same inputs. A
+different seed or Hypothesis version gives different inputs, which can change
+which mutants a generated input kills. When a generated input fails,
 Hypothesis shrinks it and the harness reports the smallest failing input it
 found.
 
@@ -76,8 +79,8 @@ the file system.
 
 ```sh
 python -m cobol_equiv.harness.check <program dir> <translation.py> [--examples N]
-python -m cobol_equiv.harness.corpus_run      # all reference translations -> results/corpus.csv
-python -m cobol_equiv.harness.mutation_run    # all mutants -> results/mutation.csv
+python -m cobol_equiv.harness.corpus_run      # all reference translations -> results/gnucobol-<version>/corpus.csv
+python -m cobol_equiv.harness.mutation_run    # all mutants -> results/gnucobol-<version>/mutation.csv
 ```
 
 ## Mutation testing
@@ -98,5 +101,5 @@ credit for anything they catch). Floating-point errors are the hardest: they
 change the output only on some inputs (half-cent ties, or values long enough
 to lose precision), and whether the generated sample contains one is partly
 luck. An independent review found one mutant labelled equivalent that was
-not (see `format-instead-of-edit` in `results/mutation.csv`); the labels are
+not (see `format-instead-of-edit` in `results/gnucobol-3.1.2/mutation.csv`); the labels are
 judgements and can be wrong.

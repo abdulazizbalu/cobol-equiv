@@ -67,6 +67,9 @@ MUTANTS = [
         "id": "count-after-dispatch",
         "category": "off-by-one",
         "description": "error counter not incremented for the first error",
+        "note": "differs only when the first record of a file takes the size-error branch (that is, "
+                "a D or Q record with amount 0, since the accumulator starts at 0); the fixed vectors "
+                "have none and whether the generated inputs contain one depends on the sample",
         "edits": [(
             '    if error:\n        add(1, ws["WS-ERRORS"])',
             '    if error and ws["WS-COUNT"].value > 1:\n        add(1, ws["WS-ERRORS"])',

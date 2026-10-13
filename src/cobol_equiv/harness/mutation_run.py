@@ -21,7 +21,8 @@ import csv
 import sys
 from pathlib import Path
 
-from .check import check
+from ..cobc import results_dir
+from .check import check, import_hits
 from .corpus import load_mutants, load_mutated, load_spec, program_dirs
 
 DEFAULT_EXAMPLES = 200
@@ -37,7 +38,8 @@ def run(examples: int = DEFAULT_EXAMPLES, programs: list[str] | None = None) -> 
         for m in load_mutants(d):
             if m["category"] not in CATEGORIES:
                 raise ValueError(f"{d.name}/{m['id']}: unknown category {m['category']}")
-            r = check(spec, load_mutated(d, m).main, examples)
+            mod = load_mutated(d, m)
+            r = check(spec, mod.main, examples, hits_at_import=import_hits(mod))
             killed = not r.passed
             rows.append({
                 "program": spec.name, "mutant": m["id"], "category": m["category"],
@@ -54,11 +56,11 @@ def run(examples: int = DEFAULT_EXAMPLES, programs: list[str] | None = None) -> 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--examples", type=int, default=DEFAULT_EXAMPLES)
-    ap.add_argument("--out", default="results")
+    ap.add_argument("--out", default=None, help="default: results/gnucobol-<version>")
     ap.add_argument("--programs", default="")
     a = ap.parse_args(argv)
     rows = run(a.examples, [p for p in a.programs.split(",") if p] or None)
-    out = Path(a.out)
+    out = Path(a.out) if a.out else results_dir()
     out.mkdir(parents=True, exist_ok=True)
     if not a.programs:
         with (out / "mutation.csv").open("w", encoding="utf-8", newline="") as fh:

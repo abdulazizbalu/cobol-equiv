@@ -125,20 +125,21 @@ def test_payroll_overtime_ge_40_all_rates_at_40_hours():
 
 
 def test_payroll_bracket_lt_at_gross_1000():
-    """The mutant differs only when WS-GROSS = 1000.00; every way the
-    reference reaches that gross with a whole-cent rate below 40 hours, plus
-    the overtime case, gives the same output."""
+    """The mutant differs only when WS-GROSS = 1000.00. Below 40 hours that is
+    every EMP-HOURS 0.1 .. 40.0 with an EMP-RATE whose ROUNDED product is
+    1000.00; plus the overtime case 80.0 x 10.00. Same output for all."""
     ref, mut = modules("payroll", "bracket-lt")
-    cases = [("80.0", "10.00")]
-    for tenths in range(1, 400):  # hours 0.1 .. 39.9
-        c = Decimal(1000) / (Decimal(tenths).scaleb(-1))
-        if c == c.quantize(Decimal("0.01")) and c < 1000:
-            cases.append((str(Decimal(tenths).scaleb(-1)), str(c)))
-    cases.append(("40.0", "25.00"))
+    cases = [(Decimal("80.0"), Decimal("10.00"))]
+    for t in range(1, 401):  # hours in tenths
+        # gross in cents = t * c / 10 ROUNDED (half up): 1000.00 iff 999995 <= t * c < 1000005
+        for c in range(-(-999995 // t), -(-1000005 // t)):
+            if c < 100000:
+                cases.append((Decimal(t).scaleb(-1), Decimal(c).scaleb(-2)))
+    assert (Decimal("33.3"), Decimal("30.03")) in cases
     a, b = Payroll(ref), Payroll(mut)
     for hours, rate in cases:
         out, gross = a(hours, rate)
-        assert gross == 1000
+        assert gross == 1000, (hours, rate)
         assert out == b(hours, rate)[0], (hours, rate)
 
 
@@ -187,7 +188,8 @@ def test_classify_float_compare_near_thresholds():
 
 def test_no_equivalence_is_disproved_by_the_committed_run():
     path = ROOT / "results" / "gnucobol-3.1.2" / "mutation.csv"
-    rows = list(csv.DictReader(path.open(encoding="utf-8")))
+    with path.open(encoding="utf-8", newline="") as fh:
+        rows = list(csv.DictReader(fh))
     assert not [r for r in rows if r["equivalence"] == "disproved"]
     claimed = {(r["program"], r["mutant"]) for r in rows if r["equivalence"] == "claimed"}
     assert claimed == EQUIVALENT

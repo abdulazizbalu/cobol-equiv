@@ -125,20 +125,20 @@ Source: `results/gnucobol-3.1.2/mutation.csv`. A mutant is a deliberately wrong 
 
 Mutants that survived (a):
 
-| program | mutant | kind | (b) | why it survived (a) |
+| program | mutant | kind | (b) | why it survived |
 |---|---|---|---|---|
-| classify | float-compare | equivalent | survived | equivalent mutant: conversion to float is monotonic and every threshold (0, 1000, 10000, 50000, -500) is exactly representable, so no comparison changes |
+| classify | float-compare | equivalent | survived | equivalent mutant: the balance is only compared with 0, 1000, 10000, 50000 and -500; its float differs from it by less than 1.2e-9 while a balance differs from a threshold by 0.01 or more, so every comparison keeps its result (docs/mutants.md) |
 | ctlbreak | float-total | missed | survived | not equivalent: once a branch total passes 9,999,999.99 (101 records of 99999.99 in one branch) COBOL truncates the total while the mutant's MOVE of the float sum is refused by the runtime; generated and boundary files have at most 30 records, so no branch total gets there. Classified as equivalent before; see docs/mutants.md |
-| datecalc | range-gt-ge | missed | survived | differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with OFFSET 0); no vector has it, and whether generated inputs do depends on the sample |
+| datecalc | range-gt-ge | missed | survived | differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with OFFSET 0); no vector has it, and whether generated inputs do depends on the sample. Boundary vectors: 99991231 is a calendar boundary, not a PICTURE one (the 9(8) boundaries such as 99999999 are invalid dates) |
 | datecalc | python-floor-division | equivalent | survived | equivalent mutant: WS-YYYY is at least 1601 whenever DATE-TO-NUM runs, so the dividend is never negative and floor and truncating division agree |
 | datecalc | year-unsigned-ignored | equivalent | survived | equivalent mutant: WS-YYYY - 1601 is never negative on any path, so the sign of WS-Y never matters |
-| loancalc | float-payment | missed | killed by boundary 7 | not detected: a double keeps about 16 significant digits; the payment is rounded to cents (at most 9 digits), so the float result differs only when the exact value is within about 1e-7 of a half-cent tie; no vector or generated input hit such a case |
+| loancalc | float-payment | missed | killed by boundary 7 | not detected by the fixed or generated inputs: a double keeps about 16 significant digits; the payment is rounded to cents (at most 9 digits), so the float result differs only when the exact value is within about 1e-7 of a half-cent tie; no vector or generated input hit such a case (see (b) for the boundary vectors) |
 | loancalc | mrate-half-even | equivalent | survived | equivalent mutant for this input domain: RATE/1200 with RATE in thousandths never has a tie at the 9th decimal place, so both rounding modes agree |
 | loancalc | residual-abs | equivalent | survived | equivalent mutant: the balance can never become negative (the principal part is capped at the balance) |
 | loancalc | loop-limit-gt | equivalent | survived | equivalent mutant: in the month equal to TERM the whole balance is paid, so the loop already ends on BALANCE <= 0 |
 | payroll | overtime-ge-40 | equivalent | survived | equivalent mutant: at exactly 40.0 hours the overtime part is 0, so both branches give the same gross |
 | payroll | bracket-lt | equivalent | survived | equivalent mutant: at gross 1000.00 both brackets give tax 100.00 |
-| redef | float-discount | missed | survived | differs only when the line amount lands on a half-cent tie that the float factor moves; whether the generated inputs contain one depends on the sample |
-| sizeerr | float-divide | missed | survived | differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample |
-| sizeerr | count-after-dispatch | missed | survived | differs only when the first record of a file takes the size-error branch (that is, a D or Q record with amount 0, since the accumulator starts at 0); the fixed vectors have none and whether the generated inputs contain one depends on the sample |
+| redef | float-discount | missed | survived | differs only when the line amount lands on a half-cent tie that the float factor moves; whether the generated inputs contain one depends on the sample. Boundary vectors: the tie is in the computed amount, not in an input value |
+| sizeerr | float-divide | missed | survived | differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample. Boundary vectors: the tie is in the computed quotient, not in an input value |
+| sizeerr | count-after-dispatch | missed | survived | differs only when the first record of a file takes the size-error branch (that is, a D or Q record with amount 0, since the accumulator starts at 0); the fixed vectors have none and whether the generated inputs contain one depends on the sample. Boundary vectors: TX-OP takes only generic text values (space, A, 9, 0, ~), never D or Q |
 | tables | rank-sign | equivalent | survived | equivalent mutant: WL-QTY (ZZ,ZZ9) has no sign position, so the edited result is the same |

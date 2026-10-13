@@ -13,7 +13,9 @@ MUTANTS = [
         "category": "off-by-one",
         "description": "upper range check uses >= MAX instead of > MAX",
         "note": "differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with "
-                "OFFSET 0); no vector has it, and whether generated inputs do depends on the sample",
+                "OFFSET 0); no vector has it, and whether generated inputs do depends on the sample. "
+                "Boundary vectors: 99991231 is a calendar boundary, not a PICTURE one (the 9(8) "
+                "boundaries such as 99999999 are invalid dates)",
         "edits": [('self.v("WS-NEW-NUM") > MAX_DAYNUM:', 'self.v("WS-NEW-NUM") >= MAX_DAYNUM:')],
     },
     {

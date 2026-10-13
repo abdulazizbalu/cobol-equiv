@@ -7,7 +7,8 @@ MUTANTS = [
         "description": "DIVIDE INTO the raw accumulator done in floating point and rounded with round()",
         "note": "differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives "
                 "0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the "
-                "inputs contain such a pair depends on the sample",
+                "inputs contain such a pair depends on the sample. Boundary vectors: the tie is in "
+                "the computed quotient, not in an input value",
         "edits": [(
             '        divide_into(amt, ws["WS-RAW"], rounded=True)\n',
             '        if amt.value != 0:\n'
@@ -69,7 +70,9 @@ MUTANTS = [
         "description": "error counter not incremented for the first error",
         "note": "differs only when the first record of a file takes the size-error branch (that is, "
                 "a D or Q record with amount 0, since the accumulator starts at 0); the fixed vectors "
-                "have none and whether the generated inputs contain one depends on the sample",
+                "have none and whether the generated inputs contain one depends on the sample. "
+                "Boundary vectors: TX-OP takes only generic text values (space, A, 9, 0, ~), never "
+                "D or Q",
         "edits": [(
             '    if error:\n        add(1, ws["WS-ERRORS"])',
             '    if error and ws["WS-COUNT"].value > 1:\n        add(1, ws["WS-ERRORS"])',

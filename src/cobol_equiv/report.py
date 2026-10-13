@@ -248,7 +248,7 @@ def mutation_section(results: Path) -> list[str]:
     surv = [r for r in rows if r["status"] == "survived"]
     if surv:
         out += ["", "Mutants that survived (a):", ""]
-        out += _table(["program", "mutant", "kind", "(b)", "why it survived (a)"],
+        out += _table(["program", "mutant", "kind", "(b)", "why it survived"],
                       [[r["program"], r["mutant"], r["survivor_kind"],
                         (f"killed by {r['detected_by_with_boundary']}"
                          if r["status_with_boundary"] == "killed" else "survived"),

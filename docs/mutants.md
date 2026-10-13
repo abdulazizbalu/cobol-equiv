@@ -24,7 +24,12 @@ translations were written against.
   files of the spec's maximum record count, plus an empty file. The
   generator does not read mutants, reference translations, value overrides
   or program logic, so the set is the same for any translation of the same
-  record layouts.
+  record layouts. It does apply the spec's `finalize` (for ctlbreak:
+  sorting by the control keys), which states a property every input file
+  of the program has. Because overrides are ignored, many boundary records
+  lie outside what the program accepts (invalid dates, unknown codes) and
+  test only its rejection paths; a program whose records come from a
+  custom strategy (redef) gets few boundary files.
 
 A mutant counts as killed in (b) if (a) killed it or a boundary vector
 does. Both columns are reported side by side.
@@ -82,10 +87,12 @@ only storage, so the rest of the program behaves the same.
 
 The first tax bracket is `< 1000` instead of `<= 1000`. The two differ only
 when WS-GROSS = 1000.00, where the first bracket gives 1000.00 x 0.10 =
-100.00 and the second 100 + 0 x 0.25 = 100.00. Check: every combination of
-hours below 40 (in tenths) and whole-cent rate that gives a gross of exactly
-1000.00, plus 40.0 x 25.00 and the overtime case 80.0 x 10.00, through the
-whole IF; same output for reference and mutant.
+100.00 and the second 100 + 0 x 0.25 = 100.00. Check: every EMP-HOURS 0.1 .. 40.0 with every
+EMP-RATE whose ROUNDED product is 1000.00 (exact products such as 40.0 x
+25.00 and rounded ones such as 33.3 x 30.03), plus the overtime case 80.0 x
+10.00, through pay_one; same output for reference and mutant. Tax depends
+only on WS-GROSS, so this covers every way to reach the differing value
+below 40 hours.
 
 ### `tables/rank-sign`
 
@@ -128,9 +135,11 @@ WS-BRANCH-TOT (`S9(7)V99`). The earlier label rested on the float sum being
 exact to the cent for short files. That does not cover every input: with
 101 records of 99999.99 in one branch the total passes 9,999,999.99;
 the reference truncates it, as GnuCOBOL does, while the mutant's MOVE of
-the float sum is refused by the runtime, and the harness reports the
-difference (`test_ctlbreak_float_total_is_not_equivalent`, run against
-GnuCOBOL). Generated and boundary files have at most 30 records, so neither
+the float sum is refused by the runtime (the value does not fit the
+receiver), which the harness reports as UNSUPPORTED, never as a pass
+(`test_ctlbreak_float_total_is_not_equivalent`, run against GnuCOBOL). The
+float value truncated to the PICTURE would have matched: what differs is
+the refusal, not the total. Generated and boundary files have at most 30 records, so neither
 measurement reaches such a total; the mutant is reported as missed in both.
 
 ## Limits

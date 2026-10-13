@@ -11,7 +11,9 @@ translations were written against.
 
 - **(a)** the fixed regression vectors of the program spec, then the
   Hypothesis-generated inputs (seeded from the program name, so every
-  mutant of a program sees the same inputs).
+  mutant of a program sees the same inputs; Hypothesis's use of literal
+  constants from loaded modules is turned off, otherwise the constants of
+  the mutated module itself would change the inputs).
 - **(b)** the same, plus the boundary vectors of `harness/boundary.py`. They
   are built from the PICTURE and USAGE of each input record item only: zero,
   one unit of the last decimal place, the maximum and one less, the smallest

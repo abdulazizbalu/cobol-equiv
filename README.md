@@ -38,10 +38,10 @@ It is:
 
 | compiler | what | result |
 |---|---|---|
-| GnuCOBOL 3.1.2 | oracle | 7967 generated cases in 31 rules: 7850 agree, 0 disagree, 117 refused as unsupported, 0 single-case GnuCOBOL crashes; 0 multi-case oracle programs aborted (their cases were rerun alone) |
+| GnuCOBOL 3.1.2 | oracle | 9769 generated cases in 33 rules: 9652 agree, 0 disagree, 117 refused as unsupported, 0 single-case GnuCOBOL crashes; 0 multi-case oracle programs aborted (their cases were rerun alone) |
 | GnuCOBOL 3.1.2 | corpus | 10 of 10 reference translations pass (regression vectors plus up to 200 generated inputs); 10 of 10 pass the PICTURE boundary vectors |
 | GnuCOBOL 3.1.2 | mutation | 67 mutants, 9 labelled equivalent (docs/mutants.md); fixed and generated inputs: 52 killed, 6 missed; plus PICTURE boundary vectors: 53 killed, 5 missed |
-| GnuCOBOL 3.2 | oracle | 7967 generated cases in 31 rules: 7753 agree, 97 disagree, 117 refused as unsupported, 0 single-case GnuCOBOL crashes; 1 multi-case oracle programs aborted (their cases were rerun alone) |
+| GnuCOBOL 3.2 | oracle | 9769 generated cases in 33 rules: 9555 agree, 97 disagree, 117 refused as unsupported, 0 single-case GnuCOBOL crashes; 1 multi-case oracle programs aborted (their cases were rerun alone) |
 | GnuCOBOL 3.2 | corpus | 9 of 10 reference translations pass (regression vectors plus up to 200 generated inputs); 10 of 10 pass the PICTURE boundary vectors |
 | 3.1.2 vs 3.2 | oracle | GnuCOBOL output differs in 104 cases (move_num_to_num 31, inspect_stmt 9, arith_single_operand 1, arith_rounded_single_operand 62, inspect_iso_example 1) |
 

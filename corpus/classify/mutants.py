@@ -26,6 +26,10 @@ MUTANTS = [
         "id": "age-boundary",
         "category": "off-by-one",
         "description": "CU-AGE < 25 written as <= 25",
+        "note": "differs only for a type P customer aged exactly 25 (segment YOUNG-P instead of "
+                "PERSONAL); the fixed vectors have none and whether the generated inputs contain "
+                "one depends on the sample. Boundary vectors: CU-TYPE takes only generic text "
+                "values (space, A, 9, 0, ~), never P",
         "edits": [('    if typ == b"P" and age < 25:', '    if typ == b"P" and age <= 25:')],
     },
     {

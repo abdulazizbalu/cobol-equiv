@@ -2,18 +2,30 @@
   "schema": 1,
   "protocol": {
     "file": "docs/benchmark-protocol.md",
-    "status": "draft under review; not merged"
+    "status": "merged (abdulazizbalu/cobol-equiv#6); deviations D1-D7 recorded in its last section"
   },
   "steps": [
     {
       "id": 1,
       "name": "protocol",
-      "status": "in progress"
+      "status": "done"
     },
     {
       "id": 2,
       "name": "corpus tracks, specs, vector split, API sheet, runner",
-      "status": "not started"
+      "status": "in review",
+      "done": [
+        "Track E screened (benchmark/corpus-e/screening.csv)",
+        "Track R: 10 existing + 10 new programs",
+        "vectors materialised for 3.1.2 and 3.2",
+        "reference translations pass all vectors (refcheck)",
+        "API sheet benchmark/prompts/api-sheet.md",
+        "prompt builder, translation driver, runner tested on benchmark/runner-test/tally"
+      ],
+      "remaining": [
+        "independent review",
+        "merge; then record runtime_harness_commit"
+      ]
     },
     {
       "id": 3,
@@ -26,7 +38,7 @@
       "status": "not started"
     }
   ],
-  "next": "merge the protocol PR before any translation is generated",
+  "next": "review and merge the corpus PR; then fill frozen_before_first_call.runtime_harness_commit with the merge commit and start condition A attempt 1",
   "sources_pinned": {
     "omp_course_commit": "1f037d24326124f4f2c5cd2d31e5220ceb549580",
     "rosettacodedata_commit": "1d475861d7141ef2fafff293d9339f56e4b0f5db",
@@ -36,11 +48,70 @@
   "frozen_before_first_call": {
     "model_id": "claude-opus-5-5",
     "runtime_harness_commit": null,
-    "python": null,
+    "python": "3.12.3",
     "hypothesis": "6.169.0",
     "gnucobol_primary": "3.1.2",
     "gnucobol_secondary": "3.2",
-    "client_version": null,
-    "api_sheet_sha256": null
+    "client_version": "2.1.296",
+    "api_sheet_sha256": "1d5221be650f590140842594252cc06a05067fa37d69de75ab7f0118e4a902c8"
+  },
+  "corpus": {
+    "track_E": [
+      "omp-cbl0001",
+      "omp-srchbin",
+      "omp-srchser",
+      "rc-a-plus-b",
+      "rc-abbreviations-automatic",
+      "rc-abc-words",
+      "rc-binary-digits",
+      "rc-csv-data-manipulation",
+      "rc-decision-tables",
+      "rc-fibonacci-sequence",
+      "rc-file-input-output",
+      "rc-fixed-length-records",
+      "rc-formatted-numeric-output",
+      "rc-function-definition",
+      "rc-greatest-common-divisor",
+      "rc-horizontal-sundial-calculations",
+      "rc-increment-a-numerical-string",
+      "rc-input-loop",
+      "rc-integer-comparison",
+      "rc-julia-set",
+      "rc-last-friday-of-each-month",
+      "rc-leap-year",
+      "rc-letter-frequency",
+      "rc-read-a-file-line-by-line",
+      "rc-roman-numerals-encode",
+      "rc-sedols",
+      "rc-sierpinski-triangle",
+      "rc-soloways-recurring-rainfall",
+      "rc-string-case",
+      "rc-string-interpolation"
+    ],
+    "track_R": [
+      "classify",
+      "ctlbreak",
+      "datecalc",
+      "loancalc",
+      "payroll",
+      "redef",
+      "report",
+      "sizeerr",
+      "strproc",
+      "tables",
+      "acctpost",
+      "custlist",
+      "interest",
+      "luhn",
+      "matrix",
+      "namefmt",
+      "ratelook",
+      "regsum",
+      "stockupd",
+      "wordwrap"
+    ],
+    "runner_test": [
+      "tally"
+    ]
   }
 }

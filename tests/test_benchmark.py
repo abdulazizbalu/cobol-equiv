@@ -1,0 +1,162 @@
+"""Benchmark corpus, vectors, prompts and translation driver
+(docs/benchmark-protocol.md). No translator is called here."""
+
+import csv
+import gzip
+import json
+from pathlib import Path
+
+import pytest
+
+from cobol_equiv.benchmark import apisheet, fetch, prompts, translate
+from cobol_equiv.benchmark.programs import programs
+from cobol_equiv.benchmark.vectors import (N_VISIBLE, PRIMARY, build_sets, decode_input, load,
+                                           unb64, vectors_path)
+
+ROOT = Path(__file__).resolve().parent.parent
+TRACKS = {"E": programs("E"), "R": programs("R")}
+ALL = TRACKS["E"] + TRACKS["R"]
+
+
+def fetched(p):
+    return Path(p.spec().source).exists()
+
+
+def test_corpus_sizes_match_the_screening_record():
+    with (ROOT / "benchmark" / "corpus-e" / "screening.csv").open(encoding="utf-8", newline="") as fh:
+        kept = [r for r in csv.DictReader(fh) if r["result"] == "kept"]
+    assert len(TRACKS["E"]) == len(kept) <= 30
+    assert len(TRACKS["R"]) == 20
+    assert len({p.name for p in ALL}) == len(ALL)
+
+
+def test_every_program_has_committed_vectors_for_both_compilers():
+    for p in ALL:
+        doc = load(p)
+        assert doc["program"] == p.name and doc["track"] == p.track
+        assert len(doc["sets"]["visible"]) == N_VISIBLE, p.name
+        held, lost = len(doc["sets"]["heldout"]), sum(r["set"] == "heldout" for r in doc["removed"])
+        assert held > 0 and lost * 10 <= held + lost, p.name
+        for items in doc["sets"].values():
+            for v in items:
+                assert PRIMARY in v["expected"] and "3.2" in v["expected"], p.name
+
+
+def test_sets_are_disjoint():
+    for p in ALL:
+        doc = load(p)
+        seen = set()
+        for items in doc["sets"].values():
+            for v in items:
+                key = json.dumps(v["input"], sort_keys=True)
+                assert key not in seen, p.name
+                seen.add(key)
+
+
+def test_vector_files_are_reproducible_bytes():
+    """gzip with mtime 0 and sorted keys: rewriting gives the same bytes."""
+    for p in ALL[:3]:
+        raw = vectors_path(p).read_bytes()
+        data = json.loads(gzip.decompress(raw).decode("utf-8"))
+        again = gzip.compress((json.dumps(data, indent=1, sort_keys=True) + "\n").encode("utf-8"),
+                              compresslevel=9, mtime=0)
+        assert again == raw
+
+
+def _pinned_hypothesis():
+    import hypothesis
+
+    pins = (ROOT / "requirements-repro.txt").read_text(encoding="utf-8")
+    return f"hypothesis=={hypothesis.__version__}" in pins
+
+
+@pytest.mark.skipif(not _pinned_hypothesis(), reason="generation is pinned to the Hypothesis version "
+                    "in requirements-repro.txt")
+@pytest.mark.parametrize("name", ["acctpost", "tables", "rc-a-plus-b", "omp-srchser"])
+def test_generated_sets_match_the_committed_ones(name):
+    p = next(p for p in ALL if p.name == name)
+    doc = load(p)
+    sets = build_sets(p.spec())
+    for set_name in ("visible", "dev"):
+        committed = [decode_input(v["input"]) for v in doc["sets"][set_name]]
+        removed = [decode_input(r["input"]) for r in doc["removed"] if r["set"] == set_name]
+        assert [inp for _, inp in sets[set_name] if inp not in removed] == committed
+
+
+def test_shown_source_removes_comments_only():
+    fixed = ("000100 IDENTIFICATION DIVISION.".ljust(72) + "SEQ00001\n"
+             "      * a comment line\n"
+             "      / a page eject\n"
+             '           DISPLAY "A *> B" *> trailing comment\n'
+             "\n"
+             "           STOP RUN.\n")
+    assert prompts.shown_source(fixed, free=False) == (
+        "000100 IDENTIFICATION DIVISION.\n"
+        '           DISPLAY "A *> B"\n'
+        "\n"
+        "           STOP RUN.\n")
+    free = "*> header\nprogram-id. x. *> note\n  display 'a*>b'.\n"
+    assert prompts.shown_source(free, free=True) == "program-id. x.\n  display 'a*>b'.\n"
+
+
+def test_extract_code():
+    assert translate.extract_code("x\n```python\na = 1\n```\n") == "a = 1\n"
+    assert translate.extract_code("```\nb = 2\n```\n```python\nc = 3\n```\n") == "c = 3\n"
+    assert translate.extract_code("```py\nd = 4\n```\n") == "d = 4\n"
+    assert translate.extract_code("no code") is None
+    assert translate.extract_code(None) is None
+
+
+def test_api_sheet_is_the_committed_one():
+    assert apisheet.generate() == apisheet.SHEET.read_text(encoding="utf-8")
+
+
+def test_api_sheet_has_no_statement_from_the_findings():
+    text = apisheet.SHEET.read_text(encoding="utf-8").lower()
+    for word in ("gnucobol", "negative zero", "remainder is", "trailing sign", "findings", "trap",
+                 "mutant", "half away"):
+        assert word not in text, word
+
+
+def test_adaptation_edits_must_match_once():
+    assert fetch.adapt("A B A", [["B", "C"]]) == "A C A"
+    with pytest.raises(ValueError):
+        fetch.adapt("A B A", [["A", "C"]])
+    with pytest.raises(ValueError):
+        fetch.adapt("A B A", [["X", "C"]])
+
+
+def test_translator_command_has_no_tools_and_no_settings():
+    cmd = translate.client_command("m")
+    for flag in ("--safe-mode", "--strict-mcp-config", "--no-session-persistence",
+                 "--disable-slash-commands"):
+        assert flag in cmd
+    assert cmd[cmd.index("--tools") + 1] == ""
+    assert cmd[cmd.index("--setting-sources") + 1] == ""
+    assert cmd[cmd.index("--model") + 1] == "m"
+
+
+def test_prompts_show_only_visible_vectors():
+    p = next(p for p in ALL if p.name == "acctpost")
+    a, c = prompts.prompt_one_shot(p, "A"), prompts.prompt_one_shot(p, "C")
+    assert "## API reference: cobol_equiv.runtime" in a and "API reference" not in c
+    assert "cobol_equiv" not in c
+    doc = load(p)
+    for v in doc["sets"]["visible"]:
+        assert repr(unb64(v["expected"][PRIMARY]["stdout"])) in a
+    for v in doc["sets"]["heldout"][:20]:
+        out = unb64(v["expected"][PRIMARY]["stdout"])
+        if len(out) > 40:
+            assert repr(out) not in a
+
+
+def test_shown_sources_have_no_comments():
+    for p in ALL:
+        if not fetched(p):
+            pytest.skip("Track E sources not fetched (python -m cobol_equiv.benchmark.fetch)")
+        assert "*>" not in prompts.source_of(p), p.name
+
+
+def test_runner_test_program_is_outside_both_tracks():
+    names = {p.name for p in ALL}
+    assert programs("T") and all(p.name not in names for p in programs("T"))

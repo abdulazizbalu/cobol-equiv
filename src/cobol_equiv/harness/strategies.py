@@ -17,6 +17,7 @@ use any USAGE.
 
 from __future__ import annotations
 
+import contextlib
 import string as _string
 from decimal import Decimal
 
@@ -121,3 +122,27 @@ def inputs(specs: list[InputSpec]):
 
 
 __all__ = ["STDIN", "for_item", "numeric_values", "record", "input_file", "inputs", "elementary_slots"]
+
+
+@contextlib.contextmanager
+def no_local_constants():
+    """Hypothesis (since 6.131) mixes literal constants found in the imported
+    modules of the project into generated values, so generated inputs would
+    depend on which modules happen to be loaded, including the translation
+    or mutant under test. Generation turns this off, so that the inputs
+    depend only on the spec and the seed. Uses a private name of Hypothesis
+    (6.169.0 is pinned in requirements-repro.txt); with a version that lacks
+    it, generation runs unchanged."""
+    from hypothesis.internal.conjecture import providers
+
+    if not hasattr(providers, "_get_local_constants"):
+        yield
+        return
+    saved = providers._get_local_constants
+    providers.CONSTANTS_CACHE.cache.clear()
+    providers._get_local_constants = providers.Constants
+    try:
+        yield
+    finally:
+        providers._get_local_constants = saved
+        providers.CONSTANTS_CACHE.cache.clear()

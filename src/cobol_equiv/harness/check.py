@@ -141,6 +141,7 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
     from hypothesis import HealthCheck, given, seed, settings
 
     from .strategies import inputs as inputs_strategy
+    from .strategies import no_local_constants
 
     exe = compile_program(spec.source, build_dir or BUILD_DIR, spec.free_format)
     result = CheckResult(spec.name, vectors=len(spec.vectors))
@@ -168,7 +169,8 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
             raise AssertionError(d.describe())
 
     try:
-        prop()
+        with no_local_constants():
+            prop()
     except AssertionError:
         pass
     result.generated = counter[0]

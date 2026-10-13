@@ -482,6 +482,18 @@ before any translation call.
   the time limit, or exits with an error on most inputs. They are listed
   in `screening.csv` with criterion "vectors".
 
+- **D6 (generation).** Hypothesis 6.169.0 mixes literal constants from
+  the project's imported modules into generated values, so the inputs
+  depended on which modules were loaded. Vector generation (and the
+  harness's own checks) now turn this off (`no_local_constants` in
+  `harness/strategies.py`), so that a set depends only on the spec and the
+  seed text of section 2. The vectors were materialised with this setting.
+- **D7 (API sheet).** The sheet is generated from the signatures of the
+  public names, but each docstring is replaced by a description written
+  during the review (in `benchmark/apisheet.py`), because several
+  docstrings state GnuCOBOL behaviours. Internal helpers (`edit`,
+  `store_numeric`, `store_cobdec`, `Pic`, `parse_pic`) are left out.
+
 Notes, not deviations: the runtime was extended before the freeze, while
 writing reference translations (ACCEPT from standard input, alphanumeric
 to numeric conversion for items, truncation of arithmetic results stored

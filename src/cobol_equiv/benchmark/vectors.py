@@ -20,7 +20,8 @@ exits with a non-zero status or times out (on GnuCOBOL 3.1.2) is removed
 and listed.
 
 Expected outputs are recorded for the compiler selected by COBC; run the
-command once per compiler version (3.1.2 first, it decides the sets).
+command once per compiler version (3.1.2 first, it decides the sets). A
+3.1.2 run keeps the other versions' outputs if the sets are unchanged.
 """
 
 from __future__ import annotations
@@ -65,6 +66,7 @@ def generated_inputs(spec: ProgramSpec, seed_text: str, n: int) -> list[dict]:
     from hypothesis import HealthCheck, given, seed, settings
 
     from ..harness.strategies import inputs as inputs_strategy
+    from ..harness.strategies import no_local_constants
 
     if not spec.inputs:
         return []
@@ -77,7 +79,8 @@ def generated_inputs(spec: ProgramSpec, seed_text: str, n: int) -> list[dict]:
     def collect(inp):
         got.append(dict(inp))
 
-    collect()
+    with no_local_constants():
+        collect()
     return got
 
 
@@ -176,6 +179,20 @@ def add_version(p: Program, doc: dict) -> dict:
     return doc
 
 
+def keep_other_versions(old: dict, doc: dict) -> None:
+    """Carry the expected outputs of other compiler versions over from the
+    committed file when the sets are unchanged (same inputs, same order)."""
+    def inputs(d):
+        return {k: [v["input"] for v in vs] for k, vs in d["sets"].items()}
+
+    if inputs(old) != inputs(doc):
+        return
+    for name, items in doc["sets"].items():
+        for v, o in zip(items, old["sets"][name]):
+            for label, exp in o["expected"].items():
+                v["expected"].setdefault(label, exp)
+
+
 def _hypothesis_version() -> str:
     import hypothesis
     return hypothesis.__version__
@@ -200,6 +217,8 @@ def main(argv=None) -> int:
             continue
         if label == PRIMARY:
             doc = materialise(p)
+            if vectors_path(p).exists():
+                keep_other_versions(load(p), doc)
         else:
             doc = add_version(p, load(p))
         write(p, doc)

@@ -201,3 +201,18 @@ def test_value_clause_on_edited_item():
     st = Storage("W", [Edited("A", "ZZ9.99", value=ZEROS), Edited("B", "ZZ9.99", value="  5.00"),
                        Edited("C", "ZZ9.99", value=SPACES), Edited("D", "ZZ9.99", value=Decimal(5))])
     assert [st[n].raw for n in "ABCD"] == [b"000000", b"  5.00", b"      ", b"  5.00"]
+
+
+def test_refmod_is_an_alphanumeric_view_of_the_item():
+    from cobol_equiv.runtime import Unsupported, refmod
+
+    ws = Storage("WS", [Alnum("T", "X(6)", value="ABCDEF"), Num("N", "9(4)", value=1234)])
+    assert refmod(ws["T"], 2, 3).raw == b"BCD"
+    assert refmod(ws["T"], 5).raw == b"EF"
+    move("xy", refmod(ws["T"], 3, 3))
+    assert ws["T"].raw == b"ABxy F"
+    move(refmod(ws["N"], 3, 2), refmod(ws["T"], 1, 2))
+    assert ws["T"].raw == b"34xy F"
+    for start, length in ((0, 1), (7, None), (6, 2), (1, 0)):
+        with pytest.raises(Unsupported):
+            refmod(ws["T"], start, length)

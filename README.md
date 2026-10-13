@@ -137,8 +137,9 @@ behaviour was checked on 3.1.2 and 3.2 is in [docs/findings.md](docs/findings.md
   backed by tests and, where one exists, a GnuCOBOL ticket or NEWS entry. We
   did not have the text of the COBOL standard, so no statement here says
   what the standard requires.
-- The corpus is small (10 programs), written for this repository. It is not production code and does not
-  represent the size, style or history of real mainframe applications.
+- The corpus is small (10 programs), written for this repository. It is
+  not production code and does not represent the size, style or history of
+  real mainframe applications.
 - The harness compares stdout and output files only; the exit status and
   stderr are not compared.
 - The mutation results measure the harness on these programs and these

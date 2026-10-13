@@ -46,7 +46,9 @@ A candidate is kept only if all of the following hold:
 - **E2** It is deterministic: no clock, date, random numbers, environment
   variables or command-line arguments.
 - **E3** Its output depends on input read with ACCEPT or from a sequential
-  file, so that held-out inputs can be generated. A program whose task
+  file, so that held-out inputs can be generated, and each input (stdin or
+  file) can be described by one record layout (every line or record of it
+  has the same fields). A program whose task
   statement (the Rosetta Code task, or the course text for the lab) names an
   input that the program hardcodes is adapted to read that input instead;
   without such a statement the candidate fails E3.
@@ -94,9 +96,11 @@ fixed vectors and output layouts. For both tracks:
 
 - Generator overrides (narrowing a field's values below what its PICTURE
   allows) are used only for a domain that the task statement or the
-  program's own validation states, and each override is listed in the
+  program's own validation states, or to make identifier fields readable
+  (e.g. account numbers of a fixed form); each override is listed in the
   program's `ADAPTATION.md` (Track E) or spec docstring (Track R) with its
-  reason.
+  reason. The 10 existing Track R specs get these reasons added before the
+  freeze; their generators are not changed.
 - Track E fixed vectors: the sample input that comes with the program or
   its task, if any, and otherwise none.
 - All programs, specs, adaptations, reference translations, materialised
@@ -139,7 +143,10 @@ than 10% of its HELD-OUT inputs this way is excluded.
 
 Inputs follow the record layouts of the program: numeric fields hold
 digits (with the sign encoding of their USAGE), alphanumeric fields hold
-printable ASCII. For stdin, one record is one line. Boundary vectors do not
+printable ASCII. For stdin and LINE SEQUENTIAL files, one record is one
+line with trailing spaces removed; for SEQUENTIAL files, records are
+concatenated at full length (the generator is extended for this before the
+freeze). Boundary vectors do not
 use the generator overrides, so they include values the program may treat
 as invalid (it must still behave like the COBOL program on them).
 
@@ -153,15 +160,18 @@ trigger the runtime's `Unsupported` error (also when it catches it).
 Model: one model ID, written in `benchmark/manifest.json` before the first
 call and passed to every call with `--model`; no fallback model. For each
 call the model IDs reported in the client's JSON result (`modelUsage`) are
-recorded. A call that reports any other model ID is invalid and is repeated
-(and logged as invalid).
+recorded. A call that reports any other model ID is invalid, logged, and
+repeated, at most 5 times; if a call is still invalid after that, the run
+stops and the cause is recorded as a deviation. The runner test on the
+outside program checks the model IDs reported and that the client works
+with an empty home directory.
 
 Each call is one run of the Claude Code command-line client in
 non-interactive mode (`claude -p`), started in an empty temporary directory
 with an empty home directory, with: `--safe-mode`, `--setting-sources ""`,
 `--tools ""`, `--disallowedTools "mcp__*"`, `--strict-mcp-config` with no
-servers, `--disable-slash-commands`, `--no-session-persistence`,
-`--exclude-dynamic-system-prompt-sections`, and the system prompt
+servers, `--disable-slash-commands`, `--no-session-persistence`, and the system
+prompt
 `You are a careful software engineer.` Sampling settings are the client's
 defaults (they cannot be set); the client version is recorded. The
 translator receives everything in the prompt text and cannot read the

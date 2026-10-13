@@ -53,14 +53,13 @@ def test_sets_are_disjoint():
                 seen.add(key)
 
 
-def test_vector_files_are_reproducible_bytes():
-    """gzip with mtime 0 and sorted keys: rewriting gives the same bytes."""
-    for p in ALL[:3]:
-        raw = vectors_path(p).read_bytes()
-        data = json.loads(gzip.decompress(raw).decode("utf-8"))
-        again = gzip.compress((json.dumps(data, indent=1, sort_keys=True) + "\n").encode("utf-8"),
-                              compresslevel=9, mtime=0)
-        assert again == raw
+def test_vector_files_hold_canonical_json():
+    """Sorted keys and fixed indentation, so a rewrite gives the same text.
+    (The gzip bytes also depend on the zlib build; the CI benchmark job
+    compares them on Python 3.12.)"""
+    for p in ALL:
+        text = gzip.decompress(vectors_path(p).read_bytes()).decode("utf-8")
+        assert json.dumps(json.loads(text), indent=1, sort_keys=True) + "\n" == text, p.name
 
 
 def _pinned_hypothesis():

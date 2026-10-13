@@ -3,12 +3,11 @@
 MUTANTS = [
     {
         "id": "format-instead-of-edit",
-        "equivalent": True,
         "category": "float",
         "description": "L1-A built with a Python format string from a float instead of COBOL editing",
-        "note": "equivalent on this input domain: for two-decimal values below 10**7 the float formats "
-                "exactly, and keeping the last 11 characters drops the same high-order digits that "
-                "COBOL truncates, with commas in the same positions",
+        "note": "not equivalent: COBOL zero-suppresses what is left after high-order truncation "
+                "(1000123.45 gives '    123.45 ', the mutant '000,123.45 '); found by an independent "
+                "review, not by the harness",
         "edits": [(
             '        write_from("LINE-1")\n',
             '        v = float(a["AM-VALUE"].value)\n'

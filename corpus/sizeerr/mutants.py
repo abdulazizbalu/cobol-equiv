@@ -5,8 +5,9 @@ MUTANTS = [
         "id": "float-divide",
         "category": "float",
         "description": "DIVIDE INTO the raw accumulator done in floating point and rounded with round()",
-        "note": "not detected: the float result differs only when RAW / AMOUNT is a half-cent tie whose "
-                "binary value lies below the tie (e.g. 0.03 / 2.00); no vector or generated input produced one",
+        "note": "differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives "
+                "0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the "
+                "inputs contain such a pair depends on the sample",
         "edits": [(
             '        divide_into(amt, ws["WS-RAW"], rounded=True)\n',
             '        if amt.value != 0:\n'

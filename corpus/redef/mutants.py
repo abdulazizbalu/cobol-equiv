@@ -38,6 +38,9 @@ MUTANTS = [
         "id": "float-discount",
         "category": "float",
         "description": "discount factor computed in floating point",
+        "note": "differs only when the line amount lands on a half-cent tie that the float factor "
+                "moves; it was killed by a generated input in a run with the earlier input generator "
+                "and survived this one, so detection depends on the sample",
         "edits": [('* (1 - dec(r["ID-DISC"]))', '* dec(repr(1 - float(r["ID-DISC"].value)))')],
     },
 ]

@@ -27,7 +27,8 @@ from ..cobc import COBC_FLAGS, clean_env, cobc_path, cobc_version
 BUILD_DIR = Path(".cobol-build") / "programs"
 
 _NONDETERMINISTIC = re.compile(
-    r"CURRENT-DATE|WHEN-COMPILED|\bRANDOM\b|ACCEPT\s+[\w-]+\s+FROM\s+(DATE|DAY|TIME|DAY-OF-WEEK)\b",
+    r"CURRENT-DATE|WHEN-COMPILED|SECONDS-PAST-MIDNIGHT|FUNCTION\s+RANDOM\b"
+    r"|ACCEPT\s+[\w-]+\s+FROM\s+(DATE|DAY|TIME|DAY-OF-WEEK)\b",
     re.IGNORECASE,
 )
 
@@ -37,13 +38,16 @@ class CobolError(RuntimeError):
 
 
 def check_deterministic(source: str) -> None:
-    for n, line in enumerate(source.splitlines(), 1):
-        code = line[6:72] if len(line) > 6 else ""
-        if code[:1] in ("*", "/"):
-            continue
-        m = _NONDETERMINISTIC.search(code)
-        if m:
-            raise CobolError(f"line {n}: non-deterministic construct {m.group(0)!r} is not allowed")
+    """Search the code area of all non-comment lines joined together, so a
+    construct split over two lines is still found."""
+    code = []
+    for line in source.splitlines():
+        area = line[6:72] if len(line) > 6 else ""
+        if area[:1] not in ("*", "/"):
+            code.append(area[1:])
+    m = _NONDETERMINISTIC.search(" ".join(code))
+    if m:
+        raise CobolError(f"non-deterministic construct {m.group(0)!r} is not allowed")
 
 
 def check_fixed_format(source: str) -> None:
@@ -57,7 +61,8 @@ def compile_program(source: Path, build_dir: Path = BUILD_DIR) -> Path:
     text = source.read_text(encoding="utf-8")
     check_fixed_format(text)
     check_deterministic(text)
-    digest = hashlib.sha256((cobc_version() + "\0" + text).encode("utf-8")).hexdigest()[:16]
+    key = cobc_version() + "\0" + " ".join(COBC_FLAGS) + "\0" + text
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
     build_dir.mkdir(parents=True, exist_ok=True)
     exe = build_dir / f"{source.stem}-{digest}"
     if exe.exists():

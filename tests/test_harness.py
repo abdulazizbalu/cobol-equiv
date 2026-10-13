@@ -52,3 +52,24 @@ def test_apply_mutant_requires_unique_match():
 def test_make_records_uses_move_semantics():
     rec = make_records([Alnum("K", "X(3)"), Num("V", "S9(3)V99")], [{"K": "AB", "V": "-1.5"}])
     assert rec == b"AB 0015p\n"
+
+
+def test_split_accept_from_date_rejected_and_access_random_allowed():
+    with pytest.raises(CobolError):
+        check_deterministic("           ACCEPT WS-D\n               FROM DATE\n")
+    check_deterministic("               ACCESS MODE IS RANDOM\n")
+
+
+def test_sys_exit_in_translation_is_a_difference(tmp_path):
+    from cobol_equiv.harness.check import run_once
+    from cobol_equiv.harness.spec import ProgramSpec
+
+    exe = tmp_path / "prog"
+    exe.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    exe.chmod(0o755)
+
+    def main(stdin, files):
+        raise SystemExit(0)
+
+    d = run_once(ProgramSpec("p", "x", tmp_path / "p.cob"), exe, main, {})
+    assert d is not None and "SystemExit" in d.detail

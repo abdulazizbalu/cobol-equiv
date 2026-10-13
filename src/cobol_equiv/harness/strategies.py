@@ -1,9 +1,12 @@
 """Hypothesis strategies derived from PICTURE clauses and record layouts.
 
-Numeric items draw from their boundary values (0, 1 unit in the last place,
-the maximum, a value ending in 5 for rounding ties) about half of the time,
-and uniformly from the full range otherwise; signed items also get negative
-values. Alphanumeric items draw printable ASCII without line breaks.
+Numeric items draw, with equal weight, from (a) their boundary values (0,
+one unit in the last place, the maximum, values ending in 5), (b) a value
+with a randomly chosen number of digits (so long and short values are both
+common), and (c) Hypothesis' integer strategy over the full range, which
+favours small values. Signed items also get negative values, and signed
+DISPLAY items occasionally a negative zero. Alphanumeric items draw printable
+ASCII (0x20-0x7E).
 
 Generated input files are LINE SEQUENTIAL: one record per line, trailing
 spaces removed (as GnuCOBOL writes them), so READ's space padding is
@@ -24,7 +27,7 @@ from ..runtime.pic import ALPHABETIC, ALPHANUMERIC, NUMERIC
 from ..runtime.storage import FieldRef, Item, Storage, _child_offsets
 from .spec import STDIN, InputSpec
 
-ALNUM_CHARS = _string.ascii_uppercase + _string.digits + " -.,/"
+ALNUM_CHARS = "".join(chr(c) for c in range(0x20, 0x7F))
 
 
 def numeric_values(item: Item):
@@ -34,7 +37,8 @@ def numeric_values(item: Item):
     if p.scale:
         bounds |= {5, 10**p.scale, 10**p.scale + 5}
     bounds = sorted(b for b in bounds if 0 <= b <= mx)
-    mags = st.one_of(st.sampled_from(bounds), st.integers(0, mx))
+    by_length = st.integers(1, p.digits).flatmap(lambda k: st.integers(10 ** (k - 1), 10**k - 1))
+    mags = st.one_of(st.sampled_from(bounds), by_length, st.integers(0, mx))
     if p.signed:
         vals = st.tuples(mags, st.booleans()).map(lambda t: -t[0] if t[1] else t[0])
     else:
@@ -81,6 +85,10 @@ def record(draw, spec: InputSpec):
         if item.pic.category == NUMERIC and isinstance(v, str):
             v = Decimal(v)  # numeric override given as text
         move(v, ref)
+        p = item.pic
+        if (p.category == NUMERIC and p.signed and item.usage == enc.DISPLAY
+                and item.name not in spec.overrides and v == 0 and draw(st.integers(0, 3)) == 0):
+            ref.set_raw(enc.encode_display(True, 0, p.digits, True))  # negative zero
     return stg
 
 

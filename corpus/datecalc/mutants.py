@@ -12,8 +12,8 @@ MUTANTS = [
         "id": "range-gt-ge",
         "category": "off-by-one",
         "description": "upper range check uses >= MAX instead of > MAX",
-        "note": "not detected: differs only when FROM + OFFSET lands exactly on 9999-12-31; no vector "
-                "has it and random inputs are unlikely to hit one day out of three million",
+        "note": "differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with "
+                "OFFSET 0); no vector has it, and whether generated inputs do depends on the sample",
         "edits": [('self.v("WS-NEW-NUM") > MAX_DAYNUM:', 'self.v("WS-NEW-NUM") >= MAX_DAYNUM:')],
     },
     {

@@ -27,8 +27,9 @@ from .compare import Difference, compare
 from .spec import STDIN, ProgramSpec
 
 
-class TranslationTimeout(Exception):
-    pass
+class TranslationTimeout(BaseException):
+    """BaseException so that a broad `except Exception` in a translation
+    cannot swallow the time limit."""
 
 
 @contextlib.contextmanager
@@ -79,7 +80,9 @@ def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes]) -> Di
             out, out_files = main(stdin, dict(files))
     except TranslationTimeout:
         return Difference("<translation>", 0, 0, None, b"", b"", f"timed out after {spec.timeout}s")
-    except Exception as e:  # any crash of the translation is a detected difference
+    except KeyboardInterrupt:
+        raise
+    except BaseException as e:  # any crash, including sys.exit(), is a detected difference
         return Difference("<translation>", 0, 0, None, b"", b"", f"raised {type(e).__name__}: {e}")
     return compare(res.stdout, res.files, out, out_files or {}, spec.outputs, spec.layouts)
 

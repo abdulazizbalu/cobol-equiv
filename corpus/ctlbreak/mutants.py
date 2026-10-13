@@ -42,9 +42,10 @@ MUTANTS = [
                    '    def branch_break(self):\n        ws = self.ws\n        self.ftot = 0.0\n'),
                   ('from cobol_equiv.runtime.files import', 'from cobol_equiv.runtime import dec\n'
                    'from cobol_equiv.runtime.files import')],
-        "note": "not detected, and not expected to be: at most 30 amounts below 100000 with two decimals; "
-                "the float sum stays far below the 1e-15 relative error that would change the rounded "
-                "cents, so the mutant behaves like the original on this input domain",
+        "note": "equivalent while a branch has fewer than about 10**5 records: each amount is below "
+                "100000 with two decimals, so the float sum stays within 1e-6 of the exact sum and "
+                "formatting to two decimals gives the exact cents; the harness generates at most 30 "
+                "records, so a longer file was not tested",
     },
     {
         "id": "trailing-spaces-kept",

@@ -89,20 +89,20 @@ Source: `results/mutation.csv`. A mutant is a deliberately wrong copy of a refer
 | branch | 14 | 14 | 0 | 0 |
 | off-by-one | 15 | 11 | 3 | 1 |
 | sign | 12 | 9 | 3 | 0 |
-| float | 9 | 3 | 3 | 3 |
+| float | 9 | 3 | 2 | 4 |
 | truncation | 9 | 9 | 0 | 0 |
 | rounding | 8 | 6 | 2 | 0 |
-| **total** | 67 | 52 | 11 | 4 |
+| **total** | 67 | 52 | 10 | 5 |
 
-Killed by a fixed regression vector: 42; by a generated input: 10. Killed because the mutated translation raised an exception: 3. Killed among non-equivalent mutants: 52 of 56.
+Killed by a fixed regression vector: 42; by a generated input: 10. Killed because the mutated translation raised an exception: 3. Killed among non-equivalent mutants: 52 of 57.
 
 Surviving mutants:
 
 | program | mutant | kind | why it survived |
 |---|---|---|---|
 | classify | float-compare | equivalent | equivalent mutant: conversion to float is monotonic and every threshold (0, 1000, 10000, 50000, -500) is exactly representable, so no comparison changes |
-| ctlbreak | float-total | equivalent | not detected, and not expected to be: at most 30 amounts below 100000 with two decimals; the float sum stays far below the 1e-15 relative error that would change the rounded cents, so the mutant behaves like the original on this input domain |
-| datecalc | range-gt-ge | missed | not detected: differs only when FROM + OFFSET lands exactly on 9999-12-31; no vector has it and random inputs are unlikely to hit one day out of three million |
+| ctlbreak | float-total | equivalent | equivalent while a branch has fewer than about 10**5 records: each amount is below 100000 with two decimals, so the float sum stays within 1e-6 of the exact sum and formatting to two decimals gives the exact cents; the harness generates at most 30 records, so a longer file was not tested |
+| datecalc | range-gt-ge | missed | differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with OFFSET 0); no vector has it, and whether generated inputs do depends on the sample |
 | datecalc | python-floor-division | equivalent | equivalent mutant: WS-YYYY is at least 1601 whenever DATE-TO-NUM runs, so the dividend is never negative and floor and truncating division agree |
 | datecalc | year-unsigned-ignored | equivalent | equivalent mutant: WS-YYYY - 1601 is never negative on any path, so the sign of WS-Y never matters |
 | loancalc | float-payment | missed | not detected: a double keeps about 16 significant digits; the payment is rounded to cents (at most 9 digits), so the float result differs only when the exact value is within about 1e-7 of a half-cent tie; no vector or generated input hit such a case |
@@ -112,6 +112,6 @@ Surviving mutants:
 | payroll | float-gross | missed | differs only when HOURS * RATE is a half-cent tie whose binary value lies below the tie (e.g. 0.1 hours at 0.35); whether the generated inputs contain one depends on the sample: a trial run with 150 generated inputs found one, the committed 200-input run did not |
 | payroll | overtime-ge-40 | equivalent | equivalent mutant: at exactly 40.0 hours the overtime part is 0, so both branches give the same gross |
 | payroll | bracket-lt | equivalent | equivalent mutant: at gross 1000.00 both brackets give tax 100.00 |
-| report | format-instead-of-edit | equivalent | equivalent on this input domain: for two-decimal values below 10**7 the float formats exactly, and keeping the last 11 characters drops the same high-order digits that COBOL truncates, with commas in the same positions |
-| sizeerr | float-divide | missed | not detected: the float result differs only when RAW / AMOUNT is a half-cent tie whose binary value lies below the tie (e.g. 0.03 / 2.00); no vector or generated input produced one |
+| redef | float-discount | missed | differs only when the line amount lands on a half-cent tie that the float factor moves; it was killed by a generated input in a run with the earlier input generator and survived this one, so detection depends on the sample |
+| sizeerr | float-divide | missed | differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample |
 | tables | rank-sign | equivalent | equivalent mutant: WL-QTY (ZZ,ZZ9) has no sign position, so the edited result is the same |

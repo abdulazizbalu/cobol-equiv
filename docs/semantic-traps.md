@@ -120,20 +120,23 @@ Backed by: `test_inspect_phrases_processed_one_after_another`; oracle rule
 
 ### 14. Spaces in numeric fields
 
-`MOVE` of an alphanumeric item containing spaces or letters to a numeric item
-gives implementation-specific digits in GnuCOBOL (in one probe, `MOVE "ABC"`
-to a `9(3)` item stored `"A C"`). The runtime raises an error instead; a translation should treat
-such data as invalid input, not as zero.
-Backed by: `test_alnum_moves_and_figuratives`.
+`MOVE` of alphanumeric data containing spaces or letters to a numeric item
+gives results that depend on the form of the statement in GnuCOBOL: in a
+manual probe, `MOVE "ABC"` (a literal) to a `9(3)` item stored `"A C"`,
+while moving an item holding `"ABC"` stored `"000"`. These probes are not
+part of the test suite. The runtime raises an error for such data; a
+translation should treat it as invalid input, not as zero.
+Backed by: `test_alnum_moves_and_figuratives` (the runtime refusal only).
 
 ### 15. Floating-point errors hide well
 
 A float-based translation is wrong only on rare inputs: values whose exact
 result is a half-cent tie and whose binary approximation falls below it.
-In the committed run three float mutants survived the regression vectors
-and up to 200 generated inputs (`float-payment` in loancalc, `float-gross` in
-payroll, `float-divide` in sizeerr). `float-gross` was caught in a trial run
-with 150 generated inputs, which shows how much detection depends on the
-sample. Random testing alone is weak against this class of error; vectors
-with deliberate ties are needed.
+In the committed run four of the nine float mutants survived the regression
+vectors and up to 200 generated inputs without being equivalent
+(`float-payment` in loancalc, `float-gross` in payroll, `float-divide` in
+sizeerr, `float-discount` in redef). `float-gross` and `float-discount` were
+caught in other runs with different samples, which shows how much detection
+depends on the sample. Random testing alone is weak against this class of
+error; vectors with deliberate ties are needed.
 Backed by: `results/mutation.csv`.

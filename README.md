@@ -35,7 +35,7 @@ It is:
 |---|---|---|
 | oracle | cobc (GnuCOBOL) 3.1.2.0 | 7806 generated cases in 29 rules: 7689 agree, 0 disagree, 117 refused as unsupported |
 | corpus | 10 programs | 10 reference translations pass (regression vectors plus up to 200 generated inputs each) |
-| mutation | 67 mutants | 52 killed, 11 survived as equivalent (manual judgement), 4 survived and missed |
+| mutation | 67 mutants | 52 killed, 10 survived as equivalent (manual judgement), 5 survived and missed |
 
 Details: [results/SUMMARY.md](results/SUMMARY.md).
 
@@ -112,6 +112,8 @@ translations are collected in [docs/semantic-traps.md](docs/semantic-traps.md).
 - The corpus is small (10 programs), written by the author of this
   repository for this purpose. It is not production code and does not
   represent the size, style or history of real mainframe applications.
+- The harness compares stdout and output files only; the exit status and
+  stderr are not compared.
 - The mutation results measure the harness on these programs and these
   mutants only. Which mutants count as "equivalent" is a manual judgement,
   written down for each one in `results/mutation.csv`.

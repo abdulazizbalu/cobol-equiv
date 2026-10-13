@@ -10,15 +10,18 @@ translation on the same inputs and compares their outputs byte for byte.
    in `.cobol-build/` under a hash of the source, the cobc version and the
    flags. Before compiling, the source is rejected if a line is longer than
    72 columns (fixed format would silently drop the rest) or if it reads the
-   clock or random numbers (`CURRENT-DATE`, `WHEN-COMPILED`, `RANDOM`,
-   `ACCEPT ... FROM DATE/DAY/TIME/DAY-OF-WEEK`).
+   clock or random numbers (`CURRENT-DATE`, `WHEN-COMPILED`,
+   `SECONDS-PAST-MIDNIGHT`, `FUNCTION RANDOM`,
+   `ACCEPT ... FROM DATE/DAY/TIME/DAY-OF-WEEK`). This is a text check, not a
+   proof of determinism.
 2. **Run**: the COBOL executable runs in a fresh temporary directory that
    holds the input files, with the given stdin and a timeout (10 s by
    default). A non-zero exit status is an error of the harness run, not a
-   difference.
+   difference. The exit status and stderr are not compared, so RETURN-CODE
+   and DISPLAY UPON SYSERR cannot be checked.
 3. **Run the translation** in the same process, with a SIGALRM time limit
-   (POSIX only). An exception or a timeout in the translation counts as a
-   detected difference.
+   (POSIX only). An exception (including `SystemExit`) or a timeout in the
+   translation counts as a detected difference.
 4. **Compare** stdout and every declared output file. The report gives the
    stream, the line (or record, for fixed-length files), the field name when
    the spec provides a layout for that line, and the expected and actual
@@ -29,10 +32,12 @@ translation on the same inputs and compares their outputs byte for byte.
 Each program has fixed regression vectors and Hypothesis-generated inputs
 (`harness/strategies.py`):
 
-- numeric items draw from boundary values (0, one unit in the last place,
-  the maximum, values ending in 5) or uniformly from the PICTURE range,
-  with both signs for signed items;
-- alphanumeric items draw printable ASCII;
+- numeric items draw, with equal weight, from boundary values (0, one unit
+  in the last place, the maximum, values ending in 5), from values with a
+  randomly chosen number of digits, and from Hypothesis' integer strategy
+  over the PICTURE range (which favours small values); signed items get
+  both signs, signed DISPLAY items sometimes a negative zero;
+- alphanumeric items draw printable ASCII (0x20-0x7E);
 - a spec can narrow single items (`overrides`), build whole records
   (`record_strategy`, used for REDEFINES variants), or post-process the
   record list (`finalize`, used to sort input for a control break);
@@ -87,7 +92,11 @@ inputs did not reach the difference. These notes are judgements; the report
 keeps them apart from the counts.
 
 What the mutation results show, read plainly: errors in control flow,
-signs, truncation and fixed rounding positions are found quickly, usually by
-the regression vectors. Floating-point errors are the hardest: they change
-the output only on rare inputs (half-cent ties whose binary value falls on
-the wrong side), and random generation rarely produces those.
+signs, truncation and fixed rounding positions are found by the regression
+vectors or the first generated inputs (vectors run first, so they get the
+credit for anything they catch). Floating-point errors are the hardest: they
+change the output only on some inputs (half-cent ties, or values long enough
+to lose precision), and whether the generated sample contains one is partly
+luck. An independent review found one mutant labelled equivalent that was
+not (see `format-instead-of-edit` in `results/mutation.csv`); the labels are
+judgements and can be wrong.

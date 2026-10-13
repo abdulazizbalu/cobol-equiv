@@ -1,0 +1,6 @@
+{
+  "edits": [
+    ["       01  num-str                PIC 9(5) VALUE 12345.\n", "       01  num-str                PIC 9(5).\n"],
+    ["       PROCEDURE DIVISION.\n", "       PROCEDURE DIVISION.\n           ACCEPT num-str\n"]
+  ]
+}

@@ -12,7 +12,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .move import Figurative, move, to_bytes
+from .move import Figurative, alnum_text_to_numeric, move, to_bytes
+from .pic import NUMERIC, NUMERIC_EDITED
 from .storage import FieldRef
 
 
@@ -124,7 +125,11 @@ def unstring(source, delimiters, targets, pointer: FieldRef | None = None,
             size = t.field.size
             piece = data[pos:pos + size]
             nxt, matched = pos + len(piece), b""
-        move(piece, t.field)
+        if t.field.category in (NUMERIC, NUMERIC_EDITED):
+            # libcob moves each piece as alphanumeric data (cob_str_memcpy)
+            alnum_text_to_numeric(piece, t.field)
+        else:
+            move(piece, t.field)
         if t.delimiter_in is not None:
             move(matched, t.delimiter_in)
         if t.count_in is not None:

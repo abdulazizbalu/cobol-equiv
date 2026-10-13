@@ -594,6 +594,23 @@ def rule_unstring(rng, n=150):
             [f"MOVE {_lit(src)} TO {{S}}"] + [f'MOVE ALL "#" TO {{{r}}}' for r in ("R1", "R2", "R3", "D1", "D2")]
             + [f"MOVE {p0} TO {{P}}", "MOVE 1 TO {TL}", st],
             py, [("flag", "")] + [("hex", r) for r in ("R1", "R2", "R3", "D1", "D2", "C1", "C2", "P", "TL")]))
+    # numeric receivers: each piece is moved as alphanumeric data
+    for i in range(n // 3):
+        src = _rtext(rng, "0123456789-.,A ", rng.randint(1, 16))
+        items = [Alnum("S", f"X({len(src)})"), Num("N1", "9(5)"), Num("N2", "S9(3)V99"),
+                 Num("N3", "S9(4)", usage=enc.COMP3)]
+        st = 'UNSTRING {S} DELIMITED BY "," INTO {N1} {N2} {N3} END-UNSTRING'
+
+        def py(f, src=src):
+            move(src, f["S"])
+            for r in ("N1", "N2", "N3"):
+                move(7, f[r])
+            text.unstring(f["S"], [","], [f["N1"], f["N2"], f["N3"]])
+
+        cases.append(Case(
+            "unstring_stmt", f'"{src}" DELIMITED BY "," INTO numeric', items,
+            [f"MOVE {_lit(src)} TO {{S}}"] + [f"MOVE 7 TO {{{r}}}" for r in ("N1", "N2", "N3")] + [st],
+            py, [("hex", r) for r in ("N1", "N2", "N3")]))
     return cases
 
 

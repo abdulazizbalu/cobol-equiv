@@ -180,21 +180,6 @@ def write_csv(rows: list[dict], path: Path) -> None:
         w.writerows(rows)
 
 
-def write_environment(out: Path) -> None:
-    import platform
-
-    from .rules import SEED
-
-    rows = [("cobc", cobc_version()), ("cobc flags", " ".join(COBC_FLAGS)),
-            ("platform", f"{platform.system()} {platform.machine()}"),
-            ("oracle seed", str(SEED))]
-    out.mkdir(parents=True, exist_ok=True)
-    with (out / "environment.csv").open("w", encoding="utf-8", newline="") as fh:
-        w = csv.writer(fh)
-        w.writerow(["key", "value"])
-        w.writerows(rows)
-
-
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="results")
@@ -203,7 +188,6 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     rows = run([r for r in a.rules.split(",") if r] or None, jobs=a.jobs)
     write_csv(rows, Path(a.out) / "oracle_cases.csv")
-    write_environment(Path(a.out))
     bad = [r for r in rows if r["outcome"] == "disagree"]
     uns = [r for r in rows if r["outcome"] == "unsupported"]
     print(f"{len(rows)} cases, {len(rows) - len(bad) - len(uns)} agree, "

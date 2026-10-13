@@ -69,3 +69,16 @@ def test_remainder_stored_despite_quotient_size_error(tmp_path):
                        Num("Q", "S9(2)", value=7), Num("R", "S9(3)", value=9)])
     assert divide_remainder(st["A"], st["B"], st["Q"], st["R"], on_size_error=True)
     assert (st["Q"].value, st["R"].value) == (7, 5)
+
+
+@pytest.mark.oracle
+def test_single_operand_subtract_wraps_unsigned_comp5(tmp_path):
+    out = run_cobol(tmp_path,
+                    "       01 U PIC 9(4) COMP-5 VALUE 0.\n",
+                    "           SUBTRACT 1 FROM U\n           DISPLAY U\n")
+    assert out == b"65535\n"  # the general arithmetic path would store 1 (absolute value)
+    from cobol_equiv.runtime import COMP5, subtract
+
+    st = Storage("W", [Num("U", "9(4)", usage=COMP5, value=0)])
+    with pytest.raises(Unsupported):
+        subtract(1, st["U"])

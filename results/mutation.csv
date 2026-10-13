@@ -1,0 +1,68 @@
+program,mutant,category,description,status,survivor_kind,detected_by,difference,note
+classify,evaluate-order,branch,EVALUATE TRUE: DEFAULT tested before CREDIT (first true WHEN changes),killed,,vector 2,"<stdout> line 8, field WS-CLASS: expected b'CREDIT ', got b'DEFAULT'",
+classify,and-or,branch,WATCH condition uses OR instead of AND,killed,,vector 2,"<stdout> line 6, field WS-CLASS: expected b'NORMAL ', got b'WATCH  '",
+classify,thru-exclusive,off-by-one,"""G"" THRU ""J"" treated as exclusive of J",killed,,vector 2,"<stdout> line 8, field WS-SEGMENT: expected b'PUBLIC    ', got b'UNKNOWN   '",
+classify,age-boundary,off-by-one,CU-AGE < 25 written as <= 25,killed,,generated,"<stdout> line 6, field WS-SEGMENT: expected b'PERSONAL  ', got b'YOUNG-P   '",
+classify,balance-unsigned,sign,balance compared as an absolute value,killed,,vector 2,"<stdout> line 2, field WS-CLASS: expected b'CREDIT ', got b'WATCH  '",
+classify,not-dropped,branch,NOT CU-BALANCE < 0 written without NOT,killed,,vector 2,"<stdout> line 1, field WS-RISK: expected b'0', got b'1'",
+classify,float-compare,float,balance thresholds compared on float values,survived,equivalent,,,"equivalent mutant: conversion to float is monotonic and every threshold (0, 1000, 10000, 50000, -500) is exactly representable, so no comparison changes"
+ctlbreak,no-final-break,off-by-one,last branch and region totals not written at end of file,killed,,vector 2,"REPORT.DAT line 8, field FILLER: expected b'    ', got b'GRAN'",
+ctlbreak,region-before-branch,branch,on a region change the region total is written before the branch total,killed,,vector 2,"REPORT.DAT line 2, field FILLER: expected b'    ', got b'REGI'",
+ctlbreak,branch-check-only,branch,region change not checked; only branch changes trigger a break,killed,,vector 2,"REPORT.DAT line 3, field FILLER: expected b'REGION ', got b'    EA/'",
+ctlbreak,abs-amounts,sign,negative sales added as positive,killed,,vector 2,"REPORT.DAT line 1, field BL-TOTAL: expected b'        4.95', got b'       15.05'",
+ctlbreak,float-total,float,branch total accumulated in a Python float and moved at the break,survived,equivalent,,,"equivalent while a branch has fewer than about 10**5 records: each amount is below 100000 with two decimals, so the float sum stays within 1e-6 of the exact sum and formatting to two decimals gives the exact cents; the harness generates at most 30 records, so a longer file was not tested"
+ctlbreak,trailing-spaces-kept,truncation,report lines written with their trailing spaces (LINE SEQUENTIAL WRITE does not keep them),killed,,vector 1,"REPORT.DAT line 2, field GL-TOTAL: expected b'          $0.00', got b'          $0.00 '",
+datecalc,leap-no-century-rule,branch,leap year = divisible by 4 only,killed,,vector 2,"<stdout> line 6, field WS-DIFF-ED: expected b'       1', got b'       2'",
+datecalc,range-gt-ge,off-by-one,upper range check uses >= MAX instead of > MAX,survived,missed,,,"differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with OFFSET 0); no vector has it, and whether generated inputs do depends on the sample"
+datecalc,dow-index-zero-based,off-by-one,day-of-week table indexed with the remainder (0-based) clamped to 1,killed,,vector 2,"<stdout> line 2, field WS-DOW-NAME: expected b'TUE', got b'MON'",
+datecalc,python-floor-division,rounding,years/4 computed with Python floor division on a signed value instead of DIVIDE,survived,equivalent,,,"equivalent mutant: WS-YYYY is at least 1601 whenever DATE-TO-NUM runs, so the dividend is never negative and floor and truncating division agree"
+datecalc,diff-abs,sign,date difference shown without its sign,killed,,vector 2,"<stdout> line 4, field WS-DIFF-ED: expected b'-3067670', got b' 3067670'",
+datecalc,year-unsigned-ignored,sign,WS-Y declared signed (S9(5)) although the program relies on 9(5),survived,equivalent,,,"equivalent mutant: WS-YYYY - 1601 is never negative on any path, so the sign of WS-Y never matters"
+datecalc,float-estimate,float,year estimate computed as round(n / 365.2425) in floating point,killed,,vector 2,<translation>: raised IndexError: subscript 0 out of range 1..12 for WS-CUM,
+loancalc,float-payment,float,payment formula evaluated in binary floating point,survived,missed,,,"not detected: a double keeps about 16 significant digits; the payment is rounded to cents (at most 9 digits), so the float result differs only when the exact value is within about 1e-7 of a half-cent tie; no vector or generated input hit such a case"
+loancalc,interest-truncated,rounding,monthly interest truncated instead of ROUNDED,killed,,vector 2,"<stdout> line 1, field OL-TOTAL-INT: expected b'    98,795.31', got b'    98,790.76'",
+loancalc,mrate-half-even,rounding,monthly rate rounded half-even (Python Decimal default) instead of half away from zero,survived,equivalent,,,"equivalent mutant for this input domain: RATE/1200 with RATE in thousandths never has a tie at the 9th decimal place, so both rounding modes agree"
+loancalc,factor-no-size-error,truncation,ON SIZE ERROR on the growth factor ignored; truncated factor used,killed,,vector 2,"<stdout> line 5, column 8: expected b'L00005 ERROR FACTOR OVERFLO', got b'L00005   $833,325.00 99,997'",
+loancalc,residual-abs,sign,residual balance edited from its absolute value,survived,equivalent,,,equivalent mutant: the balance can never become negative (the principal part is capped at the balance)
+loancalc,factor-loop-short,off-by-one,PERFORM LN-TERM TIMES runs one time less,killed,,vector 2,"<stdout> line 1, field OL-PAYMENT: expected b'      $552.20', got b'      $552.84'",
+loancalc,loop-limit-gt,off-by-one,amortisation loop stops on MONTH > TERM instead of >=,survived,equivalent,,,"equivalent mutant: in the month equal to TERM the whole balance is paid, so the loop already ends on BALANCE <= 0"
+loancalc,zero-rate-branch-swapped,branch,IF WS-MRATE = 0 branches swapped,killed,,vector 2,"<stdout> line 1, field OL-PAYMENT: expected b'      $552.20', got b'      $277.78'",
+payroll,float-gross,float,regular-hours gross computed in binary floating point,survived,missed,,,"differs only when HOURS * RATE is a half-cent tie whose binary value lies below the tie (e.g. 0.1 hours at 0.35); whether the generated inputs contain one depends on the sample: a trial run with 150 inputs from the earlier input generator found one, the committed run did not"
+payroll,tax-truncated,rounding,middle tax bracket truncated instead of ROUNDED,killed,,generated,"<stdout> line 2, field WS-TAX: expected b'+0000260.66', got b'+0000260.65'",
+payroll,adjust-abs,sign,signed adjustment read as its absolute value,killed,,vector 2,"<stdout> line 2, field WS-NET: expected b'+0001160.31', got b'+0001407.21'",
+payroll,packed-gross-unsigned,sign,PAY-GROSS declared unsigned COMP-3 (sign nibble F instead of C),killed,,vector 2,"PAYOUT.DAT line 1, field PAY-GROSS: expected b'\x00\x01\x00\x00\x0c', got b'\x00\x01\x00\x00\x0f'",
+payroll,overtime-ge-40,off-by-one,overtime from 40 hours inclusive (>= instead of >),survived,equivalent,,,"equivalent mutant: at exactly 40.0 hours the overtime part is 0, so both branches give the same gross"
+payroll,bracket-lt,off-by-one,first tax bracket uses < 1000 instead of <= 1000,survived,equivalent,,,equivalent mutant: at gross 1000.00 both brackets give tax 100.00
+payroll,dedcode-swapped,branch,deduction codes A and B swapped,killed,,vector 2,"<stdout> line 1, field WS-DED: expected b'+00050.00', got b'+00045.00'",
+redef,detail-not-rounded,rounding,line amount truncated instead of ROUNDED,killed,,generated,"<stdout> line 2, column 27: expected b'       0.01', got b'       0.00'",
+redef,qty-unsigned,sign,ID-QTY declared unsigned (overpunched negative quantities misread),killed,,vector 2,<translation>: raised DataError: invalid USAGE DISPLAY numeric data: b'000s',
+redef,date-month-off-by-one,off-by-one,days-in-month table indexed with MM - 1,killed,,generated,"<stdout> line 1, column 40: expected b'000-02-30 N 00000230', got b'000-02-30 Y 00000230'",
+redef,redefines-shifted,truncation,IH-DATE-R laid out over the name instead of the date (wrong REDEFINES target),killed,,vector 2,<translation>: raised DataError: invalid USAGE DISPLAY numeric data: b'AR',
+redef,trailer-or,branch,trailer check accepts a match on count OR total,killed,,vector 2,"<stdout> line 8, column 9: expected b'TRAILER MISMATCH 00001 +0000', got b'TRAILER OK 00001'",
+redef,float-discount,float,discount factor computed in floating point,survived,missed,,,"differs only when the line amount lands on a half-cent tie that the float factor moves; it was killed by a generated input in a run with the earlier input generator and survived this one, so detection depends on the sample"
+report,format-instead-of-edit,float,L1-A built with a Python format string from a float instead of COBOL editing,killed,,generated,"REPORT.DAT line 3, field L1-A: expected b'      0.00 ', got b'000,000.00 '",
+report,cr-for-positive,sign,L1-B edited from the negated value (CR shown for positive amounts),killed,,vector 2,"REPORT.DAT line 3, field L1-B: expected b'         $0.07CR', got b'         $0.07  '",
+report,qty-unsigned,sign,quantity total accumulated from absolute values,killed,,vector 2,"REPORT.DAT line 13, field TL-QTY: expected b'   -121', got b' 20,121'",
+report,wide-picture,truncation,"L1-F declared one digit wider (----,--9), so large quantities are not truncated",killed,,vector 2,"REPORT.DAT line 1, field L1-F: expected b'      0', got b'       '",
+report,total-picture-short,truncation,TL-AMOUNT declared with one integer digit less (high-order digit lost),killed,,vector 2,"REPORT.DAT line 13, field TL-AMOUNT: expected b'     $12,345.61  ', got b'     $1,2345.61  '",
+report,rounded-edit,rounding,L2-J (one decimal) rounded instead of truncated,killed,,vector 2,"REPORT.DAT line 4, field L2-J: expected b'  0.0-', got b'  0.1-'",
+sizeerr,float-divide,float,DIVIDE INTO the raw accumulator done in floating point and rounded with round(),survived,missed,,,"differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample"
+sizeerr,multiply-not-rounded,rounding,MULTIPLY ... ROUNDED on the accumulator done without ROUNDED,killed,,generated,"<stdout> line 3, field WS-ACC: expected b'-01000.00', got b'-00999.99'",
+sizeerr,size-error-stores,truncation,ADD with ON SIZE ERROR stores the truncated sum instead of leaving the target unchanged,killed,,vector 2,"<stdout> line 2, field WS-ACC: expected b'+99999.99', got b'+00000.00'",
+sizeerr,binary-no-truncation,truncation,WS-BIN declared COMP-5 (no truncation to PIC S9(4)) instead of COMP,killed,,vector 1,"<stdout> line 2, column 32: expected b'0.00 +0000', got b'0.00 +00000'",
+sizeerr,subtract-sign,sign,SUBTRACT implemented as ADD on the raw accumulators,killed,,vector 2,"<stdout> line 4, field WS-RAW: expected b'+00000.01', got b'-00000.01'",
+sizeerr,remainder-from-rounded-quotient,rounding,DIVIDE ... GIVING ... REMAINDER with ROUNDED quotient (remainder then changes),killed,,generated,"<stdout> line 2, field FILLER: expected b' Q ', got b' ER'",
+sizeerr,count-after-dispatch,off-by-one,error counter not incremented for the first error,killed,,generated,"<stdout> line 2, column 22: expected b'ERRORS 0001', got b'ERRORS 0000'",
+sizeerr,ok-error-swapped,branch,ON SIZE ERROR and NOT ON SIZE ERROR branches swapped for SUBTRACT,killed,,vector 2,"<stdout> line 3, field STATUS: expected b' ERROR ', got b' OK    '",
+strproc,unstring-all-dropped,branch,"DELIMITED BY ALL "" "" treated as a single-space delimiter",killed,,vector 2,"<stdout> line 1, field WS-PTR: expected b'31', got b'18'",
+strproc,leading-as-all,branch,"TALLYING FOR LEADING "" "" counts all spaces",killed,,vector 2,"<stdout> line 1, field WS-LEAD-SPACES: expected b'00', got b'15'",
+strproc,before-initial-dropped,off-by-one,"BEFORE INITIAL "","" ignored when counting A",killed,,vector 2,"<stdout> line 1, field WS-AS: expected b'02', got b'05'",
+strproc,pointer-not-reset,off-by-one,STRING pointer starts at 2 instead of 1,killed,,vector 2,"<stdout> line 1, field WS-OUT: expected b'beTa/4LPH4/GAMMA', got b' beTa/4LPH4/GAMM'",
+strproc,string-pads,truncation,"STRING result built in Python and space-padded/truncated, overflow never flagged",killed,,vector 2,"<stdout> line 1, field WS-SOVF: expected b'Y', got b'N'",
+strproc,python-replace-first,branch,"REPLACING LEADING ""0"" done with str.replace (replaces every 0)",killed,,generated,"<stdout> line 1, field WS-F1: expected b'40      ', got b'4*      '",
+tables,amount-float,float,line amount qty * price computed in floating point and truncated with int(),killed,,generated,"<stdout> line 1, field WL-AMT: expected b'      0.57', got b'      0.56'",
+tables,amount-no-truncation,truncation,accumulated amount capped at the maximum instead of truncated on the left,killed,,vector 4,"<stdout> line 1, field WL-AMT: expected b'987,880.12', got b'999,999.99'",
+tables,table-size-off-by-one,off-by-one,table accepts 7 entries instead of 8,killed,,vector 3,"<stdout> line 1, column 12: expected b'ABLE FULL III', got b'ABLE FULL HHH'",
+tables,sort-unstable,branch,bubble sort swaps on <= (equal amounts change order),killed,,vector 2,"<stdout> line 1, field WL-CODE: expected b'AAA', got b'CCC'",
+tables,search-from-two,off-by-one,SEARCH starts at the second entry,killed,,vector 2,"<stdout> line 1, field WL-CODE: expected b'AAA', got b'CCC'",
+tables,rank-sign,sign,quantity edited from a negated value,survived,equivalent,,,"equivalent mutant: WL-QTY (ZZ,ZZ9) has no sign position, so the edited result is the same"

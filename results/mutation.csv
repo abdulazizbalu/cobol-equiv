@@ -45,7 +45,7 @@ report,cr-for-positive,sign,L1-B edited from the negated value (CR shown for pos
 report,qty-unsigned,sign,quantity total accumulated from absolute values,killed,,vector 2,"REPORT.DAT line 13, field TL-QTY: expected b'   -121', got b' 20,121'",
 report,wide-picture,truncation,"L1-F declared one digit wider (----,--9), so large quantities are not truncated",killed,,vector 2,"REPORT.DAT line 1, field L1-F: expected b'      0', got b'       '",
 report,total-picture-short,truncation,TL-AMOUNT declared with one integer digit less (high-order digit lost),killed,,vector 2,"REPORT.DAT line 13, field TL-AMOUNT: expected b'     $12,345.61  ', got b'     $1,2345.61  '",
-report,rounded-edit,rounding,L2-J (one decimal) rounded instead of truncated,killed,,vector 2,"REPORT.DAT line 4, field L1-C: expected b'B   0.0-    1', got b'B   0.1-    1'",
+report,rounded-edit,rounding,L2-J (one decimal) rounded instead of truncated,killed,,vector 2,"REPORT.DAT line 4, field L2-J: expected b'  0.0-', got b'  0.1-'",
 sizeerr,float-divide,float,DIVIDE INTO the raw accumulator done in floating point and rounded with round(),survived,missed,,,"differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample"
 sizeerr,multiply-not-rounded,rounding,MULTIPLY ... ROUNDED on the accumulator done without ROUNDED,killed,,generated,"<stdout> line 3, field WS-ACC: expected b'-01000.00', got b'-00999.99'",
 sizeerr,size-error-stores,truncation,ADD with ON SIZE ERROR stores the truncated sum instead of leaving the target unchanged,killed,,vector 2,"<stdout> line 2, field WS-ACC: expected b'+99999.99', got b'+00000.00'",

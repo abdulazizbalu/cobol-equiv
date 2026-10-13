@@ -431,7 +431,9 @@ def rule_display_format(rng):
                     "display_format", f"DISPLAY {num_literal(v)} {fmt_item(t)}", [t],
                     [f"MOVE {num_literal(v)} TO {{T}}"],
                     (lambda f, v=v: move(v, f["T"])), [("disp", "T")]))
-    # negative zero (DISPLAY / COMP-3) produced by an arithmetic store
+    # negative zero (DISPLAY / COMP-3) produced by an arithmetic store. The
+    # receiver has an odd digit count: single-operand ADD into an even-digit
+    # COMP-3 item is refused by the runtime (see rule arith_single_operand).
     for u in (enc.DISPLAY, enc.COMP3):
         s, t = Num("S", "S9(7)"), Num("T", "S9(5)", usage=u)
         cases.append(Case(
@@ -784,3 +786,31 @@ RULES.update({
     "arith_single_operand": rule_arith_single,
     "figurative_group": rule_figurative_group,
 })
+
+
+def rule_value_clause(rng):
+    """VALUE clauses, checked through the item's initial bytes."""
+    from ..runtime.move import HIGH_VALUES, SPACES, ZEROS, All
+
+    cases = []
+    vals = [("ZERO", ZEROS), ("SPACES", SPACES), ('ALL "*"', All("*")), ("HIGH-VALUES", HIGH_VALUES),
+            ('"  5.00"', "  5.00"), ('"AB"', "AB"), ("5", Decimal(5)), ("-12.5", Decimal("-12.5")),
+            ("0", Decimal(0))]
+    for pic in ("ZZ9.99", "$$$9.99", "***.**", "ZZ9.99-", "X(6)", "S9(3)V99", "9(4)"):
+        cat = parse_pic(pic).category
+        for cob, py_val in vals:
+            numeric_lit = isinstance(py_val, Decimal)
+            if cat == NUMERIC and not (numeric_lit or py_val is ZEROS):
+                continue
+            if cat in ("alphanumeric",) and numeric_lit:
+                continue
+            if numeric_lit and py_val < 0 and not parse_pic(pic).signed:
+                continue  # cobc rejects a negative VALUE for an unsigned item
+            mk = {"numeric": Num, "numeric-edited": Edited}.get(cat, Alnum)
+            t = mk("T", pic, value=py_val)
+            cases.append(Case("value_clause", f"{pic} VALUE {cob}", [t], [],
+                              lambda f: None, [("hex", "T")]))
+    return cases
+
+
+RULES["value_clause"] = rule_value_clause

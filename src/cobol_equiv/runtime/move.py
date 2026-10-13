@@ -277,6 +277,19 @@ def _alnum_to_numeric(data: bytes, dst: FieldRef) -> None:
     store_numeric(dst, False, int(data), 0)
 
 
+def apply_value(value, f: FieldRef) -> None:
+    """A VALUE clause. Like MOVE, except for numeric-edited items: there a
+    figurative constant fills the item with its character (VALUE ZERO gives
+    "000000", not an edited zero) and an alphanumeric literal is stored as
+    written, as GnuCOBOL does (oracle rule value_clause)."""
+    if f.category == NUMERIC_EDITED and isinstance(value, Figurative):
+        f.set_raw(_fill(value.byte, f.size))
+    elif f.category == NUMERIC_EDITED and isinstance(value, (str, bytes)):
+        _alnum_store(f, to_bytes(value))
+    else:
+        move(value, f)
+
+
 def set_initial(f: FieldRef) -> None:
     """GnuCOBOL default WORKING-STORAGE initialisation of one elementary item."""
     if f.category in (NUMERIC, NUMERIC_EDITED):

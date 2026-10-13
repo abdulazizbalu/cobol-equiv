@@ -174,7 +174,7 @@ class Storage:
 
     def initialize_all(self) -> None:
         """Default initialisation, then VALUE clauses (redefining items skipped)."""
-        from .move import move, set_initial
+        from .move import apply_value, set_initial
 
         skip_under: list[tuple[int, int]] = []
         for p in self.order:
@@ -190,7 +190,7 @@ class Storage:
                 ref = FieldRef(self.area, off, p.size, p.item, p.item.name)
                 set_initial(ref)
                 if p.item.value is not None:
-                    move(p.item.value, ref)
+                    apply_value(p.item.value, ref)
 
 
 class FieldRef:

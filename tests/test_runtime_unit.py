@@ -189,3 +189,11 @@ def test_alnum_to_edited_refused():
     st = Storage("W", [Alnum("A", "X(3)", value="123"), Edited("E", "ZZZ9")])
     with pytest.raises(Unsupported):
         move(st["A"], st["E"])
+
+
+def test_value_clause_on_edited_item():
+    from cobol_equiv.runtime import SPACES
+
+    st = Storage("W", [Edited("A", "ZZ9.99", value=ZEROS), Edited("B", "ZZ9.99", value="  5.00"),
+                       Edited("C", "ZZ9.99", value=SPACES), Edited("D", "ZZ9.99", value=Decimal(5))])
+    assert [st[n].raw for n in "ABCD"] == [b"000000", b"  5.00", b"      ", b"  5.00"]

@@ -43,7 +43,8 @@ Source: `results/oracle_cases.csv`, produced by `python -m cobol_equiv.oracle.ru
 | edit_trailing_sign | 420 | 420 | 0 | 0 |
 | arith_single_operand | 400 | 364 | 0 | 36 |
 | figurative_group | 31 | 31 | 0 | 0 |
-| **total** | 7760 | 7643 | 0 | 117 |
+| value_clause | 46 | 46 | 0 | 0 |
+| **total** | 7806 | 7689 | 0 | 117 |
 
 Unsupported cases by reason:
 

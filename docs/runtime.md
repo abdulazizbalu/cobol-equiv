@@ -39,7 +39,10 @@ ws.f("QTY", 3)      # QTY(3), subscripts 1-based, outermost first
 All items share one `bytearray`, so `REDEFINES`, group moves and record I/O
 work on the actual bytes. Initial state without `VALUE`: alphanumeric items
 spaces, numeric items zero in their USAGE, numeric-edited items the edited
-form of zero (GnuCOBOL's default; checked by rule `default_init`).
+form of zero (GnuCOBOL's default; checked by rule `default_init`). A `VALUE`
+clause works like MOVE, except on numeric-edited items, where a figurative
+constant fills the item (`VALUE ZERO` gives `000000`, not an edited zero) and
+an alphanumeric literal is stored as written (rule `value_clause`).
 
 | Feature | Supported |
 |---|---|
@@ -131,7 +134,10 @@ err = compute(ws["T"], dec(ws["BAL"]) * dec(ws["RATE"]) / 1200, rounded=True)
   receiver wraps (`SUBTRACT 1 FROM` a zero `9(4) COMP-5` gives 65535), and a
   COMP-3 receiver with an even digit count carries into its spare nibble
   (`ADD 1` to `9(4) COMP-3` holding 9999 stores `x'10000F'`). The runtime
-  refuses these two outcomes for single-operand ADD/SUBTRACT.
+  refuses these two outcomes for every single-operand ADD/SUBTRACT, including
+  forms where GnuCOBOL takes its general path and the runtime's result would
+  have been right (for example an `S9(12)` operand); this over-refusal is
+  deliberate because the runtime cannot see which path cobc chose.
 * `DIVIDE ... REMAINDER`: remainder = dividend - divisor * q, with q the
   quotient truncated to the quotient item's decimal places. GnuCOBOL stores
   the remainder even when the quotient had a size error.

@@ -85,8 +85,18 @@ def _decl(item: Item, level: int) -> list[str]:
     if item.occurs:
         words += ["OCCURS", str(item.occurs)]
     if item.value is not None:
+        from ..runtime.move import All, Figurative
+
         v = item.value
-        words += ["VALUE", alnum_literal(v.encode("latin-1")) if isinstance(v, str) else num_literal(v)]
+        if isinstance(v, All):
+            lit = "ALL " + alnum_literal(v.byte)
+        elif isinstance(v, Figurative):
+            lit = v.name
+        elif isinstance(v, str):
+            lit = alnum_literal(v.encode("latin-1"))
+        else:
+            lit = num_literal(v)
+        words += ["VALUE", lit]
     lines = wrap(words, indent=pad, cont=pad + "    ")
     lines[-1] += "."
     for c in item.children:

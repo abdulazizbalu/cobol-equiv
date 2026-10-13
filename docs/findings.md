@@ -13,12 +13,11 @@ How the entries were checked, and the limits of that check:
   entry, compiled with `cobc -x -std=default`.
 - **GnuCOBOL sources consulted:** the NEWS file of the 3.2 release tarball,
   its `config/default.conf`, and the GnuCOBOL bug tracker on SourceForge
-  (searched in this session for the terms listed per entry). The tracker
+  (searched for the terms listed per entry). The tracker
   search is a keyword search, not a review of every ticket; "no ticket
   found" means only that.
 - **Not consulted:** the GnuCOBOL Programmer's Guide and anything on
-  gnu.org (the network policy of the environment used here blocks
-  gnu.org), and the text of the COBOL standard (ISO/IEC 1989), which we do
+  gnu.org (not reachable from the machine used for this check), and the text of the COBOL standard (ISO/IEC 1989), which we do
   not have. So nothing here claims that GnuCOBOL deviates from the
   standard. Where a ticket quotes the standard or argues from it, the
   entry says so and attributes the statement to the ticket.
@@ -83,8 +82,7 @@ operand; the runtime cannot see that, so it refuses the two outcomes above
 for every single-operand ADD/SUBTRACT without ON SIZE ERROR.
 Program: `findings/fastpath.cob`. Tracker search ("ADD 1 overflow",
 "cob_add_int", "packed decimal overflow"): no ticket found for these two
-outcomes. Ticket #934 (below) concerns the same optimised COMP-3 path in
-3.2.
+outcomes.
 
 ### `-$$$9.99` prints a minus sign for positive values
 
@@ -104,13 +102,14 @@ the second phrase cannot use characters the first one matched.
 Program: `findings/inspect.cob`. GnuCOBOL tickets #991 and #992 (opened by
 Robert Dubner, 2024-09-22) discuss INSPECT with several phrases: #991 runs
 an example that it attributes to appendix D.25 of ISO/IEC 1989:2023 and
-states the expected counts 03 01 01 00 05; a comment there describes the
-ISO rule as checking every phrase at each character position before moving
-on. In #992 the GnuCOBOL maintainer writes that "the internal 'already
-done' is reset within the statement" and accepts the ticket (status
-accepted, milestone GC 3.x, last updated 2025-01-24). By that description
-the ISO rule would give C1=0, C2=2 for the program above; we have not read
-the standard and do not claim it.
+states the expected counts 03 01 01 00 05; a comment there describes
+INSPECT as checking every phrase at each character position before moving
+on (the comment does not quote the standard). In #992 the GnuCOBOL
+maintainer writes that "the internal 'already done' is reset within the
+statement" and accepts the ticket (status accepted, milestone GC 3.x, last
+updated 2025-01-24). By the description in that comment, the program above
+would give C1=0, C2=2; we have not read the standard and do not claim what
+it requires.
 
 ## Behaviours that differ between 3.1.2 and 3.2
 
@@ -189,7 +188,10 @@ fails on 3.2 (`results/gnucobol-3.2/corpus.csv`).
 
 A translation that is byte-exact against one GnuCOBOL version is not
 automatically exact against another. Of the behaviours above, the ones
-that differ between 3.1.2 and 3.2 are mostly ones that GnuCOBOL's own
-tickets treat as defects (#904, #934, #991/#992); a translation targeting
+that differ between 3.1.2 and 3.2, three groups are treated as defects
+by GnuCOBOL's own tickets: the COMP-3 sign nibble (#904), ROUNDED into
+COMP-3 (#934) and INSPECT with several phrases (#991/#992). For the INSPECT
+abort, the binary items of 2**63 or more and the LINE SEQUENTIAL changes we
+found no ticket, or the NEWS describes the change as intended; a translation targeting
 a mainframe compiler should not copy them without checking that
 compiler.

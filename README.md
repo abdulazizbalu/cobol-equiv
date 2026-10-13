@@ -128,8 +128,8 @@ behaviour was checked on 3.1.2 and 3.2 is in [docs/findings.md](docs/findings.md
   copybook processing, no indexed or relative files, no SORT, no CALL.
 - The runtime refuses some cases instead of modelling them (listed with
   counts in `results/SUMMARY.md`), for example values of 2^63 and above
-  stored into binary items, and GnuCOBOL's integer fast path for
-  single-operand ADD/SUBTRACT.
+  stored into binary items, and the integer path GnuCOBOL 3.1.2 and 3.2
+  take for some single-operand ADD/SUBTRACT.
 - The oracle cases are generated from boundary values and seeded random
   values. Agreement on them is evidence, not proof.
 - Statements about GnuCOBOL behaviour are observations on 3.1.2 and 3.2,

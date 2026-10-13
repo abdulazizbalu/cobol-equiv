@@ -46,7 +46,12 @@ def test_reference_translation_passes(d):
     if rec["result"] == "pass":
         assert r.passed, r.difference.describe()
     else:
-        assert not r.passed and rec["difference"].startswith(r.failing_source)
+        assert not r.passed
+        if r.failing_source.startswith("vector"):
+            # a fixed vector does not depend on the number of generated inputs
+            assert rec["difference"] == f"{r.failing_source}: {r.difference.describe()}"
+        else:
+            assert rec["difference"].startswith(r.failing_source)
 
 
 @pytest.mark.oracle

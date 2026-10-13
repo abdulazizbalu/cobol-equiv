@@ -88,3 +88,37 @@ def test_cli_exit_status_for_unsupported(tmp_path, capsys):
         """), encoding="utf-8")
     assert main([str(prog), str(tr), "--examples", "0"]) == 2
     assert "UNSUPPORTED" in capsys.readouterr().out
+
+
+def test_caught_unsupported_at_import_still_fails(fake_cobol, tmp_path):
+    from cobol_equiv.harness.check import load_module, load_module_from_source
+
+    src = textwrap.dedent("""\
+        from cobol_equiv.runtime import Edited, Storage
+        try:
+            W = Storage("W", [Edited("E", "-$$$9.99")])
+        except Exception:
+            W = None
+        def main(stdin, files):
+            return b"HELLO\\n", {}
+        """)
+    path = tmp_path / "tr_import.py"
+    path.write_text(src, encoding="utf-8")
+    spec, exe = fake_cobol
+    for mod in (load_module(path, "tr_import"), load_module_from_source(src, "tr_src", "tr_src.py")):
+        d = run_once(spec, exe, mod.main, {})
+        assert d is not None and d.unsupported and "imported" in d.detail
+
+
+def test_unsupported_then_other_error_is_unsupported(fake_cobol):
+    spec, exe = fake_cobol
+
+    def main(stdin, files):
+        try:
+            Storage("W", [Edited("E", "-$$$9.99")])
+        except Exception:
+            pass
+        raise ValueError("later failure")
+
+    d = run_once(spec, exe, main, {})
+    assert d is not None and d.unsupported and "ValueError" in d.detail

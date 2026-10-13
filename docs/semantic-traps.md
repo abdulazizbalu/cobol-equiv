@@ -50,8 +50,11 @@ program `sizeerr` (vector 2).
 GnuCOBOL 3.1.2 and 3.2 behaviour: moving `-10000` to `PIC S9(4)` stores
 `000p`: zero digits with a negative sign. MOVE of a DISPLAY item, or of a
 literal, keeps the sign even when every kept digit is zero; DISPLAY then
-prints `+0000`. MOVE between COMP-3 items differs: 3.1.2 gives a positive
-zero where 3.2 keeps the negative sign (`results/version_diff.csv`).
+prints `+0000`. One case differs between the versions: a MOVE between
+COMP-3 items that drops low-order digits of a negative value (`-0.004` from
+`S9V999 COMP-3` to `S9V99 COMP-3`) gives `x'000C'` on 3.1.2 and `x'000D'` on
+3.2; high-order truncation (`-10000` to `S9(4) COMP-3`) gives `x'00000D'` on
+both (`results/version_diff.csv`).
 Backed by: `findings/neg_zero.cob`, `test_negative_zero_after_truncation`,
 `test_literal_truncated_to_zero_keeps_sign`; oracle rules `move_num_to_num`
 ("zero sign" cases), `display_format`.
@@ -117,8 +120,9 @@ Backed by: `test_divide_remainder`, `findings/remainder.cob`; mutant
 
 READ pads short lines with spaces; WRITE removes trailing spaces. A line
 longer than the record is truncated by GnuCOBOL 3.1.2 but returned as
-further records by 3.2, and 3.2 rejects control characters inside a record
-on READ. The corpus program `strproc` fails on 3.2 for the first reason.
+further records by 3.2. 3.2 ends the test program on a carriage return
+inside a record (the only control character tested; its NEWS says such a
+READ "may" return status 09). The corpus program `strproc` fails on 3.2 for the first reason.
 Backed by: `tests/oracle/test_files.py`; mutant `trailing-spaces-kept`
 (ctlbreak); `results/gnucobol-3.2/corpus.csv`.
 

@@ -3,8 +3,9 @@
 LINE SEQUENTIAL (ORGANIZATION IS LINE SEQUENTIAL), checked against GnuCOBOL
 3.1.2 and 3.2 by tests/oracle/test_files.py:
   * READ: one record per line; a short line is padded with spaces;
-    carriage returns are dropped (also inside a line); a last line without
-    newline is still read;
+    carriage returns are dropped (on 3.1.2 also inside a line; 3.2 rejects
+    a carriage return inside a line, which this module does not model);
+    a last line without newline is still read;
   * a line longer than the record: GnuCOBOL 3.1.2 truncates it and skips
     the rest of the line (long_lines="truncate", the default here);
     GnuCOBOL 3.2 by default returns the rest as further records

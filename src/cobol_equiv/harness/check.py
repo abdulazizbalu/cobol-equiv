@@ -10,7 +10,9 @@ The first difference is reported as stream, line and field name (when the
 spec has an output layout), with the expected (GnuCOBOL) and actual bytes.
 An exception or a timeout in the translation counts as a difference. A
 translation that triggers the runtime's Unsupported error (even if it catches
-it) is reported as UNSUPPORTED, exit status 2: never as a pass.
+it, while running or while its module is imported by load_module /
+load_module_from_source) is reported as UNSUPPORTED, exit status 2: never as
+a pass. Not covered: errors raised in another thread or process.
 """
 
 from __future__ import annotations
@@ -79,6 +81,15 @@ class CheckResult:
         return "unsupported" if self.difference.unsupported else "fail"
 
 
+IMPORT_HITS = "__cobol_equiv_unsupported_at_import__"
+
+
+def _caught(n: int, extra: str = "") -> Difference:
+    return Difference("<translation>", 0, 0, None, b"", b"",
+                      f"hit an unsupported runtime feature {n} time(s) and caught the error{extra}",
+                      unsupported=True)
+
+
 def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes]) -> Difference | None:
     stdin = inputs.get(STDIN, b"")
     files = {k: v for k, v in inputs.items() if k != STDIN}
@@ -98,13 +109,16 @@ def run_once(spec: ProgramSpec, exe: Path, main, inputs: dict[str, bytes]) -> Di
         return Difference("<translation>", 0, 0, None, b"", b"",
                           f"hit an unsupported runtime feature: {e}", unsupported=True)
     except BaseException as e:  # any crash, including sys.exit(), is a detected difference
+        if unsupported_hits():
+            return _caught(unsupported_hits(), f", then raised {type(e).__name__}: {e}")
         return Difference("<translation>", 0, 0, None, b"", b"", f"raised {type(e).__name__}: {e}")
     if unsupported_hits():
         # the translation caught an Unsupported error and carried on: its
         # output is not trusted even if it happens to match
-        return Difference("<translation>", 0, 0, None, b"", b"",
-                          f"hit an unsupported runtime feature {unsupported_hits()} time(s) "
-                          "and caught the error", unsupported=True)
+        return _caught(unsupported_hits())
+    at_import = getattr(main, "__globals__", {}).get(IMPORT_HITS, 0)
+    if at_import:
+        return _caught(at_import, " while its module was imported")
     return compare(res.stdout, res.files, out, out_files or {}, spec.outputs, spec.layouts)
 
 
@@ -151,14 +165,18 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
 def load_module(path: Path, name: str = "translation") -> types.ModuleType:
     spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)
+    reset_unsupported_hits()
     spec.loader.exec_module(mod)
+    setattr(mod, IMPORT_HITS, unsupported_hits())
     return mod
 
 
 def load_module_from_source(source: str, name: str, filename: str) -> types.ModuleType:
     mod = types.ModuleType(name)
     mod.__file__ = filename
+    reset_unsupported_hits()
     exec(compile(source, filename, "exec"), mod.__dict__)  # noqa: S102 (corpus code)
+    setattr(mod, IMPORT_HITS, unsupported_hits())
     return mod
 
 

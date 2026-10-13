@@ -121,7 +121,7 @@ def python_line(i: int, c: Case) -> str:
 
 def _compile_run(name: str, chunk, build: Path) -> tuple[dict[int, str], int, str]:
     src = cobol_for_chunk(name, chunk)
-    key = cobc_version() + "\0" + " ".join(COBC_FLAGS) + "\0" + src
+    key = cobc_path() + "\0" + cobc_version() + "\0" + " ".join(COBC_FLAGS) + "\0" + src
     digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
     cob = build / f"{name}-{digest}.cob"
     exe = build / f"{name}-{digest}"

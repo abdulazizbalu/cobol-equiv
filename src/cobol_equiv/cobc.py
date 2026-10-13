@@ -6,9 +6,8 @@ import os
 import shutil
 import subprocess
 
-# Flags used for every oracle and corpus compile. -std=default selects the
-# GnuCOBOL default dialect, whose settings (binary-truncate, binary-size,
-# sign encoding) the runtime documents and is validated against.
+# Flags used for every compile. -std=default selects the GnuCOBOL default
+# dialect (binary-truncate, binary-size, sign encoding).
 COBC_FLAGS = ("-x", "-std=default")
 
 
@@ -17,8 +16,12 @@ def cobc_path() -> str | None:
 
 
 def clean_env() -> dict[str, str]:
-    """Environment for compiling and running COBOL: no inherited COB_* settings."""
-    env = {k: v for k, v in os.environ.items() if not k.startswith("COB_")}
+    """Environment for compiling and running COBOL.
+
+    Drops every inherited GnuCOBOL setting (COB_*, COBC*, COBCPY, ...), so a
+    developer's copybook path or runtime options cannot change results.
+    """
+    env = {k: v for k, v in os.environ.items() if not k.upper().startswith("COB")}
     env["LC_ALL"] = "C"
     env["LANG"] = "C"
     return env

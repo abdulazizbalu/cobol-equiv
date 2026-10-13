@@ -19,9 +19,10 @@ def test_cobc_compiles_and_runs(tmp_path):
     src = tmp_path / "hello.cob"
     src.write_text(HELLO, encoding="utf-8")
     exe = tmp_path / "hello"
-    subprocess.run(
+    r = subprocess.run(
         [cobc_path(), *COBC_FLAGS, "-o", str(exe), str(src)],
-        check=True, capture_output=True, env=clean_env(),
+        capture_output=True, env=clean_env(),
     )
+    assert r.returncode == 0, r.stderr.decode("utf-8", "replace")
     out = subprocess.run([str(exe)], check=True, capture_output=True, env=clean_env())
     assert out.stdout == b"HELLO\n"

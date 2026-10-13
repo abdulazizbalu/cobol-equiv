@@ -4,5 +4,5 @@
 
 Differential testing of Python translations of COBOL programs against GnuCOBOL.
 
-Work in progress: this commit contains only the project scaffold and CI
-(GnuCOBOL from the Ubuntu 24.04 `gnucobol3` package, Python 3.10-3.12).
+Work in progress. CI installs GnuCOBOL from the Ubuntu 24.04 `gnucobol3`
+package and runs the tests on Python 3.10-3.12.

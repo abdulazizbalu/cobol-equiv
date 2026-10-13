@@ -1,1 +1,1 @@
-"""Differential testing harness (see docs/harness.md)."""
+"""Differential testing harness."""

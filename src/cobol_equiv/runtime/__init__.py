@@ -1,1 +1,1 @@
-"""COBOL numeric and data runtime (see docs/runtime.md)."""
+"""COBOL numeric and data runtime."""

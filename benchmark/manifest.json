@@ -13,24 +13,13 @@
     {
       "id": 2,
       "name": "corpus tracks, specs, vector split, API sheet, runner",
-      "status": "in review",
-      "done": [
-        "Track E screened (benchmark/corpus-e/screening.csv)",
-        "Track R: 10 existing + 10 new programs",
-        "vectors materialised for 3.1.2 and 3.2",
-        "reference translations pass all vectors (refcheck)",
-        "API sheet benchmark/prompts/api-sheet.md",
-        "prompt builder, translation driver, runner tested on benchmark/runner-test/tally"
-      ],
-      "remaining": [
-        "independent review",
-        "merge; then record runtime_harness_commit"
-      ]
+      "status": "done (abdulazizbalu/cobol-equiv#7)"
     },
     {
       "id": 3,
       "name": "translation runs and artifacts",
-      "status": "not started"
+      "status": "in progress",
+      "completed_units": []
     },
     {
       "id": 4,
@@ -38,7 +27,7 @@
       "status": "not started"
     }
   ],
-  "next": "review and merge the corpus PR; then fill frozen_before_first_call.runtime_harness_commit with the merge commit and start condition A attempt 1",
+  "next": "run conditions A and C, attempts 1-3 (python -m cobol_equiv.benchmark.translate), then B from each A attempt; completed (condition, attempt) units are listed in steps[2].completed_units; a call whose artifacts exist is skipped on resume",
   "sources_pinned": {
     "omp_course_commit": "1f037d24326124f4f2c5cd2d31e5220ceb549580",
     "rosettacodedata_commit": "1d475861d7141ef2fafff293d9339f56e4b0f5db",
@@ -47,7 +36,7 @@
   "attempts": [],
   "frozen_before_first_call": {
     "model_id": "claude-opus-5-5",
-    "runtime_harness_commit": null,
+    "runtime_harness_commit": "50456a315a953c502aebe53e8ccc5f8e80c3e7b3",
     "python": "3.12.3",
     "hypothesis": "6.169.0",
     "gnucobol_primary": "3.1.2",

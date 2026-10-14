@@ -159,3 +159,16 @@ def test_shown_sources_have_no_comments():
 def test_runner_test_program_is_outside_both_tracks():
     names = {p.name for p in ALL}
     assert programs("T") and all(p.name not in names for p in programs("T"))
+
+
+def test_statistics():
+    from cobol_equiv.benchmark.analysis import binom_two_sided, holm, mcnemar, wilson
+
+    lo, hi = wilson(5, 10)
+    assert round(lo, 4) == 0.2366 and round(hi, 4) == 0.7634
+    assert wilson(0, 0) == (0.0, 1.0)
+    assert binom_two_sided(1, 10) == 22 / 1024
+    assert binom_two_sided(0, 0) == 1.0 and binom_two_sided(5, 10) == 1.0
+    assert holm([0.01, 0.04, 0.03, 0.2]) == [0.04, 0.09, 0.09, 0.2]
+    m = mcnemar([(True, False)] * 6 + [(True, True)] * 3 + [(False, True)])
+    assert (m["first_only"], m["second_only"]) == (6, 1) and m["p"] == binom_two_sided(1, 7)

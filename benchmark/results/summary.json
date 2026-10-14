@@ -1,0 +1,482 @@
+{
+ "by_track": {
+  "E": {
+   "b_by_round": [
+    {
+     "attempts": 90,
+     "ci95": [
+      0.8480613974425688,
+      0.9618151848912118
+     ],
+     "passed": 83,
+     "rate": 0.9222222222222223,
+     "round": 0
+    },
+    {
+     "attempts": 90,
+     "ci95": [
+      0.9590643738163189,
+      0.9999999999999998
+     ],
+     "passed": 90,
+     "rate": 1.0,
+     "round": 1
+    },
+    {
+     "attempts": 90,
+     "ci95": [
+      0.9590643738163189,
+      0.9999999999999998
+     ],
+     "passed": 90,
+     "rate": 1.0,
+     "round": 2
+    },
+    {
+     "attempts": 90,
+     "ci95": [
+      0.9590643738163189,
+      0.9999999999999998
+     ],
+     "passed": 90,
+     "rate": 1.0,
+     "round": 3
+    }
+   ],
+   "heldout": {
+    "A": {
+     "attempts": 90,
+     "ci95": [
+      0.8480613974425688,
+      0.9618151848912118
+     ],
+     "passed": 83,
+     "rate": 0.9222222222222223,
+     "slow_passes": 3,
+     "timeouts": 2
+    },
+    "B": {
+     "attempts": 90,
+     "ci95": [
+      0.9590643738163189,
+      0.9999999999999998
+     ],
+     "passed": 90,
+     "rate": 1.0,
+     "slow_passes": 3,
+     "timeouts": 0
+    },
+    "C": {
+     "attempts": 90,
+     "ci95": [
+      0.8342945329953153,
+      0.9542695076981025
+     ],
+     "passed": 82,
+     "rate": 0.9111111111111111,
+     "slow_passes": 0,
+     "timeouts": 0
+    }
+   },
+   "pass_at_3": {
+    "A": {
+     "ci95": [
+      0.886486605238548,
+      1.0
+     ],
+     "programs": 30,
+     "programs_passed": 30,
+     "rate": 1.0
+    },
+    "B": {
+     "ci95": [
+      0.886486605238548,
+      1.0
+     ],
+     "programs": 30,
+     "programs_passed": 30,
+     "rate": 1.0
+    },
+    "C": {
+     "ci95": [
+      0.8332960885388428,
+      0.9940914096838022
+     ],
+     "programs": 30,
+     "programs_passed": 29,
+     "rate": 0.9666666666666667
+    }
+   },
+   "visible": {
+    "A": {
+     "attempts": 90,
+     "ci95": [
+      0.8480613974425688,
+      0.9618151848912118
+     ],
+     "passed": 83,
+     "rate": 0.9222222222222223,
+     "slow_passes": 0,
+     "timeouts": 2
+    },
+    "B": {
+     "attempts": 90,
+     "ci95": [
+      0.9590643738163189,
+      0.9999999999999998
+     ],
+     "passed": 90,
+     "rate": 1.0,
+     "slow_passes": 0,
+     "timeouts": 0
+    },
+    "C": {
+     "attempts": 90,
+     "ci95": [
+      0.9397159162551686,
+      0.9980359159207876
+     ],
+     "passed": 89,
+     "rate": 0.9888888888888889,
+     "slow_passes": 0,
+     "timeouts": 0
+    }
+   }
+  },
+  "R": {
+   "b_by_round": [
+    {
+     "attempts": 60,
+     "ci95": [
+      0.7782121187599428,
+      0.9423227939138165
+     ],
+     "passed": 53,
+     "rate": 0.8833333333333333,
+     "round": 0
+    },
+    {
+     "attempts": 60,
+     "ci95": [
+      0.9398281469657729,
+      1.0
+     ],
+     "passed": 60,
+     "rate": 1.0,
+     "round": 1
+    },
+    {
+     "attempts": 60,
+     "ci95": [
+      0.9398281469657729,
+      1.0
+     ],
+     "passed": 60,
+     "rate": 1.0,
+     "round": 2
+    },
+    {
+     "attempts": 60,
+     "ci95": [
+      0.9398281469657729,
+      1.0
+     ],
+     "passed": 60,
+     "rate": 1.0,
+     "round": 3
+    }
+   ],
+   "heldout": {
+    "A": {
+     "attempts": 60,
+     "ci95": [
+      0.7782121187599428,
+      0.9423227939138165
+     ],
+     "passed": 53,
+     "rate": 0.8833333333333333,
+     "slow_passes": 0,
+     "timeouts": 0
+    },
+    "B": {
+     "attempts": 60,
+     "ci95": [
+      0.9398281469657729,
+      1.0
+     ],
+     "passed": 60,
+     "rate": 1.0,
+     "slow_passes": 0,
+     "timeouts": 0
+    },
+    "C": {
+     "attempts": 60,
+     "ci95": [
+      0.7008024615073325,
+      0.8944220315709903
+     ],
+     "passed": 49,
+     "rate": 0.8166666666666667,
+     "slow_passes": 0,
+     "timeouts": 0
+    }
+   },
+   "pass_at_3": {
+    "A": {
+     "ci95": [
+      0.8388748398148705,
+      1.0
+     ],
+     "programs": 20,
+     "programs_passed": 20,
+     "rate": 1.0
+    },
+    "B": {
+     "ci95": [
+      0.8388748398148705,
+      1.0
+     ],
+     "programs": 20,
+     "programs_passed": 20,
+     "rate": 1.0
+    },
+    "C": {
+     "ci95": [
+      0.6395811333571357,
+      0.9476312545132735
+     ],
+     "programs": 20,
+     "programs_passed": 17,
+     "rate": 0.85
+    }
+   },
+   "visible": {
+    "A": {
+     "attempts": 60,
+     "ci95": [
+      0.7782121187599428,
+      0.9423227939138165
+     ],
+     "passed": 53,
+     "rate": 0.8833333333333333,
+     "slow_passes": 0,
+     "timeouts": 0
+    },
+    "B": {
+     "attempts": 60,
+     "ci95": [
+      0.9398281469657729,
+      1.0
+     ],
+     "passed": 60,
+     "rate": 1.0,
+     "slow_passes": 0,
+     "timeouts": 0
+    },
+    "C": {
+     "attempts": 60,
+     "ci95": [
+      0.9398281469657729,
+      1.0
+     ],
+     "passed": 60,
+     "rate": 1.0,
+     "slow_passes": 0,
+     "timeouts": 0
+    }
+   }
+  }
+ },
+ "secondary": {
+  "fail_on_3_2": [],
+  "not_run_no_3_2_outputs": [
+   "rc-csv-data-manipulation"
+  ],
+  "pass": 408,
+  "run": 408
+ },
+ "taxonomy": {
+  "E/A": {
+   "PICTURE editing": 0,
+   "crash or syntax error": 4,
+   "file handling": 0,
+   "loop or branch logic": 0,
+   "other": 1,
+   "rounding": 0,
+   "sign handling": 0,
+   "string statements": 0,
+   "time-out": 2,
+   "truncation": 0,
+   "unclassified": 0,
+   "unsupported runtime feature": 0
+  },
+  "E/B": {
+   "PICTURE editing": 0,
+   "crash or syntax error": 0,
+   "file handling": 0,
+   "loop or branch logic": 0,
+   "other": 0,
+   "rounding": 0,
+   "sign handling": 0,
+   "string statements": 0,
+   "time-out": 0,
+   "truncation": 0,
+   "unclassified": 0,
+   "unsupported runtime feature": 0
+  },
+  "E/C": {
+   "PICTURE editing": 0,
+   "crash or syntax error": 0,
+   "file handling": 0,
+   "loop or branch logic": 0,
+   "other": 4,
+   "rounding": 2,
+   "sign handling": 0,
+   "string statements": 0,
+   "time-out": 0,
+   "truncation": 2,
+   "unclassified": 0,
+   "unsupported runtime feature": 0
+  },
+  "R/A": {
+   "PICTURE editing": 0,
+   "crash or syntax error": 7,
+   "file handling": 0,
+   "loop or branch logic": 0,
+   "other": 0,
+   "rounding": 0,
+   "sign handling": 0,
+   "string statements": 0,
+   "time-out": 0,
+   "truncation": 0,
+   "unclassified": 0,
+   "unsupported runtime feature": 0
+  },
+  "R/B": {
+   "PICTURE editing": 0,
+   "crash or syntax error": 0,
+   "file handling": 0,
+   "loop or branch logic": 0,
+   "other": 0,
+   "rounding": 0,
+   "sign handling": 0,
+   "string statements": 0,
+   "time-out": 0,
+   "truncation": 0,
+   "unclassified": 0,
+   "unsupported runtime feature": 0
+  },
+  "R/C": {
+   "PICTURE editing": 0,
+   "crash or syntax error": 0,
+   "file handling": 0,
+   "loop or branch logic": 0,
+   "other": 4,
+   "rounding": 0,
+   "sign handling": 1,
+   "string statements": 0,
+   "time-out": 0,
+   "truncation": 6,
+   "unclassified": 0,
+   "unsupported runtime feature": 0
+  }
+ },
+ "tests": [
+  {
+   "comparison": "A vs C",
+   "mcnemar": {
+    "first_only": 8,
+    "p": 1.0,
+    "p_holm": 1.0,
+    "pairs": 90,
+    "second_only": 7
+   },
+   "pass_at_3_mcnemar": {
+    "first_only": 1,
+    "p": 1.0,
+    "pairs": 30,
+    "second_only": 0
+   },
+   "sign_test": {
+    "a_better": 4,
+    "a_worse": 5,
+    "p": 1.0,
+    "programs": 30,
+    "ties_dropped": 21
+   },
+   "track": "E"
+  },
+  {
+   "comparison": "A vs B",
+   "mcnemar": {
+    "first_only": 0,
+    "p": 0.015625,
+    "p_holm": 0.0625,
+    "pairs": 90,
+    "second_only": 7
+   },
+   "pass_at_3_mcnemar": {
+    "first_only": 0,
+    "p": 1.0,
+    "pairs": 30,
+    "second_only": 0
+   },
+   "sign_test": {
+    "a_better": 0,
+    "a_worse": 6,
+    "p": 0.03125,
+    "programs": 30,
+    "ties_dropped": 24
+   },
+   "track": "E"
+  },
+  {
+   "comparison": "A vs C",
+   "mcnemar": {
+    "first_only": 11,
+    "p": 0.480682373046875,
+    "p_holm": 0.96136474609375,
+    "pairs": 60,
+    "second_only": 7
+   },
+   "pass_at_3_mcnemar": {
+    "first_only": 3,
+    "p": 0.25,
+    "pairs": 20,
+    "second_only": 0
+   },
+   "sign_test": {
+    "a_better": 3,
+    "a_worse": 3,
+    "p": 1.0,
+    "programs": 20,
+    "ties_dropped": 14
+   },
+   "track": "R"
+  },
+  {
+   "comparison": "A vs B",
+   "mcnemar": {
+    "first_only": 0,
+    "p": 0.015625,
+    "p_holm": 0.0625,
+    "pairs": 60,
+    "second_only": 7
+   },
+   "pass_at_3_mcnemar": {
+    "first_only": 0,
+    "p": 1.0,
+    "pairs": 20,
+    "second_only": 0
+   },
+   "sign_test": {
+    "a_better": 0,
+    "a_worse": 5,
+    "p": 0.0625,
+    "programs": 20,
+    "ties_dropped": 15
+   },
+   "track": "R"
+  }
+ ]
+}

@@ -38,6 +38,14 @@ CATEGORIES = ["unsupported runtime feature", "crash or syntax error", "time-out"
 # not a crash and not a semantic failure (deviation D12).
 AUTOMATIC = {"unsupported": CATEGORIES[0], "error": CATEGORIES[1], "no code": CATEGORIES[1],
              "timeout": CATEGORIES[2]}
+# docs/semantic-traps.md entries that match a category (protocol, section 6)
+TRAPS_LINK = "@TRAPS@"  # replaced by the path from each target file
+TRAPS = {
+    "rounding": ("3", "3-without-rounded-extra-decimals-are-cut-never-rounded"),
+    "truncation": ("4", "4-overflow-on-size-error-keeps-the-old-value-otherwise-digits-are-lost-on-the-left"),
+    "sign handling": ("6", "6-negative-zero-exists"),
+    "PICTURE editing": ("10", "10-numeric-editing-is-more-than-formatting"),
+}
 FAILURE_FIELDS = ["track", "program", "condition", "attempt", "first_failure_kind", "category",
                   "reason", "first_failure"]
 
@@ -200,8 +208,10 @@ BLIND_KEY = RESULTS / "blind-key.csv"
 
 def blind_list(rows: list[dict]) -> list[dict]:
     """Failures that need a manual category, in random order (seed
-    crc32("taxonomy")). Each item shows the program, the translation code and
-    the difference, never the condition, attempt or file path; the mapping
+    crc32("taxonomy")). Each item shows the program, its COBOL source as shown
+    to translators, the translation code and the difference, never the
+    condition, attempt or file path (the code itself can still reveal the
+    condition: only condition C has no runtime import); the mapping
     from item number to attempt is written to blind-key.csv, which is read
     only to merge the categories back."""
     finals = [r for r in failing_finals(rows) if r["first_failure_kind"] not in AUTOMATIC]
@@ -212,7 +222,11 @@ def blind_list(rows: list[dict]) -> list[dict]:
         w.writerow(["item", "track", "program", "condition", "attempt"])
         for i, r in enumerate(finals, 1):
             w.writerow([i, r["track"], r["program"], r["condition"], r["attempt"]])
-    return [{"item": i, "program": r["program"],
+    from .programs import programs
+    from .prompts import source_of
+
+    sources = {(p.track, p.name): source_of(p) for t in ("E", "R") for p in programs(t)}
+    return [{"item": i, "program": r["program"], "cobol": sources[(r["track"], r["program"])],
              "translation": (ROOT / r["translation"]).read_text(encoding="utf-8"),
              "difference": r["first_failure"]}
             for i, r in enumerate(finals, 1)]
@@ -280,7 +294,45 @@ def tables(s: dict) -> str:
         for cat in CATEGORIES + ["unclassified"]:
             lines.append(f"| {cat} | " + " | ".join(str(s["taxonomy"][f"{t}/{c}"][cat]) for t in TRACKS
                                                    for c in CONDITIONS) + " |")
+    crashes = crash_messages()
+    if crashes:
+        lines += ["", "Crash messages (crash or syntax error, by condition):", ""]
+        for (c, msg), n in crashes:
+            lines.append(f"- {c}: {n} x `{msg}`")
+    ex = examples()
+    if ex:
+        lines += ["", "One example per failure category (first attempt in program order; the full list "
+                      "is benchmark/results/failures.csv):", ""]
+        for cat, r in ex:
+            diff = r["first_failure"].replace("|", "\\|")[:220]
+            trap = TRAPS.get(cat)
+            link = f" See [semantic trap {trap[0]}]({TRAPS_LINK}#{trap[1]})." if trap else ""
+            lines.append(f"- **{cat}** ({r['program']}): {r['reason'] or diff}. First difference: `{diff}`.{link}")
     return "\n".join(lines) + "\n"
+
+
+def crash_messages() -> list:
+    if not FAILURES.exists():
+        return []
+    from collections import Counter
+
+    with FAILURES.open(encoding="utf-8", newline="") as fh:
+        rows = [r for r in csv.DictReader(fh) if r["category"] == CATEGORIES[1]]
+    c = Counter((r["condition"], r["first_failure"].split(" (")[0][:100]) for r in rows)
+    return sorted(c.items(), key=lambda kv: (kv[0][0], -kv[1], kv[0][1]))
+
+
+def examples() -> list:
+    if not FAILURES.exists():
+        return []
+    with FAILURES.open(encoding="utf-8", newline="") as fh:
+        rows = sorted(csv.DictReader(fh), key=lambda r: (r["track"], r["program"], r["condition"], r["attempt"]))
+    out = []
+    for cat in CATEGORIES:
+        r = next((r for r in rows if r["category"] == cat), None)
+        if r:
+            out.append((cat, r))
+    return out
 
 
 def _replace_block(text: str, block: str) -> str:
@@ -291,12 +343,21 @@ def _replace_block(text: str, block: str) -> str:
 
 def report(check: bool) -> int:
     s = compute(load_verdicts())
-    summary = json.dumps(s, indent=1, sort_keys=True) + "\n"
+    summary = json.dumps(s, indent=1, sort_keys=True) + "\n"  # no links in the JSON
     block = tables(s)
     targets = {SUMMARY: summary}
+    missing = []
     for path in (DOC, README):
-        if path.exists() and "<!-- BENCHMARK:START -->" in path.read_text(encoding="utf-8"):
-            targets[path] = _replace_block(path.read_text(encoding="utf-8"), block)
+        text = path.read_text(encoding="utf-8") if path.exists() else ""
+        if "<!-- BENCHMARK:START -->" in text and "<!-- BENCHMARK:END -->" in text:
+            rel = "semantic-traps.md" if path == DOC else "docs/semantic-traps.md"
+            targets[path] = _replace_block(text, block.replace(TRAPS_LINK, rel))
+        else:
+            missing.append(path)
+    if missing:
+        for p in missing:
+            print(f"{p} has no BENCHMARK:START/END block")
+        return 1
     bad = [p for p, t in targets.items() if not p.exists() or p.read_text(encoding="utf-8") != t]
     if check:
         for p in bad:

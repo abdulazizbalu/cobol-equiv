@@ -28,9 +28,10 @@ It is:
    inputs (fixed regression vectors plus Hypothesis-generated ones derived
    from the record layouts), compare stdout and output files byte for byte,
    and report the first difference by line and field name.
-3. **Benchmark (in progress):** LLM-produced translations measured with
-   the harness, under the pre-registered protocol in
-   [docs/benchmark-protocol.md](docs/benchmark-protocol.md).
+3. **Benchmark:** LLM-produced translations measured with the harness,
+   under the pre-registered protocol in
+   [docs/benchmark-protocol.md](docs/benchmark-protocol.md). Results,
+   method and limits: [docs/benchmark.md](docs/benchmark.md).
 
 ## Current results
 
@@ -48,6 +49,71 @@ It is:
 Details: [results/SUMMARY.md](results/SUMMARY.md).
 
 <!-- results:end -->
+
+## Benchmark results
+
+Produced by `python -m cobol_equiv.benchmark.analysis report` from
+`benchmark/results/`; read the limits in [docs/benchmark.md](docs/benchmark.md)
+before the numbers. The intervals and the McNemar tests treat the three
+attempts of a program as independent, which they are not; the sign test
+over programs does not. The API sheet given in conditions A and B contains
+an error that causes most of condition A's failures (deviation D13), so the
+A vs C comparison is affected by it.
+
+<!-- BENCHMARK:START -->
+| track | condition | HELD-OUT pass (attempts) | 95% CI | pass@3 (programs) | 95% CI | VISIBLE pass (attempts) | time-out (attempts) | passes needing the extended time limit (depends on machine speed) |
+|---|---|---|---|---|---|---|---|---|
+| E | A | 83/90 (92.2%) | 84.8-96.2% | 30/30 (100.0%) | 88.6-100.0% | 83/90 (92.2%) | 2 | 3 |
+| E | B | 90/90 (100.0%) | 95.9-100.0% | 30/30 (100.0%) | 88.6-100.0% | 90/90 (100.0%) | 0 | 3 |
+| E | C | 82/90 (91.1%) | 83.4-95.4% | 29/30 (96.7%) | 83.3-99.4% | 89/90 (98.9%) | 0 | 0 |
+| R | A | 53/60 (88.3%) | 77.8-94.2% | 20/20 (100.0%) | 83.9-100.0% | 53/60 (88.3%) | 0 | 0 |
+| R | B | 60/60 (100.0%) | 94.0-100.0% | 20/20 (100.0%) | 83.9-100.0% | 60/60 (100.0%) | 0 | 0 |
+| R | C | 49/60 (81.7%) | 70.1-89.4% | 17/20 (85.0%) | 64.0-94.8% | 60/60 (100.0%) | 0 | 0 |
+
+| track | comparison | pairs | A only / other only | McNemar p | Holm p | sign test (A better / worse, p) | pass@3 McNemar p |
+|---|---|---|---|---|---|---|---|
+| E | A vs C | 90 | 8 / 7 | 1 | 1 | 4 / 5, 1 | 1 |
+| E | A vs B | 90 | 0 / 7 | 0.0156 | 0.0625 | 0 / 6, 0.0312 | 1 |
+| R | A vs C | 60 | 11 / 7 | 0.481 | 0.961 | 3 / 3, 1 | 0.25 |
+| R | A vs B | 60 | 0 / 7 | 0.0156 | 0.0625 | 0 / 5, 0.0625 | 1 |
+
+| track | B after round 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| E | 83/90 (92.2%) | 90/90 (100.0%) | 90/90 (100.0%) | 90/90 (100.0%) |
+| R | 53/60 (88.3%) | 60/60 (100.0%) | 60/60 (100.0%) | 60/60 (100.0%) |
+
+GnuCOBOL 3.2 re-run of the final translations that pass HELD-OUT on 3.1.2: 408 of 408 pass; fail on 3.2: none; not run (no 3.2 outputs): rc-csv-data-manipulation.
+
+| category | E/A | E/B | E/C | R/A | R/B | R/C |
+|---|---|---|---|---|---|---|
+| unsupported runtime feature | 0 | 0 | 0 | 0 | 0 | 0 |
+| crash or syntax error | 4 | 0 | 0 | 7 | 0 | 0 |
+| time-out | 2 | 0 | 0 | 0 | 0 | 0 |
+| rounding | 0 | 0 | 2 | 0 | 0 | 0 |
+| truncation | 0 | 0 | 2 | 0 | 0 | 6 |
+| sign handling | 0 | 0 | 0 | 0 | 0 | 1 |
+| PICTURE editing | 0 | 0 | 0 | 0 | 0 | 0 |
+| string statements | 0 | 0 | 0 | 0 | 0 | 0 |
+| file handling | 0 | 0 | 0 | 0 | 0 | 0 |
+| loop or branch logic | 0 | 0 | 0 | 0 | 0 | 0 |
+| other | 1 | 0 | 4 | 0 | 0 | 4 |
+| unclassified | 0 | 0 | 0 | 0 | 0 | 0 |
+
+Crash messages (crash or syntax error, by condition):
+
+- A: 8 x `TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'`
+- A: 2 x `TypeError: '>' not supported between instances of 'CobDecimal' and 'CobDecimal'`
+- A: 1 x `SyntaxError: invalid syntax`
+
+One example per failure category (first attempt in program order; the full list is benchmark/results/failures.csv):
+
+- **crash or syntax error** (rc-fibonacci-sequence): TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'. First difference: `TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'`.
+- **time-out** (rc-soloways-recurring-rainfall): the loop ends on dec(x) == dec(99999), which is never true: CobDecimal == compares identity (D13). First difference: `timed out`.
+- **rounding** (rc-formatted-numeric-output): ACCEPT into 9(5)V9(3) cuts the input line to the 8-byte receiver, dropping the last decimal digit; the translation keeps it. First difference: `<stdout> line 1, column 9: expected b'82474.140', got b'82474.147'`. See [semantic trap 3](docs/semantic-traps.md#3-without-rounded-extra-decimals-are-cut-never-rounded).
+- **truncation** (rc-integer-comparison): ACCEPT into 9(10): the 11-character input line is not cut to the receiver length before conversion. First difference: `<stdout> line 1, column 54: expected b'less than 0126133773', got b'less than 1261337734'`. See [semantic trap 4](docs/semantic-traps.md#4-overflow-on-size-error-keeps-the-old-value-otherwise-digits-are-lost-on-the-left).
+- **sign handling** (matrix): a negative zero cell is edited with a minus sign; GnuCOBOL edits zero without sign. First difference: `<stdout> line 1, column 16: expected b'     0     0     0     0      ', got b'     0    -0     0     0      '`. See [semantic trap 6](docs/semantic-traps.md#6-negative-zero-exists).
+- **other** (rc-a-plus-b): conversion of non-numeric ACCEPT input text ('A') to a number differs. First difference: `<stdout> line 1, column 6: expected b'+00000', got b'+00001'`.
+<!-- BENCHMARK:END -->
 
 ## Reproduce
 

@@ -215,6 +215,46 @@ def rule_move_alnum_num(rng):
     return cases
 
 
+NUMBER_TEXTS = [
+    "", " ", "0", "7", "-0", "+0", "-123", "+45", "12.5", "-1.239", "0.005", ".5", "-.25",
+    "1,234.56", "1,5", " 42 ", "  -7", "9 9", "123456789", "99999.999", "-99999.999",
+    "abc", "1x2", "12-", "1.2.3", "- 5", "+-1", "3.", "00012", "1e5", "\t8", "12 a",
+]
+
+
+def rule_move_alnum_text_num(rng):
+    """MOVE of alphanumeric items holding number-like text to numeric and
+    numeric-edited items (and the cut to the receiver length that ACCEPT
+    applies first is not part of this rule)."""
+    cases = []
+    texts = NUMBER_TEXTS + ["".join(rng.choice("0123456789 .,+-a") for _ in range(rng.randint(1, 9)))
+                            for _ in range(20)]
+    tpics = ["9(4)", "S9(4)", "9(3)V99", "S9(3)V99", "S9(5)V9(3)", "S9", "9(12)"]
+    for txt in texts:
+        lit_text = txt.replace("\t", "\x09")
+        n = max(1, len(txt))
+        for tp in tpics:
+            for tu in usages_for(tp):
+                s, t = Alnum("S", f"X({n})"), Num("T", tp, usage=tu)
+                if "\t" in txt:
+                    continue  # a tab cannot be written as an alphanumeric literal here
+                lit = alnum_literal(txt.encode()) if txt else "SPACES"
+                cases.append(Case(
+                    "move_alnum_text_to_num", f'"{lit_text}" X({n}) -> {fmt_item(t)}', [s, t],
+                    [f"MOVE {lit} TO {{S}}", "MOVE {S} TO {T}"],
+                    (lambda f, x=txt: (move(x, f["S"]), move(f["S"], f["T"]))), [("hex", "T")]))
+        for ep in ("ZZZ9.99-", "-(5)9", "$$,$$9.99", "ZZ9"):
+            s, t = Alnum("S", f"X({n})"), Edited("T", ep)
+            if "\t" in txt:
+                continue
+            lit = alnum_literal(txt.encode()) if txt else "SPACES"
+            cases.append(Case(
+                "move_alnum_text_to_num", f'"{lit_text}" X({n}) -> {ep}', [s, t],
+                [f"MOVE {lit} TO {{S}}", "MOVE {S} TO {T}"],
+                (lambda f, x=txt: (move(x, f["S"]), move(f["S"], f["T"]))), [("hex", "T")]))
+    return cases
+
+
 def rule_move_alnum_alnum(rng):
     cases = []
     texts = ["A", "ABC", "HELLO WORLD", "  LEAD", "TRAIL  ", "12345678901234567890"]
@@ -299,6 +339,33 @@ def rule_arith(rng, n_per_variant=45):
                         [f"MOVE {num_literal(av)} TO {{A}}", f"MOVE {num_literal(bv)} TO {{B}}",
                          f"MOVE {num_literal(tv)} TO {{T}}", st],
                         py, [("flag", ""), ("hex", "T")]))
+    return cases
+
+
+def rule_arith_edited_giving(rng, n=120):
+    """Arithmetic GIVING into numeric-edited receivers, with results that fit
+    and results wider than the receiver."""
+    cases = []
+    pics = ["-(7)9.99", "ZZZ9", "Z,ZZ9.99-", "$$$9.99", "---9", "+ZZZ9.9", "ZZ9.99CR", "9(4)"]
+    for i in range(n):
+        ep = pics[i % len(pics)]
+        if ep == "9(4)":
+            ep = "ZZZ9.9"
+        a_pic, b_pic = "S9(9)V99", "S9(5)V99"
+        av = scaled_decimal(rng.randint(-10**11 + 1, 10**11 - 1) // pick(rng, [1, 10, 1000, 10**6]), 2)
+        bv = scaled_decimal(rng.randint(-10**7 + 1, 10**7 - 1), 2)
+        a, b, t = Num("A", a_pic), Num("B", b_pic), Edited("T", ep)
+        op = pick(rng, ["ADD", "SUBTRACT", "MULTIPLY"])
+        if op == "ADD":
+            st, fn = "ADD {A} TO {B} GIVING {T}", lambda f: arith.add_giving([f["A"], f["B"]], f["T"])
+        elif op == "SUBTRACT":
+            st, fn = "SUBTRACT {B} FROM {A} GIVING {T}", lambda f: arith.subtract_giving([f["B"]], f["A"], f["T"])
+        else:
+            st, fn = "MULTIPLY {A} BY {B} GIVING {T}", lambda f: arith.multiply_giving(f["A"], f["B"], f["T"])
+        cases.append(Case(
+            "arith_edited_giving", f"{op} {num_literal(av)} {num_literal(bv)} -> {ep}", [a, b, t],
+            [f"MOVE {num_literal(av)} TO {{A}}", f"MOVE {num_literal(bv)} TO {{B}}", st],
+            (lambda f, av=av, bv=bv, fn=fn: (move(av, f["A"]), move(bv, f["B"]), fn(f))), [("hex", "T")]))
     return cases
 
 
@@ -450,10 +517,12 @@ RULES = {
     "move_num_to_num": rule_move_num_num,
     "move_num_to_alnum": rule_move_num_alnum,
     "move_alnum_to_num": rule_move_alnum_num,
+    "move_alnum_text_to_num": rule_move_alnum_text_num,
     "move_alnum_to_alnum": rule_move_alnum_alnum,
     "edit": rule_edit,
     "arith": rule_arith,
     "arith_divide_remainder": rule_divide_remainder,
+    "arith_edited_giving": rule_arith_edited_giving,
     "compute_intermediate": rule_compute_expr,
     "binary_store": rule_binary_store,
     "display_format": rule_display_format,
@@ -553,6 +622,23 @@ def rule_unstring(rng, n=150):
             [f"MOVE {_lit(src)} TO {{S}}"] + [f'MOVE ALL "#" TO {{{r}}}' for r in ("R1", "R2", "R3", "D1", "D2")]
             + [f"MOVE {p0} TO {{P}}", "MOVE 1 TO {TL}", st],
             py, [("flag", "")] + [("hex", r) for r in ("R1", "R2", "R3", "D1", "D2", "C1", "C2", "P", "TL")]))
+    # numeric receivers: each piece is moved as alphanumeric data
+    for i in range(n // 3):
+        src = _rtext(rng, "0123456789-.,A ", rng.randint(1, 16))
+        items = [Alnum("S", f"X({len(src)})"), Num("N1", "9(5)"), Num("N2", "S9(3)V99"),
+                 Num("N3", "S9(4)", usage=enc.COMP3)]
+        st = 'UNSTRING {S} DELIMITED BY "," INTO {N1} {N2} {N3} END-UNSTRING'
+
+        def py(f, src=src):
+            move(src, f["S"])
+            for r in ("N1", "N2", "N3"):
+                move(7, f[r])
+            text.unstring(f["S"], [","], [f["N1"], f["N2"], f["N3"]])
+
+        cases.append(Case(
+            "unstring_stmt", f'"{src}" DELIMITED BY "," INTO numeric', items,
+            [f"MOVE {_lit(src)} TO {{S}}"] + [f"MOVE 7 TO {{{r}}}" for r in ("N1", "N2", "N3")] + [st],
+            py, [("hex", r) for r in ("N1", "N2", "N3")]))
     return cases
 
 

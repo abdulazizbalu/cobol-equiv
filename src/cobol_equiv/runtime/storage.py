@@ -283,3 +283,21 @@ def _child_offsets(item: Item):
         local[c.name] = pos
         yield c, pos
         pos += c.elem_size() * (c.occurs or 1)
+
+
+def refmod(f: FieldRef, start: int, length: int | None = None) -> FieldRef:
+    """Reference modification `f (start : length)`: an alphanumeric view of
+    bytes start .. start + length - 1 (1-based) of the item, sharing its
+    storage. Without length, to the end of the item. A start or length that
+    leaves the item is refused (GnuCOBOL without runtime checks would read
+    or write outside it)."""
+    from .errors import Unsupported
+
+    start = int(start)
+    if length is None:
+        length = f.size - start + 1
+    length = int(length)
+    if start < 1 or length < 1 or start + length - 1 > f.size:
+        raise Unsupported(f"reference modification ({start}:{length}) outside {f.name} ({f.size} bytes)")
+    item = Item(f"{f.name}({start}:{length})", parse_pic(f"X({length})"))
+    return FieldRef(f.area, f.offset + start - 1, length, item, item.name)

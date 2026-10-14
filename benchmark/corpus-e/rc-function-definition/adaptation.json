@@ -1,0 +1,7 @@
+{
+  "edits": [
+    ["       01  x   PICTURE IS 9(3) VALUE IS 3.\n", "       01  x   PICTURE IS 9(3).\n"],
+    ["       01  y   PICTURE IS 9(3) VALUE IS 2.\n", "       01  y   PICTURE IS 9(3).\n"],
+    ["           DISPLAY myMultiply(x, y).\n", "           ACCEPT x\n           ACCEPT y\n           DISPLAY myMultiply(x, y).\n"]
+  ]
+}

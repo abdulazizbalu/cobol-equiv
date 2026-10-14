@@ -33,3 +33,14 @@ def test_generator_does_not_look_at_mutants_or_translations():
     src = Path(boundary.__file__).read_text(encoding="utf-8")
     for word in ("mutant", "reference", "overrides", "vectors="):
         assert word not in src.split('"""', 2)[2], word
+
+
+def test_record_organization_concatenates_full_records():
+    from cobol_equiv.runtime import COMP3
+
+    spec = InputSpec("F.DAT", [Alnum("K", "X(2)"), Num("N", "S9(3)", usage=COMP3)], 0, 3,
+                     organization="record")
+    files = boundary.boundary_files(spec)
+    assert any(files) and all(len(f) % 4 == 0 for f in files)
+    # a packed field is stored as bytes, e.g. -1 as x'001D'
+    assert any(b"\x00\x1d" in f for f in files)

@@ -1,5 +1,6 @@
 """COBOL numeric and data runtime (see docs/runtime.md for the supported subset)."""
 
+from .accept import Stdin, accept_line
 from .arith import (add, add_giving, compute, divide_giving, divide_into, divide_remainder,
                     multiply, multiply_giving, subtract, subtract_giving)
 from .cobdec import CobDecimal, dec
@@ -9,12 +10,13 @@ from .encoding import COMP, COMP3, COMP5, DISPLAY, DataError
 from .move import (HIGH_VALUES, LOW_VALUES, SPACES, ZEROS, All, MoveError, initialize, move,
                    store_cobdec, store_numeric)
 from .pic import Pic, PicError, parse_pic
-from .storage import Alnum, Edited, FieldRef, Filler, Group, Num, Storage
+from .storage import Alnum, Edited, FieldRef, Filler, Group, Num, Storage, refmod
 from .errors import Unsupported
 from .text import (Into, Phrase, inspect_converting, inspect_replacing, inspect_tallying, string,
                    unstring)
 
 __all__ = [
+    "Stdin", "accept_line",
     "add", "add_giving", "compute", "divide_giving", "divide_into", "divide_remainder",
     "multiply", "multiply_giving", "subtract", "subtract_giving",
     "CobDecimal", "dec", "display_bytes", "display_line", "edit",
@@ -22,7 +24,7 @@ __all__ = [
     "HIGH_VALUES", "LOW_VALUES", "SPACES", "ZEROS", "All", "MoveError", "initialize", "move",
     "store_cobdec", "store_numeric",
     "Pic", "PicError", "parse_pic",
-    "Alnum", "Edited", "FieldRef", "Filler", "Group", "Num", "Storage", "Unsupported",
+    "Alnum", "Edited", "FieldRef", "Filler", "Group", "Num", "Storage", "Unsupported", "refmod",
     "Into", "Phrase", "inspect_converting", "inspect_replacing", "inspect_tallying", "string",
     "unstring",
 ]

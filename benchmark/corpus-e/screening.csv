@@ -1,0 +1,561 @@
+source,candidate,lines,format,result,criterion,reason
+Open Mainframe Project course,ADDAMT.cobol,,fixed,excluded,E3,"stdin lines have different layouts (name, three amounts, YES/NO)"
+Open Mainframe Project course,CBL0001.cobol,,fixed,kept,,
+Open Mainframe Project course,CBL0002.cobol,,fixed,excluded,E1,does not compile: PRINT-REX is not defined (a course debugging exercise)
+Open Mainframe Project course,CBL0004.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBL0005.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBL0006.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBL0007.cobol,,fixed,excluded,E1,does not compile: unexpected END-IF (a course exercise)
+Open Mainframe Project course,CBL0008.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBL0009.cobol,,fixed,excluded,E1,does not compile: TLIMIT is not defined (a course exercise)
+Open Mainframe Project course,CBL0010.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBL0011.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBL0012.cobol,,fixed,excluded,E1,does not compile: FUNCTION CURRENT-DATA unknown
+Open Mainframe Project course,CBL0013.cobol,,fixed,excluded,E3,no input; hardcoded values are not named as input by the course text
+Open Mainframe Project course,CBL0014.cobol,,fixed,excluded,E3,no input
+Open Mainframe Project course,CBL0033.cobol,,fixed,excluded,E6,CALL 'HELLO'
+Open Mainframe Project course,CBL006A.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBL0106.cbl,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBL0106C.cbl,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBLC1.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,CBLDB21.cbl,,fixed,excluded,E1,"embedded SQL (SQLCA copybook), does not compile"
+Open Mainframe Project course,CBLDB22.cbl,,fixed,excluded,E1,"embedded SQL (SQLCA copybook), does not compile"
+Open Mainframe Project course,CBLDB23.cbl,,fixed,excluded,E1,"embedded SQL (SQLCA copybook), does not compile"
+Open Mainframe Project course,COBOL.cobol,,fixed,excluded,E2,FUNCTION CURRENT-DATE
+Open Mainframe Project course,DEPTPAY.CBL,,fixed,excluded,E3,no input; values are hardcoded test data
+Open Mainframe Project course,EMPPAY.CBL,,fixed,excluded,E3,no input; values are hardcoded test data
+Open Mainframe Project course,HELLO.cobol,,fixed,excluded,E3,no input
+Open Mainframe Project course,PAYROL00.cobol,,fixed,excluded,E3,no input
+Open Mainframe Project course,PAYROL0X.cobol,,fixed,excluded,E1,does not compile: GROSS-PAY is not numeric
+Open Mainframe Project course,SRCHBIN.cobol,,fixed,kept,,
+Open Mainframe Project course,SRCHSER.cobol,,fixed,kept,,
+Rosetta Code,100-doors/100-doors.cob,33,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,15-puzzle-game/15-puzzle-game.cob,151,fixed,excluded,E2,clock or random numbers
+Rosetta Code,24-game/24-game.cob,843,fixed,excluded,E2,clock or random numbers
+Rosetta Code,24-game-Solve/24-game-solve.cob,446,fixed,excluded,E4,"uses SIGN LEADING SEPARATE, which the runtime does not support"
+Rosetta Code,99-bottles-of-beer/99-bottles-of-beer-1.cob,104,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,99-bottles-of-beer/99-bottles-of-beer-2.cob,122,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,99-bottles-of-beer/99-bottles-of-beer-3.cob,16,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,A+B/a+b-1.cob,20,fixed,kept,,
+Rosetta Code,A+B/a+b-2.cob,39,fixed,not screened,,an earlier solution of the task was kept
+Rosetta Code,Abbreviations-automatic/abbreviations-automatic.cob,158,fixed,kept,,
+Rosetta Code,ABC-problem/abc-problem.cob,64,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected WORDS; free: error: syntax error, unexpected WORDS)"
+Rosetta Code,ABC-words/abc-words.cob,41,fixed,kept,,
+Rosetta Code,Abstract-type/abstract-type.cob,68,,excluded,E1,"does not compile (fixed: error: 'INTERFACE-ID' is a reserved word, but isn't supported; free: error: 'INTERFACE-ID' is a reserved word, but isn't supported)"
+Rosetta Code,Abundant-odd-numbers/abundant-odd-numbers.cob,100,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Achilles-numbers/achilles-numbers.cob,258,free,excluded,E6,SORT
+Rosetta Code,Ackermann-function/ackermann-function.cob,32,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Additive-primes/additive-primes.cob,73,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Address-of-a-variable/address-of-a-variable-1.cob,7,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Address-of-a-variable/address-of-a-variable-2.cob,17,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Aho-Corasick-algorithm/aho-corasick-algorithm.cob,206,fixed,excluded,E3,"no input; text and a table of patterns are hardcoded, not a single input item"
+Rosetta Code,Align-columns/align-columns-1.cob,83,free,excluded,E6,CALL
+Rosetta Code,Align-columns/align-columns-2.cob,21,,excluded,E1,does not compile (fixed: error: invalid indicator 'r' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Almost-prime/almost-prime.cob,69,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Anagrams/anagrams.cob,243,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Anagrams-Deranged-anagrams/anagrams-deranged-anagrams.cob,181,,excluded,E1,does not compile (fixed: error: invalid indicator 'L' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Angle-difference-between-two-bearings/angle-difference-between-two-bearings.cob,149,,excluded,E1,does not compile (fixed: Task/Angle-difference-between-two-bearings/COBOL/angle-difference-betw; free: Task/Angle-difference-between-two-bearings/COBOL/angle-difference-betw)
+Rosetta Code,Anti-primes/anti-primes.cob,84,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Append-a-record-to-the-end-of-a-text-file/append-a-record-to-the-end-of-a-text-file.cob,272,,excluded,E1,does not compile (fixed: Task/Append-a-record-to-the-end-of-a-text-file/COBOL/append-a-record-t; free: Task/Append-a-record-to-the-end-of-a-text-file/COBOL/append-a-record-t)
+Rosetta Code,Apply-a-callback-to-an-array/apply-a-callback-to-an-array.cob,20,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Arbitrary-precision-integers-included-/arbitrary-precision-integers-included-.cob,133,,excluded,E1,does not compile (fixed: Task/Arbitrary-precision-integers-included-/COBOL/arbitrary-precision-; free: Task/Arbitrary-precision-integers-included-/COBOL/arbitrary-precision-)
+Rosetta Code,Arithmetic-Complex/arithmetic-complex-1.cob,14,,excluded,E1,"does not compile (fixed: error: 'class-id' is a reserved word, but isn't supported; free: error: 'class-id' is a reserved word, but isn't supported)"
+Rosetta Code,Arithmetic-Complex/arithmetic-complex-2.cob,98,,excluded,E1,"does not compile (fixed: error: 'class-id' is a reserved word, but isn't supported; free: error: 'class-id' is a reserved word, but isn't supported)"
+Rosetta Code,Arithmetic-geometric-mean/arithmetic-geometric-mean.cob,33,,excluded,E1,does not compile (fixed: error: invalid indicator 'F' at column 7; free: error: PROCEDURE DIVISION header missing)
+Rosetta Code,Arithmetic-Integer/arithmetic-integer.cob,44,,excluded,E1,"does not compile (fixed: error: invalid symbol '^' - skipping word; free: error: syntax error, unexpected *)"
+Rosetta Code,Arithmetic-numbers/arithmetic-numbers.cob,127,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Array-concatenation/array-concatenation.cob,47,,excluded,E1,does not compile (fixed: error: invalid indicator 'F' at column 7; free: error: 'TALLY' is ambiguous; needs qualification)
+Rosetta Code,Array-length/array-length.cob,40,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Arrays/arrays.cob,39,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Attractive-numbers/attractive-numbers.cob,88,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Averages-Arithmetic-mean/averages-arithmetic-mean-1.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'O' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Averages-Arithmetic-mean/averages-arithmetic-mean-2.cob,28,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Averages-Median/averages-median.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'O' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Averages-Root-mean-square/averages-root-mean-square.cob,21,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,AVL-tree/avl-tree.cob,516,free,excluded,E5,more than 500 lines
+Rosetta Code,Babbage-problem/babbage-problem.cob,32,,excluded,E1,does not compile (fixed: error: invalid indicator 'I' at column 7; free: error: PROCEDURE DIVISION header missing)
+Rosetta Code,Balanced-brackets/balanced-brackets.cob,98,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Base-16-numbers-needing-a-to-f/base-16-numbers-needing-a-to-f.cob,55,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Berlekamp-Massey-algorithm/berlekamp-massey-algorithm.cob,411,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Bernoullis-triangle/bernoullis-triangle.cob,65,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Binary-digits/binary-digits-1.cob,26,fixed,kept,,
+Rosetta Code,Binary-digits/binary-digits-2.cob,27,free,not screened,,an earlier solution of the task was kept
+Rosetta Code,Binary-search/binary-search.cob,18,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Biorhythms/biorhythms-1.cob,145,fixed,excluded,E2,command-line arguments
+Rosetta Code,Biorhythms/biorhythms-2.cob,9,,excluded,E1,does not compile (fixed: error: invalid indicator 'e' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Bitwise-operations/bitwise-operations-1.cob,55,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Bitwise-operations/bitwise-operations-2.cob,41,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Boolean-values/boolean-values-1.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Boolean-values/boolean-values-2.cob,4,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Boolean-values/boolean-values-3.cob,28,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Bor-vka-algorithm/bor-vka-algorithm.cob,256,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Box-the-compass/box-the-compass.cob,67,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected BOX; free: error: syntax error, unexpected BOX)"
+Rosetta Code,Bron-Kerbosch-algorithm/bron-kerbosch-algorithm.cob,468,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Caesar-cipher/caesar-cipher-1.cob,36,fixed,excluded,E3,the task's two inputs (key and text) would need two different line layouts
+Rosetta Code,Caesar-cipher/caesar-cipher-2.cob,84,fixed,excluded,E3,"stdin lines have different layouts (text, then a number)"
+Rosetta Code,Calculating-the-value-of-e/calculating-the-value-of-e.cob,23,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Calendar/calendar.cob,226,free,excluded,E6,CALL
+Rosetta Code,Calkin-Wilf-sequence/calkin-wilf-sequence.cob,213,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Call-a-foreign-language-function/call-a-foreign-language-function.cob,27,,excluded,E1,does not compile (fixed: Task/Call-a-foreign-language-function/COBOL/call-a-foreign-language-fu; free: Task/Call-a-foreign-language-function/COBOL/call-a-foreign-language-fu)
+Rosetta Code,Call-a-function/call-a-function.cob,65,,excluded,E1,does not compile (fixed: error: invalid indicator 'N' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Call-a-function-in-a-shared-library/call-a-function-in-a-shared-library.cob,37,,excluded,E1,does not compile (fixed: Task/Call-a-function-in-a-shared-library/COBOL/call-a-function-in-a-sh; free: Task/Call-a-function-in-a-shared-library/COBOL/call-a-function-in-a-sh)
+Rosetta Code,Call-an-object-method/call-an-object-method-1.cob,11,,excluded,E1,"does not compile (fixed: error: invalid indicator 'O' at column 7; free: error: 'INVOKE' is a reserved word, but isn't supported)"
+Rosetta Code,Call-an-object-method/call-an-object-method-2.cob,3,,excluded,E1,"does not compile (fixed: error: PROGRAM-ID header missing; free: error: 'INVOKE' is a reserved word, but isn't supported)"
+Rosetta Code,Cantor-set/cantor-set.cob,48,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected POS; free: error: syntax error, unexpected POS)"
+Rosetta Code,Case-sensitivity-of-identifiers/case-sensitivity-of-identifiers.cob,21,,excluded,E1,does not compile (fixed: error: invalid PROGRAM-ID 'case__sensitivity__of__identifie...' - leng; free: error: invalid PROGRAM-ID 'case__sensitivity__of__identifie...' - leng)
+Rosetta Code,Character-codes/character-codes.cob,9,fixed,excluded,E3,"no input; the values are literals inside function calls, not held in a data item"
+Rosetta Code,Check-input-device-is-a-terminal/check-input-device-is-a-terminal.cob,26,,excluded,E1,does not compile (fixed: Task/Check-input-device-is-a-terminal/COBOL/check-input-device-is-a-te; free: Task/Check-input-device-is-a-terminal/COBOL/check-input-device-is-a-te)
+Rosetta Code,Check-output-device-is-a-terminal/check-output-device-is-a-terminal.cob,26,,excluded,E1,does not compile (fixed: Task/Check-output-device-is-a-terminal/COBOL/check-output-device-is-a-; free: Task/Check-output-device-is-a-terminal/COBOL/check-output-device-is-a-)
+Rosetta Code,Check-that-file-exists/check-that-file-exists.cob,70,fixed,excluded,E6,CALL
+Rosetta Code,Christofides-algorithm/christofides-algorithm.cob,614,free,excluded,E5,more than 500 lines
+Rosetta Code,Classes/classes.cob,66,,excluded,E1,"does not compile (fixed: error: 'CLASS-ID' is a reserved word, but isn't supported; free: error: 'CLASS-ID' is a reserved word, but isn't supported)"
+Rosetta Code,Cocke-Younger-Kasami-CYK-Algorithm/cocke-younger-kasami-cyk-algorithm.cob,85,,excluded,E1,does not compile (fixed: Task/Cocke-Younger-Kasami-CYK-Algorithm/COBOL/cocke-younger-kasami-cyk; free: Task/Cocke-Younger-Kasami-CYK-Algorithm/COBOL/cocke-younger-kasami-cyk)
+Rosetta Code,Code-Golf/code-golf-1.cob,1,,excluded,E1,"does not compile (fixed: error: invalid indicator 'm' at column 7; free: error: syntax error, unexpected end of file)"
+Rosetta Code,Code-Golf/code-golf-2.cob,1,,excluded,E1,"does not compile (fixed: error: invalid indicator 'm' at column 7; free: error: syntax error, unexpected end of file)"
+Rosetta Code,Code-segment-unload/code-segment-unload.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Collections/collections.cob,37,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Colorful-numbers/colorful-numbers.cob,244,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Colour-bars-Display/colour-bars-display.cob,52,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected COLORS; free: error: syntax error, unexpected COLORS)"
+Rosetta Code,Comma-quibbling/comma-quibbling.cob,75,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Command-line-arguments/command-line-arguments-1.cob,14,fixed,excluded,E2,command-line arguments
+Rosetta Code,Command-line-arguments/command-line-arguments-2.cob,17,fixed,excluded,E2,command-line arguments
+Rosetta Code,Command-line-arguments/command-line-arguments-3.cob,57,fixed,excluded,E2,command-line arguments
+Rosetta Code,Comments/comments-1.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Comments/comments-2.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Comments/comments-3.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 's' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Comments/comments-4.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'S' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Comments/comments-5.cob,3,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Comments/comments-6.cob,11,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Compare-a-list-of-strings/compare-a-list-of-strings.cob,60,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Compiler-AST-interpreter/compiler-ast-interpreter.cob,497,fixed,excluded,E6,CALL
+Rosetta Code,Compiler-code-generator/compiler-code-generator.cob,652,fixed,excluded,E5,more than 500 lines
+Rosetta Code,Compiler-lexical-analyzer/compiler-lexical-analyzer.cob,407,fixed,excluded,E2,command-line arguments (PROCEDURE DIVISION CHAINING)
+Rosetta Code,Compiler-syntax-analyzer/compiler-syntax-analyzer.cob,606,fixed,excluded,E5,more than 500 lines
+Rosetta Code,Compiler-virtual-machine-interpreter/compiler-virtual-machine-interpreter.cob,422,,excluded,E1,does not compile (fixed: Task/Compiler-virtual-machine-interpreter/COBOL/compiler-virtual-machi; free: Task/Compiler-virtual-machine-interpreter/COBOL/compiler-virtual-machi)
+Rosetta Code,Compound-data-type/compound-data-type.cob,5,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Conditional-structures/conditional-structures-1.cob,19,,excluded,E1,does not compile (fixed: error: invalid indicator 'p' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Conditional-structures/conditional-structures-2.cob,33,,excluded,E1,does not compile (fixed: error: invalid indicator 't' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Constrained-random-points-on-a-circle/constrained-random-points-on-a-circle.cob,113,,excluded,E1,does not compile (fixed: Task/Constrained-random-points-on-a-circle/COBOL/constrained-random-po; free: Task/Constrained-random-points-on-a-circle/COBOL/constrained-random-po)
+Rosetta Code,Continued-fraction/continued-fraction.cob,185,,excluded,E1,"does not compile (fixed: error: 'iterations' ANY LENGTH must be PIC X, PIC N or PIC 1; free: error: 'iterations' ANY LENGTH must be PIC X, PIC N or PIC 1)"
+Rosetta Code,Convert-seconds-to-compound-duration/convert-seconds-to-compound-duration.cob,74,,excluded,E1,does not compile (fixed: Task/Convert-seconds-to-compound-duration/COBOL/convert-seconds-to-com; free: Task/Convert-seconds-to-compound-duration/COBOL/convert-seconds-to-com)
+Rosetta Code,Conways-Game-of-Life/conways-game-of-life.cob,73,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Copy-a-string/copy-a-string.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator 'H' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Count-how-many-vowels-and-consonants-occur-in-a-string/count-how-many-vowels-and-consonants-occur-in-a-string.cob,54,,excluded,E1,does not compile (fixed: Task/Count-how-many-vowels-and-consonants-occur-in-a-string/COBOL/coun; free: Task/Count-how-many-vowels-and-consonants-occur-in-a-string/COBOL/coun)
+Rosetta Code,Count-in-octal/count-in-octal.cob,44,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Count-occurrences-of-a-substring/count-occurrences-of-a-substring.cob,22,,excluded,E1,does not compile (fixed: Task/Count-occurrences-of-a-substring/COBOL/count-occurrences-of-a-sub; free: Task/Count-occurrences-of-a-substring/COBOL/count-occurrences-of-a-sub)
+Rosetta Code,Count-the-coins/count-the-coins.cob,31,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Count-the-occurrence-of-each-digit-in-e/count-the-occurrence-of-each-digit-in-e.cob,66,,excluded,E1,does not compile (fixed: Task/Count-the-occurrence-of-each-digit-in-e/COBOL/count-the-occurrenc; free: Task/Count-the-occurrence-of-each-digit-in-e/COBOL/count-the-occurrenc)
+Rosetta Code,Cousin-primes/cousin-primes.cob,51,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,CRC-32/crc-32.cob,37,fixed,excluded,E6,CALL
+Rosetta Code,Create-a-file/create-a-file.cob,41,fixed,excluded,E6,CALL
+Rosetta Code,Create-a-file-on-magnetic-tape/create-a-file-on-magnetic-tape.cob,26,fixed,excluded,E3,no input; only writes a file
+Rosetta Code,Create-an-HTML-table/create-an-html-table.cob,115,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Create-an-object-at-a-given-address/create-an-object-at-a-given-address.cob,18,,excluded,E1,does not compile (fixed: Task/Create-an-object-at-a-given-address/COBOL/create-an-object-at-a-g; free: Task/Create-an-object-at-a-given-address/COBOL/create-an-object-at-a-g)
+Rosetta Code,CSV-data-manipulation/csv-data-manipulation.cob,93,fixed,kept,,
+Rosetta Code,Cullen-and-Woodall-numbers/cullen-and-woodall-numbers.cob,30,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Cumulative-standard-deviation/cumulative-standard-deviation-1.cob,71,free,excluded,E6,CALL
+Rosetta Code,Cumulative-standard-deviation/cumulative-standard-deviation-2.cob,9,,excluded,E1,does not compile (fixed: error: invalid indicator '2' at column 7; free: error: invalid PROGRAM-ID 'cumulative__standard__deviation_...' - leng)
+Rosetta Code,Currency/currency.cob,28,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Damm-algorithm/damm-algorithm.cob,197,free,excluded,E3,"no input; a table of test values, not a single input item"
+Rosetta Code,Date-format/date-format.cob,64,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Date-manipulation/date-manipulation.cob,121,fixed,excluded,E6,CALL
+Rosetta Code,Day-of-the-week/day-of-the-week-1.cob,22,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Day-of-the-week/day-of-the-week-2.cob,68,fixed,excluded,E6,CALL
+Rosetta Code,Day-of-the-week-of-Christmas-and-New-Year/day-of-the-week-of-christmas-and-new-year.cob,75,,excluded,E1,does not compile (fixed: Task/Day-of-the-week-of-Christmas-and-New-Year/COBOL/day-of-the-week-o; free: Task/Day-of-the-week-of-Christmas-and-New-Year/COBOL/day-of-the-week-o)
+Rosetta Code,Days-between-dates/days-between-dates.cob,21,fixed,excluded,E3,"no input; the dates are literals inside function calls, not held in a data item"
+Rosetta Code,De-Bruijn-sequences/de-bruijn-sequences.cob,363,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Decision-tables/decision-tables.cob,94,fixed,kept,,
+Rosetta Code,Delete-a-file/delete-a-file-1.cob,22,fixed,excluded,E3,no input data; deletes files
+Rosetta Code,Delete-a-file/delete-a-file-2.cob,12,fixed,excluded,E6,CALL
+Rosetta Code,Department-numbers/department-numbers.cob,37,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Detect-division-by-zero/detect-division-by-zero.cob,4,,excluded,E1,does not compile (fixed: error: invalid indicator 'V' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Determine-if-a-string-is-numeric/determine-if-a-string-is-numeric-1.cob,10,,excluded,E1,does not compile (fixed: Task/Determine-if-a-string-is-numeric/COBOL/determine-if-a-string-is-n; free: Task/Determine-if-a-string-is-numeric/COBOL/determine-if-a-string-is-n)
+Rosetta Code,Determine-if-a-string-is-numeric/determine-if-a-string-is-numeric-2.cob,54,,excluded,E1,does not compile (fixed: Task/Determine-if-a-string-is-numeric/COBOL/determine-if-a-string-is-n; free: Task/Determine-if-a-string-is-numeric/COBOL/determine-if-a-string-is-n)
+Rosetta Code,Digit-fifth-powers/digit-fifth-powers.cob,40,,excluded,E1,does not compile (fixed: error: REDEFINES must follow the original definition; free: error: REDEFINES must follow the original definition)
+Rosetta Code,Digital-root/digital-root.cob,45,fixed,excluded,E3,"no input; several test values moved in turn, not a single input item"
+Rosetta Code,Dijkstras-algorithm/dijkstras-algorithm.cob,240,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Disarium-numbers/disarium-numbers.cob,36,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Documentation/documentation-1.cob,57,,excluded,E1,"does not compile (fixed: error: PROCEDURE DIVISION header missing; free: error: syntax error, unexpected IDENTIFICATION, expecting DIVISION)"
+Rosetta Code,Documentation/documentation-2.cob,16,,excluded,E1,does not compile (fixed: error: invalid indicator 'o' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Dragon-curve/dragon-curve.cob,173,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected SEGMENT; free: error: syntax error, unexpected SEGMENT)"
+Rosetta Code,Empty-program/empty-program.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Empty-string/empty-string.cob,23,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Enforced-immutability/enforced-immutability-1.cob,4,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Enforced-immutability/enforced-immutability-2.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Enforced-immutability/enforced-immutability-3.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Enforced-immutability/enforced-immutability-4.cob,2,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Environment-variables/environment-variables.cob,18,fixed,excluded,E2,environment variables
+Rosetta Code,Ethiopian-multiplication/ethiopian-multiplication.cob,93,fixed,excluded,E6,CALL
+Rosetta Code,Euler-method/euler-method.cob,45,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Eulers-sum-of-powers-conjecture/eulers-sum-of-powers-conjecture.cob,97,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Even-or-odd/even-or-odd.cob,5,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Evolutionary-algorithm/evolutionary-algorithm.cob,88,free,excluded,E2,clock or random numbers
+Rosetta Code,Execute-a-system-command/execute-a-system-command.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'S' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Execute-HQ9+/execute-hq9+.cob,44,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Extend-your-language/extend-your-language.cob,10,,excluded,E1,does not compile (fixed: error: invalid indicator 'T' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Factorial/factorial-1.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'U' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Factorial/factorial-2.cob,21,,excluded,E1,does not compile (fixed: error: executable requested but no program found; free: error: executable requested but no program found)
+Rosetta Code,Factorial/factorial-3.cob,22,,excluded,E1,does not compile (fixed: error: executable requested but no program found; free: error: executable requested but no program found)
+Rosetta Code,Factorial/factorial-4.cob,34,fixed,excluded,E1,not a complete program: the user-defined FUNCTIONs are in other solution files (fails at run time)
+Rosetta Code,Factors-of-an-integer/factors-of-an-integer.cob,40,fixed,excluded,E4,"uses USAGE BINARY-LONG / BINARY-SHORT, which the runtime does not support"
+Rosetta Code,Farey-sequence/farey-sequence.cob,213,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Fibonacci-sequence/fibonacci-sequence-1.cob,40,free,kept,,
+Rosetta Code,Fibonacci-sequence/fibonacci-sequence-2.cob,45,fixed,not screened,,an earlier solution of the task was kept
+Rosetta Code,File-input-output/file-input-output-1.cob,40,fixed,kept,,
+Rosetta Code,File-input-output/file-input-output-2.cob,48,fixed,not screened,,an earlier solution of the task was kept
+Rosetta Code,File-input-output/file-input-output-3.cob,2,,not screened,,an earlier solution of the task was kept
+Rosetta Code,File-input-output/file-input-output-4.cob,2,,not screened,,an earlier solution of the task was kept
+Rosetta Code,File-size/file-size.cob,42,fixed,excluded,E6,CALL
+Rosetta Code,Find-limit-of-recursion/find-limit-of-recursion-1.cob,50,free,excluded,E6,CALL
+Rosetta Code,Find-limit-of-recursion/find-limit-of-recursion-2.cob,25,fixed,excluded,E6,CALL
+Rosetta Code,Find-prime-numbers-of-the-form-n-n-n+2/find-prime-numbers-of-the-form-n-n-n+2.cob,71,,excluded,E1,does not compile (fixed: Task/Find-prime-numbers-of-the-form-n-n-n+2/COBOL/find-prime-numbers-o; free: Task/Find-prime-numbers-of-the-form-n-n-n+2/COBOL/find-prime-numbers-o)
+Rosetta Code,Find-squares-n-where-n+1-is-prime/find-squares-n-where-n+1-is-prime.cob,39,,excluded,E1,does not compile (fixed: Task/Find-squares-n-where-n+1-is-prime/COBOL/find-squares-n-where-n+1-; free: Task/Find-squares-n-where-n+1-is-prime/COBOL/find-squares-n-where-n+1-)
+Rosetta Code,Find-the-last-Sunday-of-each-month/find-the-last-sunday-of-each-month.cob,48,,excluded,E1,does not compile (fixed: Task/Find-the-last-Sunday-of-each-month/COBOL/find-the-last-sunday-of-; free: Task/Find-the-last-Sunday-of-each-month/COBOL/find-the-last-sunday-of-)
+Rosetta Code,Find-words-which-contain-all-the-vowels/find-words-which-contain-all-the-vowels.cob,45,,excluded,E1,does not compile (fixed: Task/Find-words-which-contain-all-the-vowels/COBOL/find-words-which-co; free: Task/Find-words-which-contain-all-the-vowels/COBOL/find-words-which-co)
+Rosetta Code,Find-words-which-contains-more-than-3-e-vowels/find-words-which-contains-more-than-3-e-vowels.cob,38,,excluded,E1,does not compile (fixed: Task/Find-words-which-contains-more-than-3-e-vowels/COBOL/find-words-w; free: Task/Find-words-which-contains-more-than-3-e-vowels/COBOL/find-words-w)
+Rosetta Code,First-9-prime-Fibonacci-number/first-9-prime-fibonacci-number.cob,64,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Five-weekends/five-weekends.cob,53,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected FALSE, expecting SET; free: error: syntax error, unexpected FALSE, expecting SET)"
+Rosetta Code,Fixed-length-records/fixed-length-records-1.cob,89,fixed,kept,,
+Rosetta Code,Fixed-length-records/fixed-length-records-2.cob,90,fixed,not screened,,an earlier solution of the task was kept
+Rosetta Code,Fixed-length-records/fixed-length-records-3.cob,72,fixed,not screened,,an earlier solution of the task was kept
+Rosetta Code,FizzBuzz/fizzbuzz-1.cob,36,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,FizzBuzz/fizzbuzz-2.cob,16,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,FizzBuzz/fizzbuzz-3.cob,26,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,FizzBuzz/fizzbuzz-4.cob,29,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Flow-control-structures/flow-control-structures-1.cob,8,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Flow-control-structures/flow-control-structures-2.cob,4,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Flow-control-structures/flow-control-structures-3.cob,13,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Flow-control-structures/flow-control-structures-4.cob,38,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Flow-control-structures/flow-control-structures-5.cob,23,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Floyd-Warshall-algorithm/floyd-warshall-algorithm.cob,183,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Floyds-triangle/floyds-triangle.cob,69,fixed,excluded,E3,"no input; two orders moved in turn, not a single input item"
+Rosetta Code,Forest-fire/forest-fire.cob,168,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Fork/fork.cob,30,fixed,excluded,E6,CALL
+Rosetta Code,Formatted-numeric-output/formatted-numeric-output.cob,10,free,kept,,
+Rosetta Code,Four-bit-adder/four-bit-adder.cob,108,,excluded,E1,"does not compile (fixed: error: 'b-not' is a reserved word, but isn't supported; free: error: 'b-not' is a reserved word, but isn't supported)"
+Rosetta Code,Function-definition/function-definition-1.cob,26,fixed,excluded,E6,CALL
+Rosetta Code,Function-definition/function-definition-2.cob,26,fixed,kept,,
+Rosetta Code,Function-prototype/function-prototype.cob,39,,excluded,E1,"does not compile (fixed: error: 'PROTOTYPE' is a reserved word, but isn't supported; free: error: 'PROTOTYPE' is a reserved word, but isn't supported)"
+Rosetta Code,Fusc-sequence/fusc-sequence.cob,111,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Gabows-algorithm/gabows-algorithm.cob,326,fixed,excluded,E6,CALL
+Rosetta Code,Gapful-numbers/gapful-numbers.cob,48,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Generate-lower-case-ASCII-alphabet/generate-lower-case-ascii-alphabet.cob,17,,excluded,E1,does not compile (fixed: Task/Generate-lower-case-ASCII-alphabet/COBOL/generate-lower-case-asci; free: Task/Generate-lower-case-ASCII-alphabet/COBOL/generate-lower-case-asci)
+Rosetta Code,Generic-swap/generic-swap.cob,74,fixed,excluded,E6,CALL
+Rosetta Code,Golden-ratio-Convergence/golden-ratio-convergence.cob,28,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Greatest-common-divisor/greatest-common-divisor.cob,28,fixed,kept,,
+Rosetta Code,Greatest-element-of-a-list/greatest-element-of-a-list-1.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'Y' at column 7; free: error: invalid PROGRAM-ID 'greatest__element__of__a__list__...' - leng)
+Rosetta Code,Greatest-element-of-a-list/greatest-element-of-a-list-2.cob,25,,excluded,E1,does not compile (fixed: error: executable requested but no program found; free: error: executable requested but no program found)
+Rosetta Code,Guess-the-number/guess-the-number.cob,25,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Guess-the-number-With-feedback/guess-the-number-with-feedback.cob,30,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Hailstone-sequence/hailstone-sequence.cob,90,fixed,excluded,E2,command-line arguments
+Rosetta Code,Handle-a-signal/handle-a-signal.cob,44,fixed,excluded,E6,CALL
+Rosetta Code,Happy-numbers/happy-numbers.cob,56,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Harmonic-series/harmonic-series.cob,39,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected POS; free: error: syntax error, unexpected POS)"
+Rosetta Code,Harshad-or-Niven-series/harshad-or-niven-series.cob,78,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Held-Karp-algorithm/held-karp-algorithm.cob,173,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Hello-world-Graphical/hello-world-graphical-1.cob,7,,excluded,E1,"does not compile (fixed: error: 'CLASS-ID' is a reserved word, but isn't supported; free: error: 'CLASS-ID' is a reserved word, but isn't supported)"
+Rosetta Code,Hello-world-Graphical/hello-world-graphical-2.cob,7,,excluded,E1,"does not compile (fixed: error: 'CLASS-ID' is a reserved word, but isn't supported; free: error: 'CLASS-ID' is a reserved word, but isn't supported)"
+Rosetta Code,Hello-world-Graphical/hello-world-graphical-3.cob,6,,excluded,E1,does not compile (fixed: error: invalid indicator 'w' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Hello-world-Graphical/hello-world-graphical-4.cob,62,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Hello-world-Graphical/hello-world-graphical-5.cob,19,free,excluded,E2,reads the terminal size (ACCEPT FROM LINES / COLUMNS)
+Rosetta Code,Hello-world-Line-printer/hello-world-line-printer.cob,8,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Hello-world-Newbie/hello-world-newbie-1.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Hello-world-Newbie/hello-world-newbie-2.cob,7,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Hello-world-Newbie/hello-world-newbie-3.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Hello-world-Newbie/hello-world-newbie-4.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator 'l' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Hello-world-Newline-omission/hello-world-newline-omission.cob,6,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Hello-world-Standard-error/hello-world-standard-error.cob,4,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Hello-world-Text/hello-world-text-1.cob,4,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Hello-world-Text/hello-world-text-2.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'y' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Hickerson-series-of-almost-integers/hickerson-series-of-almost-integers.cob,29,,excluded,E1,does not compile (fixed: Task/Hickerson-series-of-almost-integers/COBOL/hickerson-series-of-alm; free: Task/Hickerson-series-of-almost-integers/COBOL/hickerson-series-of-alm)
+Rosetta Code,Hofstadter-Q-sequence/hofstadter-q-sequence.cob,40,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Holidays-related-to-Easter/holidays-related-to-easter.cob,123,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Hopcroft-Karp-Algorithm/hopcroft-karp-algorithm.cob,385,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Horizontal-sundial-calculations/horizontal-sundial-calculations.cob,54,free,kept,,
+Rosetta Code,Hostname/hostname.cob,15,fixed,excluded,E6,CALL
+Rosetta Code,HTTP/http-1.cob,292,,excluded,E1,does not compile (fixed: error: gccurlsym.cpy: No such file or directory; free: error: gccurlsym.cpy: No such file or directory)
+Rosetta Code,HTTP/http-2.cob,192,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,IBAN/iban.cob,161,fixed,excluded,E6,CALL
+Rosetta Code,Idiomatically-determine-all-the-lowercase-and-uppercase-letters/idiomatically-determine-all-the-lowercase-and-uppercase-letters.cob,78,,excluded,E1,does not compile (fixed: Task/Idiomatically-determine-all-the-lowercase-and-uppercase-letters/C; free: Task/Idiomatically-determine-all-the-lowercase-and-uppercase-letters/C)
+Rosetta Code,Include-a-file/include-a-file.cob,4,,excluded,E1,does not compile (fixed: error: invalid indicator 'c' at column 7; free: error: copy.cpy: No such file or directory)
+Rosetta Code,Increment-a-numerical-string/increment-a-numerical-string-1.cob,14,fixed,excluded,E4,"after ACCEPT, invalid digits in the PIC 9(5) REDEFINES (boundary inputs) are refused by the runtime (DataError)"
+Rosetta Code,Increment-a-numerical-string/increment-a-numerical-string-2.cob,13,fixed,kept,,
+Rosetta Code,Inheritance-Multiple/inheritance-multiple.cob,21,,excluded,E1,"does not compile (fixed: error: 'CLASS-ID' is a reserved word, but isn't supported; free: error: 'CLASS-ID' is a reserved word, but isn't supported)"
+Rosetta Code,Inheritance-Single/inheritance-single.cob,48,,excluded,E1,"does not compile (fixed: error: 'CLASS-ID' is a reserved word, but isn't supported; free: error: 'CLASS-ID' is a reserved word, but isn't supported)"
+Rosetta Code,Input-loop/input-loop.cob,33,fixed,kept,,
+Rosetta Code,Integer-comparison/integer-comparison.cob,26,fixed,kept,,
+Rosetta Code,Integer-overflow/integer-overflow-1.cob,10,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Integer-overflow/integer-overflow-2.cob,78,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Integer-sequence/integer-sequence.cob,16,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,ISBN13-check-digit/isbn13-check-digit.cob,139,fixed,excluded,E6,CALL
+Rosetta Code,Isqrt-integer-square-root-of-X/isqrt-integer-square-root-of-x.cob,74,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Jaro-similarity/jaro-similarity.cob,98,free,excluded,E3,"no input; several test pairs moved in turn, not a single input item"
+Rosetta Code,Johnsons-algorithm/johnsons-algorithm.cob,280,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Julia-set/julia-set.cob,59,free,kept,,
+Rosetta Code,Jump-anywhere/jump-anywhere-1.cob,32,,excluded,E1,does not compile (fixed: error: invalid indicator 'I' at column 7; free: error: PROCEDURE DIVISION header missing)
+Rosetta Code,Jump-anywhere/jump-anywhere-2.cob,7,,excluded,E1,does not compile (fixed: error: invalid indicator 'N' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,K-d-tree/k-d-tree.cob,392,free,excluded,E2,clock or random numbers
+Rosetta Code,Kernighans-large-earthquake-problem/kernighans-large-earthquake-problem-1.cob,85,,excluded,E1,does not compile (fixed: Task/Kernighans-large-earthquake-problem/COBOL/kernighans-large-earthq; free: Task/Kernighans-large-earthquake-problem/COBOL/kernighans-large-earthq)
+Rosetta Code,Kernighans-large-earthquake-problem/kernighans-large-earthquake-problem-2.cob,33,,excluded,E1,does not compile (fixed: Task/Kernighans-large-earthquake-problem/COBOL/kernighans-large-earthq; free: Task/Kernighans-large-earthquake-problem/COBOL/kernighans-large-earthq)
+Rosetta Code,Kirkpatrick-Seidel-algorithm/kirkpatrick-seidel-algorithm.cob,164,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Knuth-shuffle/knuth-shuffle.cob,29,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Knuths-algorithm-S/knuths-algorithm-s.cob,166,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Langtons-ant/langtons-ant.cob,91,fixed,excluded,E6,CALL
+Rosetta Code,Last-Friday-of-each-month/last-friday-of-each-month.cob,48,fixed,kept,,
+Rosetta Code,Leap-year/leap-year-1.cob,29,fixed,excluded,E3,"no input; a table of test years, not a single input item"
+Rosetta Code,Leap-year/leap-year-2.cob,33,fixed,kept,,
+Rosetta Code,Least-common-multiple/least-common-multiple.cob,63,fixed,excluded,E3,"no input; the arguments are literals inside a function call, not held in a data item"
+Rosetta Code,Leonardo-numbers/leonardo-numbers.cob,46,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Letter-frequency/letter-frequency.cob,182,fixed,kept,,
+Rosetta Code,Levenshtein-distance/levenshtein-distance.cob,62,free,excluded,E3,"no input; several test pairs moved in turn, not a single input item"
+Rosetta Code,Literals-Integer/literals-integer-1.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator 'y' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Literals-Integer/literals-integer-2.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator '4' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Literals-String/literals-string-1.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator 'i' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Literals-String/literals-string-2.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator '6' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Literals-String/literals-string-3.cob,6,,excluded,E1,does not compile (fixed: error: invalid indicator 'A' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Logical-operations/logical-operations.cob,26,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Long-multiplication/long-multiplication.cob,88,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Look-and-say-sequence/look-and-say-sequence.cob,43,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loop-over-multiple-arrays-simultaneously/loop-over-multiple-arrays-simultaneously.cob,23,,excluded,E1,does not compile (fixed: Task/Loop-over-multiple-arrays-simultaneously/COBOL/loop-over-multiple; free: Task/Loop-over-multiple-arrays-simultaneously/COBOL/loop-over-multiple)
+Rosetta Code,Loops-Break/loops-break.cob,26,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Loops-Continue/loops-continue.cob,21,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-Do-while/loops-do-while.cob,15,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-Downward-for/loops-downward-for.cob,14,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-For/loops-for.cob,21,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-For-with-a-specified-step/loops-for-with-a-specified-step.cob,14,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-Foreach/loops-foreach.cob,6,,excluded,E1,does not compile (fixed: error: invalid indicator 'i' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Loops-Infinite/loops-infinite.cob,10,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-N-plus-one-half/loops-n-plus-one-half-1.cob,27,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-N-plus-one-half/loops-n-plus-one-half-2.cob,18,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-N-plus-one-half/loops-n-plus-one-half-3.cob,18,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-N-plus-one-half/loops-n-plus-one-half-4.cob,17,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Loops-Nested/loops-nested.cob,45,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Loops-While/loops-while.cob,15,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Luhn-test-of-credit-card-numbers/luhn-test-of-credit-card-numbers.cob,87,,excluded,E1,does not compile (fixed: Task/Luhn-test-of-credit-card-numbers/COBOL/luhn-test-of-credit-card-n; free: Task/Luhn-test-of-credit-card-numbers/COBOL/luhn-test-of-credit-card-n)
+Rosetta Code,Machine-code/machine-code-1.cob,10,,excluded,E1,does not compile (fixed: error: invalid symbol '%' - skipping word; free: error: PROGRAM-ID header missing)
+Rosetta Code,Machine-code/machine-code-2.cob,73,fixed,excluded,E6,CALL
+Rosetta Code,Magic-8-ball/magic-8-ball.cob,90,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Mandelbrot-set/mandelbrot-set.cob,51,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Map-range/map-range.cob,53,fixed,excluded,E6,CALL
+Rosetta Code,McNaughton-Yamada-Thompson-algorithm/mcnaughton-yamada-thompson-algorithm.cob,395,,excluded,E1,does not compile (fixed: Task/McNaughton-Yamada-Thompson-algorithm/COBOL/mcnaughton-yamada-thom; free: Task/McNaughton-Yamada-Thompson-algorithm/COBOL/mcnaughton-yamada-thom)
+Rosetta Code,McNuggets-problem/mcnuggets-problem.cob,35,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,MD5/md5-1.cob,62,fixed,excluded,E6,CALL
+Rosetta Code,MD5/md5-2.cob,87,fixed,excluded,E6,CALL
+Rosetta Code,Memory-allocation/memory-allocation.cob,15,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Menu/menu.cob,92,,excluded,E1,does not compile (fixed: error: 'Menu-Options' cannot be larger than 268435456 bytes; free: error: 'Menu-Options' cannot be larger than 268435456 bytes)
+Rosetta Code,Mertens-function/mertens-function.cob,66,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Middle-three-digits/middle-three-digits-1.cob,91,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Middle-three-digits/middle-three-digits-2.cob,72,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Minimum-multiple-of-m-where-digital-sum-equals-m/minimum-multiple-of-m-where-digital-sum-equals-m.cob,42,,excluded,E1,does not compile (fixed: Task/Minimum-multiple-of-m-where-digital-sum-equals-m/COBOL/minimum-mu; free: Task/Minimum-multiple-of-m-where-digital-sum-equals-m/COBOL/minimum-mu)
+Rosetta Code,Minimum-number-of-cells-after-before-above-and-below-NxN-squares/minimum-number-of-cells-after-before-above-and-below-nxn-squares.cob,45,,excluded,E1,does not compile (fixed: Task/Minimum-number-of-cells-after-before-above-and-below-NxN-squares/; free: Task/Minimum-number-of-cells-after-before-above-and-below-NxN-squares/)
+Rosetta Code,Monty-Hall-problem/monty-hall-problem.cob,89,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Move-to-front-algorithm/move-to-front-algorithm.cob,169,fixed,excluded,E3,"no input; a table of test strings, not a single input item"
+Rosetta Code,Multiplication-tables/multiplication-tables.cob,46,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Munchausen-numbers/munchausen-numbers.cob,33,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected end of file; free: error: syntax error, unexpected end of file)"
+Rosetta Code,N-body-problem/n-body-problem-1.cob,209,fixed,excluded,E3,the input file has records of different layouts
+Rosetta Code,N-body-problem/n-body-problem-2.cob,122,,excluded,E1,does not compile (fixed: error: invalid indicator 'f' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Narcissistic-decimal-number/narcissistic-decimal-number.cob,58,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Nim-game/nim-game.cob,26,fixed,excluded,vectors,"all HELD-OUT inputs removed: the generated inputs duplicate VISIBLE/DEV (27 possible), and on the boundary inputs the program does not end"
+Rosetta Code,Nth/nth.cob,31,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Nth-root/nth-root.cob,101,,excluded,E1,does not compile (fixed: error: invalid indicator ':' at column 7; free: error: PROCEDURE DIVISION header missing)
+Rosetta Code,Null-object/null-object.cob,43,fixed,excluded,E6,CALL
+Rosetta Code,Number-reversal-game/number-reversal-game.cob,115,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Numbers-divisible-by-their-individual-digits-but-not-by-the-product-of-their-digits/numbers-divisible-by-their-individual-digits-but-not-by-the-product-of-their-digits.cob,50,,excluded,E1,does not compile (fixed: Task/Numbers-divisible-by-their-individual-digits-but-not-by-the-produ; free: Task/Numbers-divisible-by-their-individual-digits-but-not-by-the-produ)
+Rosetta Code,Numbers-in-base-10-that-are-palindromic-in-bases-2-4-and-16/numbers-in-base-10-that-are-palindromic-in-bases-2-4-and-16.cob,44,,excluded,E1,does not compile (fixed: Task/Numbers-in-base-10-that-are-palindromic-in-bases-2-4-and-16/COBOL; free: Task/Numbers-in-base-10-that-are-palindromic-in-bases-2-4-and-16/COBOL)
+Rosetta Code,Numbers-in-base-16-representation-that-cannot-be-written-with-decimal-digits/numbers-in-base-16-representation-that-cannot-be-written-with-decimal-digits.cob,26,,excluded,E1,does not compile (fixed: Task/Numbers-in-base-16-representation-that-cannot-be-written-with-dec; free: Task/Numbers-in-base-16-representation-that-cannot-be-written-with-dec)
+Rosetta Code,Numerical-integration-Adaptive-Simpsons-method/numerical-integration-adaptive-simpsons-method.cob,125,,excluded,E1,does not compile (fixed: Task/Numerical-integration-Adaptive-Simpsons-method/COBOL/numerical-in; free: Task/Numerical-integration-Adaptive-Simpsons-method/COBOL/numerical-in)
+Rosetta Code,Odd-and-square-numbers/odd-and-square-numbers.cob,23,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Old-lady-swallowed-a-fly/old-lady-swallowed-a-fly.cob,90,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,One-dimensional-cellular-automata/one-dimensional-cellular-automata-1.cob,108,,excluded,E1,does not compile (fixed: Task/One-dimensional-cellular-automata/COBOL/one-dimensional-cellular-; free: Task/One-dimensional-cellular-automata/COBOL/one-dimensional-cellular-)
+Rosetta Code,One-dimensional-cellular-automata/one-dimensional-cellular-automata-2.cob,32,,excluded,E1,does not compile (fixed: Task/One-dimensional-cellular-automata/COBOL/one-dimensional-cellular-; free: Task/One-dimensional-cellular-automata/COBOL/one-dimensional-cellular-)
+Rosetta Code,Ordered-words/ordered-words.cob,66,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected ENTRY; free: error: syntax error, unexpected ENTRY)"
+Rosetta Code,Palindrome-detection/palindrome-detection.cob,19,,excluded,E1,does not compile (fixed: error: executable requested but no program found; free: error: executable requested but no program found)
+Rosetta Code,Pancake-numbers/pancake-numbers.cob,36,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Pangram-checker/pangram-checker.cob,51,,excluded,E1,does not compile (fixed: error: PROCEDURE DIVISION header missing; free: error: PROCEDURE DIVISION header missing)
+Rosetta Code,Parametric-polymorphism/parametric-polymorphism.cob,34,,excluded,E1,"does not compile (fixed: error: 'CLASS-ID' is a reserved word, but isn't supported; free: error: 'CLASS-ID' is a reserved word, but isn't supported)"
+Rosetta Code,Parsing-RPN-calculator-algorithm/parsing-rpn-calculator-algorithm.cob,127,,excluded,E1,does not compile (fixed: Task/Parsing-RPN-calculator-algorithm/COBOL/parsing-rpn-calculator-alg; free: Task/Parsing-RPN-calculator-algorithm/COBOL/parsing-rpn-calculator-alg)
+Rosetta Code,Perfect-numbers/perfect-numbers-1.cob,24,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Perfect-numbers/perfect-numbers-2.cob,37,,excluded,E1,does not compile (fixed: error: executable requested but no program found; free: error: executable requested but no program found)
+Rosetta Code,Pernicious-numbers/pernicious-numbers.cob,94,,excluded,E1,"does not compile (fixed: error: 'FORMAT' is a reserved word, but isn't supported; free: error: 'FORMAT' is a reserved word, but isn't supported)"
+Rosetta Code,Phrase-reversals/phrase-reversals.cob,35,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected POS; free: error: syntax error, unexpected POS)"
+Rosetta Code,Pick-random-element/pick-random-element.cob,16,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Playing-cards/playing-cards.cob,177,fixed,excluded,E6,SORT
+Rosetta Code,Pointers-and-references/pointers-and-references-1.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator 'r' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Pointers-and-references/pointers-and-references-2.cob,6,,excluded,E1,does not compile (fixed: error: invalid indicator 'a' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Pointers-and-references/pointers-and-references-3.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'o' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Pointers-and-references/pointers-and-references-4.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator 'r' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Pointers-and-references/pointers-and-references-5.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator 'r' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Pointers-and-references/pointers-and-references-6.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator 'b' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Pointers-and-references/pointers-and-references-7.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'j' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Pointers-and-references/pointers-and-references-8.cob,2,,excluded,E1,"does not compile (fixed: error: invalid indicator 'o' at column 7; free: error: 'INVOKE' is a reserved word, but isn't supported)"
+Rosetta Code,Population-count/population-count.cob,73,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Positive-decimal-integers-with-the-digit-1-occurring-exactly-twice/positive-decimal-integers-with-the-digit-1-occurring-exactly-twice.cob,21,,excluded,E1,does not compile (fixed: Task/Positive-decimal-integers-with-the-digit-1-occurring-exactly-twic; free: Task/Positive-decimal-integers-with-the-digit-1-occurring-exactly-twic)
+Rosetta Code,Primality-by-trial-division/primality-by-trial-division.cob,38,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Print-debugging-statement/print-debugging-statement.cob,21,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Priority-queue/priority-queue.cob,286,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected ENVIRONMENT, expecting COMMON or EXTER; free: error: syntax error, unexpected ENVIRONMENT, expecting COMMON or EXTER)"
+Rosetta Code,Product-of-divisors/product-of-divisors.cob,43,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Product-of-min-and-max-prime-factors/product-of-min-and-max-prime-factors.cob,86,,excluded,E1,does not compile (fixed: Task/Product-of-min-and-max-prime-factors/COBOL/product-of-min-and-max; free: Task/Product-of-min-and-max-prime-factors/COBOL/product-of-min-and-max)
+Rosetta Code,Program-name/program-name.cob,18,fixed,excluded,E2,command-line arguments
+Rosetta Code,Program-termination/program-termination-1.cob,3,,excluded,E1,does not compile (fixed: error: invalid indicator 'b' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Program-termination/program-termination-2.cob,3,,excluded,E1,does not compile (fixed: error: invalid indicator 'b' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Pseudo-random-numbers-Middle-square-method/pseudo-random-numbers-middle-square-method.cob,25,,excluded,E1,does not compile (fixed: Task/Pseudo-random-numbers-Middle-square-method/COBOL/pseudo-random-nu; free: Task/Pseudo-random-numbers-Middle-square-method/COBOL/pseudo-random-nu)
+Rosetta Code,Quickselect-algorithm/quickselect-algorithm.cob,95,,excluded,E1,"does not compile (fixed: error: 'CLASS-ID' is a reserved word, but isn't supported; free: error: 'CLASS-ID' is a reserved word, but isn't supported)"
+Rosetta Code,Quine/quine-1.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'e' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Quine/quine-2.cob,339,fixed,excluded,E3,no input
+Rosetta Code,Quine/quine-3.cob,48,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Quine/quine-4.cob,24,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Random-numbers/random-numbers.cob,68,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Range-expansion/range-expansion.cob,93,fixed,excluded,E6,CALL
+Rosetta Code,Range-extraction/range-extraction-1.cob,180,,excluded,E1,does not compile (fixed: error: nums-table.cpy: No such file or directory; free: error: nums-table.cpy: No such file or directory)
+Rosetta Code,Range-extraction/range-extraction-2.cob,6,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Read-a-configuration-file/read-a-configuration-file.cob,96,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected POS; free: error: syntax error, unexpected POS)"
+Rosetta Code,Read-a-file-line-by-line/read-a-file-line-by-line.cob,38,fixed,kept,,
+Rosetta Code,Real-constants-and-functions/real-constants-and-functions-1.cob,13,,excluded,E1,does not compile (fixed: error: invalid indicator ')' at column 7; free: error: invalid PROGRAM-ID 'real__constants__and__functions_...' - leng)
+Rosetta Code,Real-constants-and-functions/real-constants-and-functions-2.cob,3,,excluded,E1,does not compile (fixed: error: invalid indicator 'I' at column 7; free: error: invalid PROGRAM-ID 'real__constants__and__functions_...' - leng)
+Rosetta Code,Recamans-sequence/recamans-sequence.cob,59,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Repeat-a-string/repeat-a-string.cob,9,free,excluded,E3,"no input; the string is a literal in MOVE ALL, not held in a data item"
+Rosetta Code,Return-multiple-values/return-multiple-values.cob,73,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected C; free: error: syntax error, unexpected C)"
+Rosetta Code,Reverse-a-string/reverse-a-string.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'O' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Reverse-words-in-a-string/reverse-words-in-a-string.cob,62,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected POS; free: error: syntax error, unexpected POS)"
+Rosetta Code,Roman-numerals-Decode/roman-numerals-decode.cob,75,free,excluded,E4,"a full-length input line makes the program subscript past its OCCURS bounds, which the runtime refuses"
+Rosetta Code,Roman-numerals-Encode/roman-numerals-encode.cob,53,free,kept,,
+Rosetta Code,Rot-13/rot-13-1.cob,19,,excluded,E1,"does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: 'FORMAT' is a reserved word, but isn't supported)"
+Rosetta Code,Rot-13/rot-13-2.cob,21,,excluded,E1,does not compile (fixed: error: invalid indicator 'F' at column 7; free: error: executable requested but no program found)
+Rosetta Code,Run-length-encoding/run-length-encoding.cob,124,fixed,excluded,E6,CALL
+Rosetta Code,Schieber-Vishkin-algorithm/schieber-vishkin-algorithm.cob,540,free,excluded,E5,more than 500 lines
+Rosetta Code,Search-a-list/search-a-list.cob,63,,excluded,E1,"does not compile (fixed: error: invalid indicator 's' at column 7; free: error: syntax error, unexpected *)"
+Rosetta Code,SEDOLs/sedols.cob,79,fixed,kept,,
+Rosetta Code,Selective-file-copy/selective-file-copy-1.cob,2,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Selective-file-copy/selective-file-copy-2.cob,5,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Selective-file-copy/selective-file-copy-3.cob,159,fixed,excluded,E4,"uses SIGN TRAILING SEPARATE, which the runtime does not support"
+Rosetta Code,Sequence-of-non-squares/sequence-of-non-squares.cob,62,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Shell-one-liner/shell-one-liner-1.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Shell-one-liner/shell-one-liner-2.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'i' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,Show-ASCII-table/show-ascii-table.cob,37,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Show-the-decimal-value-of-a-number-of-1s-appended-with-a-3-then-squared/show-the-decimal-value-of-a-number-of-1s-appended-with-a-3-then-squared.cob,32,,excluded,E1,does not compile (fixed: Task/Show-the-decimal-value-of-a-number-of-1s-appended-with-a-3-then-s; free: Task/Show-the-decimal-value-of-a-number-of-1s-appended-with-a-3-then-s)
+Rosetta Code,Show-the-epoch/show-the-epoch.cob,17,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Sierpinski-triangle/sierpinski-triangle.cob,36,free,kept,,
+Rosetta Code,Sieve-of-Eratosthenes/sieve-of-eratosthenes.cob,55,,excluded,E1,"does not compile (fixed: error: invalid indicator 'a' at column 7; free: error: syntax error, unexpected *)"
+Rosetta Code,Simple-database/simple-database.cob,262,,excluded,E1,does not compile (fixed: Task/Simple-database/COBOL/simple-database.cob: in section 'database-f; free: Task/Simple-database/COBOL/simple-database.cob: in section 'database-f)
+Rosetta Code,Sleep/sleep-1.cob,15,fixed,excluded,E4,"uses USAGE FLOAT-LONG, which the runtime does not support"
+Rosetta Code,Sleep/sleep-2.cob,18,fixed,excluded,E6,CALL
+Rosetta Code,Sleep/sleep-3.cob,26,fixed,excluded,E6,CALL
+Rosetta Code,Smallest-square-that-begins-with-n/smallest-square-that-begins-with-n.cob,29,,excluded,E1,does not compile (fixed: Task/Smallest-square-that-begins-with-n/COBOL/smallest-square-that-beg; free: Task/Smallest-square-that-begins-with-n/COBOL/smallest-square-that-beg)
+Rosetta Code,Soloways-recurring-rainfall/soloways-recurring-rainfall.cob,22,fixed,kept,,
+Rosetta Code,Sort-an-integer-array/sort-an-integer-array.cob,22,fixed,excluded,E6,SORT
+Rosetta Code,Sort-numbers-lexicographically/sort-numbers-lexicographically.cob,36,fixed,excluded,E6,CALL
+Rosetta Code,Sort-three-variables/sort-three-variables.cob,43,fixed,excluded,E6,SORT
+Rosetta Code,Sorting-algorithms-Bead-sort/sorting-algorithms-bead-sort.cob,98,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Sorting-algorithms-Bogosort/sorting-algorithms-bogosort.cob,65,free,excluded,E2,clock or random numbers
+Rosetta Code,Sorting-algorithms-Bubble-sort/sorting-algorithms-bubble-sort-1.cob,145,,excluded,E1,does not compile (fixed: Task/Sorting-algorithms-Bubble-sort/COBOL/sorting-algorithms-bubble-so; free: Task/Sorting-algorithms-Bubble-sort/COBOL/sorting-algorithms-bubble-so)
+Rosetta Code,Sorting-algorithms-Bubble-sort/sorting-algorithms-bubble-sort-2.cob,54,,excluded,E1,does not compile (fixed: Task/Sorting-algorithms-Bubble-sort/COBOL/sorting-algorithms-bubble-so; free: Task/Sorting-algorithms-Bubble-sort/COBOL/sorting-algorithms-bubble-so)
+Rosetta Code,Sorting-algorithms-Cocktail-sort/sorting-algorithms-cocktail-sort.cob,38,,excluded,E1,does not compile (fixed: Task/Sorting-algorithms-Cocktail-sort/COBOL/sorting-algorithms-cocktai; free: Task/Sorting-algorithms-Cocktail-sort/COBOL/sorting-algorithms-cocktai)
+Rosetta Code,Sorting-algorithms-Comb-sort/sorting-algorithms-comb-sort.cob,41,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Sorting-algorithms-Gnome-sort/sorting-algorithms-gnome-sort.cob,30,,excluded,E1,does not compile (fixed: error: invalid PROGRAM-ID 'sorting__algorithms__gnome__sort...' - leng; free: error: invalid PROGRAM-ID 'sorting__algorithms__gnome__sort...' - leng)
+Rosetta Code,Sorting-algorithms-Heapsort/sorting-algorithms-heapsort.cob,81,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Sorting-algorithms-Insertion-sort/sorting-algorithms-insertion-sort-1.cob,27,,excluded,E1,does not compile (fixed: Task/Sorting-algorithms-Insertion-sort/COBOL/sorting-algorithms-insert; free: Task/Sorting-algorithms-Insertion-sort/COBOL/sorting-algorithms-insert)
+Rosetta Code,Sorting-algorithms-Insertion-sort/sorting-algorithms-insertion-sort-2.cob,70,,excluded,E1,does not compile (fixed: Task/Sorting-algorithms-Insertion-sort/COBOL/sorting-algorithms-insert; free: Task/Sorting-algorithms-Insertion-sort/COBOL/sorting-algorithms-insert)
+Rosetta Code,Sorting-algorithms-Merge-sort/sorting-algorithms-merge-sort.cob,293,fixed,excluded,E6,SORT
+Rosetta Code,Sorting-algorithms-Quicksort/sorting-algorithms-quicksort.cob,66,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: executable program requested but PROCEDURE/ENTRY has USING clau)
+Rosetta Code,Sorting-algorithms-Selection-sort/sorting-algorithms-selection-sort.cob,28,,excluded,E1,does not compile (fixed: Task/Sorting-algorithms-Selection-sort/COBOL/sorting-algorithms-select; free: Task/Sorting-algorithms-Selection-sort/COBOL/sorting-algorithms-select)
+Rosetta Code,Sorting-algorithms-Shell-sort/sorting-algorithms-shell-sort-1.cob,100,,excluded,E1,does not compile (fixed: error: executable program requested but PROCEDURE/ENTRY has USING clau; free: error: invalid PROGRAM-ID 'sorting__algorithms__shell__sort...' - leng)
+Rosetta Code,Sorting-algorithms-Shell-sort/sorting-algorithms-shell-sort-2.cob,55,,excluded,E1,does not compile (fixed: error: invalid PROGRAM-ID 'sorting__algorithms__shell__sort...' - leng; free: error: invalid PROGRAM-ID 'sorting__algorithms__shell__sort...' - leng)
+Rosetta Code,Sorting-algorithms-Stooge-sort/sorting-algorithms-stooge-sort.cob,80,fixed,excluded,E6,CALL
+Rosetta Code,Soundex/soundex.cob,149,fixed,excluded,E6,CALL
+Rosetta Code,Special-divisors/special-divisors.cob,58,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected REVERSE; free: error: syntax error, unexpected REVERSE)"
+Rosetta Code,Split-a-character-string-based-on-change-of-character/split-a-character-string-based-on-change-of-character.cob,61,,excluded,E1,does not compile (fixed: Task/Split-a-character-string-based-on-change-of-character/COBOL/split; free: Task/Split-a-character-string-based-on-change-of-character/COBOL/split)
+Rosetta Code,Square-but-not-cube/square-but-not-cube.cob,29,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Stack/stack-1.cob,2,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Stack/stack-2.cob,5,,excluded,E1,does not compile (fixed: error: node-info: No such file or directory; free: error: node-info: No such file or directory)
+Rosetta Code,Stack/stack-3.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Stack/stack-4.cob,3,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Stack/stack-5.cob,247,,excluded,E1,does not compile (fixed: error: p: No such file or directory; free: error: p: No such file or directory)
+Rosetta Code,Stack/stack-6.cob,37,,excluded,E1,does not compile (fixed: error: stack: No such file or directory; free: error: stack: No such file or directory)
+Rosetta Code,Strange-numbers/strange-numbers.cob,36,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Strange-plus-numbers/strange-plus-numbers.cob,39,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Strassens-algorithm/strassens-algorithm.cob,367,free,excluded,E6,CALL
+Rosetta Code,String-append/string-append.cob,23,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,String-case/string-case-1.cob,30,fixed,kept,,
+Rosetta Code,String-case/string-case-2.cob,32,fixed,not screened,,an earlier solution of the task was kept
+Rosetta Code,String-comparison/string-comparison-1.cob,3,,excluded,E1,"does not compile (fixed: error: invalid indicator '""' at column 7; free: error: PROGRAM-ID header missing)"
+Rosetta Code,String-comparison/string-comparison-2.cob,3,,excluded,E1,does not compile (fixed: error: invalid indicator 'O' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,String-comparison/string-comparison-3.cob,2,,excluded,E1,does not compile (fixed: error: invalid indicator '>' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,String-concatenation/string-concatenation-1.cob,15,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,String-concatenation/string-concatenation-2.cob,8,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,String-concatenation/string-concatenation-3.cob,11,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,String-interpolation-included-/string-interpolation-included-.cob,12,fixed,kept,,
+Rosetta Code,String-length/string-length-1.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'O' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,String-length/string-length-2.cob,1,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,String-length/string-length-3.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'O' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,String-length/string-length-4.cob,1,,excluded,E1,does not compile (fixed: error: invalid indicator 'O' at column 7; free: error: PROGRAM-ID header missing)
+Rosetta Code,String-prepend/string-prepend-1.cob,25,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,String-prepend/string-prepend-2.cob,12,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Strip-a-set-of-characters-from-a-string/strip-a-set-of-characters-from-a-string.cob,47,,excluded,E1,does not compile (fixed: Task/Strip-a-set-of-characters-from-a-string/COBOL/strip-a-set-of-char; free: Task/Strip-a-set-of-characters-from-a-string/COBOL/strip-a-set-of-char)
+Rosetta Code,Strip-comments-from-a-string/strip-comments-from-a-string.cob,21,fixed,excluded,E3,"no input; several test strings moved in turn, not a single input item"
+Rosetta Code,Strip-whitespace-from-a-string-Top-and-tail/strip-whitespace-from-a-string-top-and-tail-1.cob,3,,excluded,E1,does not compile (fixed: Task/Strip-whitespace-from-a-string-Top-and-tail/COBOL/strip-whitespac; free: Task/Strip-whitespace-from-a-string-Top-and-tail/COBOL/strip-whitespac)
+Rosetta Code,Strip-whitespace-from-a-string-Top-and-tail/strip-whitespace-from-a-string-top-and-tail-2.cob,3,,excluded,E1,does not compile (fixed: Task/Strip-whitespace-from-a-string-Top-and-tail/COBOL/strip-whitespac; free: Task/Strip-whitespace-from-a-string-Top-and-tail/COBOL/strip-whitespac)
+Rosetta Code,Subleq/subleq.cob,81,free,excluded,E3,"stdin lines have different layouts (program, then input characters)"
+Rosetta Code,Substring/substring.cob,56,,excluded,E1,"does not compile (fixed: error: syntax error, unexpected POS; free: error: syntax error, unexpected POS)"
+Rosetta Code,Substring-Top-and-tail/substring-top-and-tail.cob,17,fixed,not kept,,"meets E1-E6, but the cap of 30 kept programs was reached before it"
+Rosetta Code,Suffix-tree/suffix-tree.cob,287,fixed,excluded,E6,CALL
+Rosetta Code,Sum-and-product-of-an-array/sum-and-product-of-an-array.cob,25,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Sum-multiples-of-3-and-5/sum-multiples-of-3-and-5-1.cob,23,free,excluded,vectors,"with n read as input (the task names n) the program loops up to n; for most 18-digit n it exceeds the time limit (n = 10**7 takes about 6 s), so over 10% of HELD-OUT would be removed"
+Rosetta Code,Sum-multiples-of-3-and-5/sum-multiples-of-3-and-5-2.cob,47,,excluded,E1,does not compile (fixed: error: invalid indicator 'f' at column 7; free: error: multiple PROGRAM-ID's without matching END PROGRAM)
+Rosetta Code,Sum-multiples-of-3-and-5/sum-multiples-of-3-and-5-3.cob,40,fixed,excluded,E4,"uses USAGE BINARY-CHAR / BINARY-LONG / BINARY-DOUBLE, which the runtime does not support"
+Rosetta Code,Sum-of-a-series/sum-of-a-series.cob,19,fixed,excluded,E3,"no input; n is a level-78 constant, not a data item"
+Rosetta Code,Sum-of-first-n-cubes/sum-of-first-n-cubes.cob,30,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Sum-of-square-and-cube-digits-of-an-integer-are-primes/sum-of-square-and-cube-digits-of-an-integer-are-primes.cob,64,,excluded,E1,does not compile (fixed: Task/Sum-of-square-and-cube-digits-of-an-integer-are-primes/COBOL/sum-; free: Task/Sum-of-square-and-cube-digits-of-an-integer-are-primes/COBOL/sum-)
+Rosetta Code,Sum-of-the-digits-of-n-is-substring-of-n/sum-of-the-digits-of-n-is-substring-of-n.cob,53,,excluded,E1,does not compile (fixed: Task/Sum-of-the-digits-of-n-is-substring-of-n/COBOL/sum-of-the-digits-; free: Task/Sum-of-the-digits-of-n-is-substring-of-n/COBOL/sum-of-the-digits-)
+Rosetta Code,Sum-of-two-adjacent-numbers-are-primes/sum-of-two-adjacent-numbers-are-primes.cob,110,,excluded,E1,does not compile (fixed: Task/Sum-of-two-adjacent-numbers-are-primes/COBOL/sum-of-two-adjacent-; free: Task/Sum-of-two-adjacent-numbers-are-primes/COBOL/sum-of-two-adjacent-)
+Rosetta Code,Sync-subtitles/sync-subtitles.cob,89,fixed,excluded,vectors,"the program ends with a file error (status 42, exit status 1) on every non-empty input, so over 10% of HELD-OUT would be removed"
+Rosetta Code,System-time/system-time.cob,15,,excluded,E1,does not compile (fixed: error: PROGRAM-ID header missing; free: error: PROGRAM-ID header missing)
+Rosetta Code,Szyma-skis-algorithm/szyma-skis-algorithm.cob,295,free,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Take-notes-on-the-command-line/take-notes-on-the-command-line.cob,78,fixed,excluded,E2,clock or random numbers
+Rosetta Code,Tau-function/tau-function.cob,65,fixed,excluded,E3,"no input read, and the task names no single input value held in one data item (fixed output, or a range or list of test values)"
+Rosetta Code,Temperature-conversion/temperature-conversion.cob,36,free,not kept,,"meets E1-E6, but the cap of 30 kept programs was reached before it"
+Rosetta Code,Terminal-control-Clear-the-screen/terminal-control-clear-the-screen.cob,11,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Terminal-control-Coloured-text/terminal-control-coloured-text.cob,89,free,not screened,,cap of 30 kept programs reached
+Rosetta Code,Terminal-control-Cursor-positioning/terminal-control-cursor-positioning.cob,8,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Terminal-control-Dimensions/terminal-control-dimensions.cob,27,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Terminal-control-Display-an-extended-character/terminal-control-display-an-extended-character.cob,8,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Terminal-control-Inverse-video/terminal-control-inverse-video.cob,9,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Terminal-control-Ringing-the-terminal-bell/terminal-control-ringing-the-terminal-bell-1.cob,12,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Terminal-control-Ringing-the-terminal-bell/terminal-control-ringing-the-terminal-bell-2.cob,17,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Terminal-control-Ringing-the-terminal-bell/terminal-control-ringing-the-terminal-bell-3.cob,13,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Test-integerness/test-integerness.cob,35,free,not screened,,cap of 30 kept programs reached
+Rosetta Code,Text-processing-1/text-processing-1.cob,144,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Text-processing-2/text-processing-2.cob,163,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Text-processing-Max-licenses-in-use/text-processing-max-licenses-in-use.cob,90,,not screened,,cap of 30 kept programs reached
+Rosetta Code,The-Name-Game/the-name-game.cob,28,free,not screened,,cap of 30 kept programs reached
+Rosetta Code,The-Twelve-Days-of-Christmas/the-twelve-days-of-christmas.cob,44,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Thue-Morse/thue-morse.cob,24,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Tokenize-a-string/tokenize-a-string.cob,30,free,not screened,,cap of 30 kept programs reached
+Rosetta Code,Tokenize-a-string-with-escaping/tokenize-a-string-with-escaping.cob,135,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Totient-function/totient-function.cob,93,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Towers-of-Hanoi/towers-of-hanoi-1.cob,28,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Towers-of-Hanoi/towers-of-hanoi-2.cob,29,free,not screened,,cap of 30 kept programs reached
+Rosetta Code,Towers-of-Hanoi/towers-of-hanoi-3.cob,91,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Trigonometric-functions/trigonometric-functions.cob,39,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Two-identical-strings/two-identical-strings.cob,65,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Twos-complement/twos-complement.cob,32,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Use-another-language-to-call-a-function/use-another-language-to-call-a-function.cob,33,,not screened,,cap of 30 kept programs reached
+Rosetta Code,User-input-Text/user-input-text.cob,17,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Validate-International-Securities-Identification-Number/validate-international-securities-identification-number.cob,173,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Van-Eck-sequence/van-eck-sequence.cob,46,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variable-size-Get/variable-size-get.cob,61,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variables/variables-1.cob,5,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variables/variables-2.cob,18,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variables/variables-3.cob,4,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variables/variables-4.cob,4,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variables/variables-5.cob,8,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variables/variables-6.cob,3,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variables/variables-7.cob,6,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Variadic-function/variadic-function.cob,58,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Vigen-re-cipher/vigen-re-cipher.cob,126,free,not screened,,cap of 30 kept programs reached
+Rosetta Code,Window-creation-X11/window-creation-x11.cob,175,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Word-frequency/word-frequency.cob,213,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Write-entire-file/write-entire-file.cob,42,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Write-float-arrays-to-a-text-file/write-float-arrays-to-a-text-file.cob,42,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Write-language-name-in-3D-ASCII/write-language-name-in-3d-ascii.cob,78,fixed,not screened,,cap of 30 kept programs reached
+Rosetta Code,Zeckendorf-number-representation/zeckendorf-number-representation.cob,55,,not screened,,cap of 30 kept programs reached
+Rosetta Code,Zero-to-the-zero-power/zero-to-the-zero-power.cob,9,free,not screened,,cap of 30 kept programs reached

@@ -1,3 +1,12 @@
+"""Track R program (corpus/ctlbreak), written for this repository.
+
+Overrides and their reasons: SL-REGION and SL-BRANCH from short lists of
+readable codes, so that control breaks occur. finalize sorts the records by
+the control keys (the program's input is sorted, as for any control-break
+report). These overrides predate the benchmark protocol and are kept
+unchanged.
+"""
+
 from pathlib import Path
 
 from hypothesis import strategies as st

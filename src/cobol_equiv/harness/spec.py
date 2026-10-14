@@ -57,7 +57,7 @@ STDOUT = "<stdout>"
 
 @dataclass
 class InputSpec:
-    """A LINE SEQUENTIAL input (a file, or STDIN) made of fixed-layout records.
+    """A sequential input (a file, or STDIN) made of fixed-layout records.
 
     record: data items of one record (as for Storage).
     min_records / max_records: how many records generated inputs contain.
@@ -70,6 +70,9 @@ class InputSpec:
     record_strategy: optional Hypothesis strategy producing a whole record as
         bytes, for layouts that need consistency between fields (REDEFINES
         variants selected by a type code). Replaces the per-item generation.
+    organization: "line" (LINE SEQUENTIAL: one record per line, trailing
+        spaces removed) or "record" (ORGANIZATION SEQUENTIAL: full-length
+        records concatenated, so non-DISPLAY usages such as COMP-3 work).
     """
     name: str
     record: list[Item]
@@ -78,6 +81,7 @@ class InputSpec:
     overrides: dict = field(default_factory=dict)
     finalize: Callable[[list], list] | None = None
     record_strategy: object = None
+    organization: str = "line"
 
 
 @dataclass
@@ -102,3 +106,4 @@ class ProgramSpec:
     layouts: dict[str, OutputLayout] = field(default_factory=dict)  # STDOUT or file name
     vectors: list[dict[str, bytes]] = field(default_factory=list)  # name -> content
     timeout: float = 10.0
+    free_format: bool = False  # compile with cobc -free

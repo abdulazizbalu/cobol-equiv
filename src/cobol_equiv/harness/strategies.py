@@ -8,13 +8,16 @@ favours small values. Signed items also get negative values, and signed
 DISPLAY items occasionally a negative zero. Alphanumeric items draw printable
 ASCII (0x20-0x7E).
 
-Generated input files are LINE SEQUENTIAL: one record per line, trailing
-spaces removed (as GnuCOBOL writes them), so READ's space padding is
-exercised too. Records must therefore use USAGE DISPLAY only.
+Generated input files are LINE SEQUENTIAL by default: one record per line,
+trailing spaces removed (as GnuCOBOL writes them), so READ's space padding
+is exercised too; such records must use USAGE DISPLAY only. With
+organization "record" the records are concatenated at full length and may
+use any USAGE.
 """
 
 from __future__ import annotations
 
+import contextlib
 import string as _string
 from decimal import Decimal
 
@@ -46,10 +49,10 @@ def numeric_values(item: Item):
     return vals.map(lambda v: scaled_decimal(v, p.scale))
 
 
-def for_item(item: Item):
+def for_item(item: Item, any_usage: bool = False):
     p = item.pic
     if p.category == NUMERIC:
-        if item.usage != enc.DISPLAY:
+        if item.usage != enc.DISPLAY and not any_usage:
             raise ValueError(f"{item.name}: generated LINE SEQUENTIAL records must be USAGE DISPLAY")
         return numeric_values(item)
     if p.category == ALPHABETIC:
@@ -80,7 +83,8 @@ def elementary_slots(stg: Storage):
 def record(draw, spec: InputSpec):
     stg = Storage(spec.name, spec.record)
     for item, ref in elementary_slots(stg):
-        strat = spec.overrides[item.name] if item.name in spec.overrides else for_item(item)
+        strat = (spec.overrides[item.name] if item.name in spec.overrides
+                 else for_item(item, spec.organization == "record"))
         v = draw(strat)
         if item.pic.category == NUMERIC and isinstance(v, str):
             v = Decimal(v)  # numeric override given as text
@@ -101,6 +105,14 @@ def input_file(draw, spec: InputSpec) -> bytes:
         recs = draw(st.lists(record(spec), min_size=spec.min_records, max_size=spec.max_records))
     if spec.finalize is not None:
         recs = spec.finalize(recs)
+    return file_bytes(spec, recs)
+
+
+def file_bytes(spec: InputSpec, recs: list) -> bytes:
+    if spec.organization == "record":
+        return b"".join(bytes(r.area) for r in recs)
+    if spec.organization != "line":
+        raise ValueError(f"{spec.name}: unknown organization {spec.organization!r}")
     return b"".join(bytes(r.area).rstrip(b" ") + b"\n" for r in recs)
 
 
@@ -110,3 +122,27 @@ def inputs(specs: list[InputSpec]):
 
 
 __all__ = ["STDIN", "for_item", "numeric_values", "record", "input_file", "inputs", "elementary_slots"]
+
+
+@contextlib.contextmanager
+def no_local_constants():
+    """Hypothesis (since 6.131) mixes literal constants found in the imported
+    modules of the project into generated values, so generated inputs would
+    depend on which modules happen to be loaded, including the translation
+    or mutant under test. Generation turns this off, so that the inputs
+    depend only on the spec and the seed. Uses a private name of Hypothesis
+    (6.169.0 is pinned in requirements-repro.txt); with a version that lacks
+    it, generation runs unchanged."""
+    from hypothesis.internal.conjecture import providers
+
+    if not hasattr(providers, "_get_local_constants"):
+        yield
+        return
+    saved = providers._get_local_constants
+    providers.CONSTANTS_CACHE.cache.clear()
+    providers._get_local_constants = providers.Constants
+    try:
+        yield
+    finally:
+        providers._get_local_constants = saved
+        providers.CONSTANTS_CACHE.cache.clear()

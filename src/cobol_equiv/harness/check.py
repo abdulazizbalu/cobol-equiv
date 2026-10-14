@@ -141,8 +141,9 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
     from hypothesis import HealthCheck, given, seed, settings
 
     from .strategies import inputs as inputs_strategy
+    from .strategies import no_local_constants
 
-    exe = compile_program(spec.source, build_dir or BUILD_DIR)
+    exe = compile_program(spec.source, build_dir or BUILD_DIR, spec.free_format)
     result = CheckResult(spec.name, vectors=len(spec.vectors))
     for i, vec in enumerate(spec.vectors, 1):
         d = run_once(spec, exe, main, vec, hits_at_import)
@@ -168,7 +169,8 @@ def check(spec: ProgramSpec, main, examples: int = 100, build_dir: Path | None =
             raise AssertionError(d.describe())
 
     try:
-        prop()
+        with no_local_constants():
+            prop()
     except AssertionError:
         pass
     result.generated = counter[0]
@@ -185,7 +187,7 @@ def check_boundary(spec: ProgramSpec, main, build_dir: Path | None = None,
     Difference or None)."""
     from .boundary import boundary_vectors
 
-    exe = compile_program(spec.source, build_dir or BUILD_DIR)
+    exe = compile_program(spec.source, build_dir or BUILD_DIR, spec.free_format)
     vecs = boundary_vectors(spec.inputs)
     for i, v in enumerate(vecs, 1):
         d = run_once(spec, exe, main, v, hits_at_import)

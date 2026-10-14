@@ -36,6 +36,7 @@ Source: `results/gnucobol-<version>/oracle_cases.csv`, produced by `python -m co
 | move_num_to_num | 556 | 527 / 0 / 29 / 0 | 502 / 25 / 29 / 0 |
 | move_num_to_alnum | 110 | 110 / 0 / 0 / 0 | 110 / 0 / 0 / 0 |
 | move_alnum_to_num | 120 | 120 / 0 / 0 / 0 | 120 / 0 / 0 / 0 |
+| move_alnum_text_to_num | 1632 | 1632 / 0 / 0 / 0 | 1632 / 0 / 0 / 0 |
 | move_alnum_to_alnum | 48 | 48 / 0 / 0 / 0 | 48 / 0 / 0 / 0 |
 | edit | 728 | 700 / 0 / 28 / 0 | 700 / 0 / 28 / 0 |
 | arith_add_to | 180 | 178 / 0 / 2 / 0 | 178 / 0 / 2 / 0 |
@@ -48,11 +49,12 @@ Source: `results/gnucobol-<version>/oracle_cases.csv`, produced by `python -m co
 | arith_divide_by_giving | 180 | 180 / 0 / 0 / 0 | 180 / 0 / 0 / 0 |
 | arith_compute | 180 | 179 / 0 / 1 / 0 | 179 / 0 / 1 / 0 |
 | arith_divide_remainder | 240 | 240 / 0 / 0 / 0 | 240 / 0 / 0 / 0 |
+| arith_edited_giving | 120 | 120 / 0 / 0 / 0 | 120 / 0 / 0 / 0 |
 | compute_intermediate | 360 | 360 / 0 / 0 / 0 | 360 / 0 / 0 / 0 |
 | binary_store | 900 | 886 / 0 / 14 / 0 | 886 / 0 / 14 / 0 |
 | display_format | 306 | 306 / 0 / 0 / 0 | 306 / 0 / 0 / 0 |
 | string_stmt | 120 | 120 / 0 / 0 / 0 | 120 / 0 / 0 / 0 |
-| unstring_stmt | 150 | 150 / 0 / 0 / 0 | 150 / 0 / 0 / 0 |
+| unstring_stmt | 200 | 200 / 0 / 0 / 0 | 200 / 0 / 0 / 0 |
 | inspect_stmt | 266 | 266 / 0 / 0 / 0 | 257 / 9 / 0 / 0 |
 | literal_truncation | 272 | 272 / 0 / 0 / 0 | 272 / 0 / 0 / 0 |
 | edit_trailing_sign | 420 | 420 / 0 / 0 / 0 | 420 / 0 / 0 / 0 |
@@ -61,7 +63,7 @@ Source: `results/gnucobol-<version>/oracle_cases.csv`, produced by `python -m co
 | value_clause | 46 | 46 / 0 / 0 / 0 | 46 / 0 / 0 / 0 |
 | arith_rounded_single_operand | 160 | 160 / 0 / 0 / 0 | 98 / 62 / 0 / 0 |
 | inspect_iso_example | 1 | 1 / 0 / 0 / 0 | 0 / 1 / 0 / 0 |
-| **total** | 7967 | 7850 / 0 / 117 / 0 | 7753 / 97 / 117 / 0 |
+| **total** | 9769 | 9652 / 0 / 117 / 0 | 9555 / 97 / 117 / 0 |
 
 Refused (unsupported) cases by category (`results/unsupported_categories.csv`):
 
@@ -88,7 +90,7 @@ Oracle cases whose GnuCOBOL output differs between the versions (`results/versio
 | inspect_iso_example | 1 | 1 |
 | inspect_stmt | 266 | 9 |
 | move_num_to_num | 556 | 31 |
-| **total** | 7967 | 104 |
+| **total** | 9769 | 104 |
 
 ## Corpus: reference translations vs GnuCOBOL
 
@@ -127,6 +129,7 @@ Mutants that survived (a):
 
 | program | mutant | kind | (b) | why it survived |
 |---|---|---|---|---|
+| classify | age-boundary | missed | survived | differs only for a type P customer aged exactly 25 (segment YOUNG-P instead of PERSONAL); the fixed vectors have none and whether the generated inputs contain one depends on the sample. Boundary vectors: CU-TYPE takes only generic text values (space, A, 9, 0, ~), never P |
 | classify | float-compare | equivalent | survived | equivalent mutant: the balance is only compared with 0, 1000, 10000, 50000 and -500; its float differs from it by less than 1.2e-9 while a balance differs from a threshold by 0.01 or more, so every comparison keeps its result (docs/mutants.md) |
 | ctlbreak | float-total | missed | survived | not equivalent: once a branch total passes 9,999,999.99 (101 records of 99999.99 in one branch) COBOL truncates the total while the mutant's MOVE of the float sum is refused by the runtime; generated and boundary files have at most 30 records, so no branch total gets there. Classified as equivalent before; see docs/mutants.md |
 | datecalc | range-gt-ge | missed | survived | differs only when FROM + OFFSET lands exactly on 9999-12-31 (e.g. FROM 99991231 with OFFSET 0); no vector has it, and whether generated inputs do depends on the sample. Boundary vectors: 99991231 is a calendar boundary, not a PICTURE one (the 9(8) boundaries such as 99999999 are invalid dates) |
@@ -140,5 +143,4 @@ Mutants that survived (a):
 | payroll | bracket-lt | equivalent | survived | equivalent mutant: at gross 1000.00 both brackets give tax 100.00 |
 | redef | float-discount | missed | survived | differs only when the line amount lands on a half-cent tie that the float factor moves; whether the generated inputs contain one depends on the sample. Boundary vectors: the tie is in the computed amount, not in an input value |
 | sizeerr | float-divide | missed | survived | differs on half-cent ties: Python round() rounds half to even (0.25 / 2.00 gives 0.12, COBOL ROUNDED 0.13) and binary values just below a tie round down; whether the inputs contain such a pair depends on the sample. Boundary vectors: the tie is in the computed quotient, not in an input value |
-| sizeerr | count-after-dispatch | missed | survived | differs only when the first record of a file takes the size-error branch (that is, a D or Q record with amount 0, since the accumulator starts at 0); the fixed vectors have none and whether the generated inputs contain one depends on the sample. Boundary vectors: TX-OP takes only generic text values (space, A, 9, 0, ~), never D or Q |
 | tables | rank-sign | equivalent | survived | equivalent mutant: WL-QTY (ZZ,ZZ9) has no sign position, so the edited result is the same |

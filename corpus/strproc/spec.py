@@ -1,3 +1,12 @@
+"""Track R program (corpus/strproc), written for this repository.
+
+Override and its reason: LN-TEXT from the characters the program's
+UNSTRING, INSPECT and STRING statements act on (A-E, 0, space, comma), so
+that delimiters and replaced characters occur often; narrows the PICTURE;
+not stated by the program. This override predates the benchmark protocol
+and is kept unchanged.
+"""
+
 from pathlib import Path
 
 from hypothesis import strategies as st

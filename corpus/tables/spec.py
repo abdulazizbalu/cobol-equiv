@@ -1,3 +1,10 @@
+"""Track R program (corpus/tables), written for this repository.
+
+Override and its reason: IT-CODE from ten readable codes, so that codes
+repeat and the eight-entry table overflows. This override predates the
+benchmark protocol and is kept unchanged.
+"""
+
 from pathlib import Path
 
 from hypothesis import strategies as st

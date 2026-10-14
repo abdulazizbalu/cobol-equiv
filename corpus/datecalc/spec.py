@@ -1,3 +1,14 @@
+"""Track R program (corpus/datecalc), written for this repository.
+
+Overrides and their reasons:
+- DT-FROM, DT-TO: half valid calendar dates 1601-01-01 .. 9999-12-31 (the
+  range the program's date validation accepts), a quarter edge dates
+  (leap days, invalid months and days), a quarter the full PICTURE.
+- DT-OFFSET: values at the edges of the PICTURE plus the full PICTURE
+  range (not narrowed).
+These overrides predate the benchmark protocol and are kept unchanged.
+"""
+
 import datetime
 from pathlib import Path
 

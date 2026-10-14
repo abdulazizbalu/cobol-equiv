@@ -81,14 +81,25 @@ an alphanumeric literal is stored as written (rule `value_clause`).
 * Integer numeric to alphanumeric: the PICTURE digits without sign, then
   alphanumeric padding/truncation. Non-integer numeric to alphanumeric is
   rejected by cobc and by the runtime.
-* Alphanumeric to numeric: only when the sender is all digits; it is treated
-  as an unsigned integer. Other content (spaces, letters) gives
-  implementation-specific results in GnuCOBOL and raises `MoveError` here.
+* Alphanumeric item to numeric or numeric-edited (rule
+  `move_alnum_text_to_num`): the text is converted as GnuCOBOL does
+  (libcob `cob_move_alphanum_to_display`): leading spaces are skipped, an
+  optional `+` or `-` is read, the digits before the decimal point are
+  right-aligned to the receiver's integer places (excess leading digits are
+  dropped), digits after it fill the decimal places (excess dropped);
+  spaces and commas are skipped; a second decimal point or any other
+  character (before the receiver is full) makes the result zero. A USAGE
+  DISPLAY receiver keeps a `-` sign even on a zero result. Other receivers
+  get the value through a signed temporary of 38 integer and 38 decimal
+  digits, then a numeric MOVE.
+* Alphanumeric literal to numeric: only when the literal is all digits; it
+  is treated as an unsigned integer. Other literals raise `MoveError`.
 * Alphanumeric / group moves: left-justified, space-padded, truncated on the
   right. Group moves copy bytes without conversion.
-* Refused: alphanumeric to numeric-edited, and numeric-edited to numeric or
-  numeric-edited. GnuCOBOL converts these numerically (`MOVE "123"` to
-  `ZZZ9` gives `" 123"`); the runtime does not model that conversion.
+* Refused: an alphanumeric literal to numeric-edited, and numeric-edited
+  to numeric or numeric-edited. GnuCOBOL converts these numerically
+  (`MOVE "123"` to `ZZZ9` gives `" 123"`); the runtime does not model that
+  conversion for literals.
 * Figuratives: `SPACES`, `ZEROS`, `HIGH_VALUES`, `LOW_VALUES`, `All("x")`.
 * A numeric literal with more integer digits than the receiver is refused
   (cobc warns, and the resulting sign is inconsistent between items).
@@ -128,6 +139,10 @@ err = compute(ws["T"], dec(ws["BAL"]) * dec(ws["RATE"]) / 1200, rounded=True)
   value is truncated on the left (COMP-5: wraps).
 * Division by zero is a size error; the receiver is unchanged even without
   ON SIZE ERROR.
+* A numeric-edited receiver of an arithmetic statement (GIVING or
+  COMPUTE) gets the result truncated to the edited item's digit positions
+  first, then edited (rule `arith_edited_giving`). A MOVE to an edited item
+  edits the sender's digits instead.
 * `ADD x TO y` / `SUBTRACT x FROM y` with a single operand and no ON SIZE
   ERROR can be compiled by cobc to an integer fast path with different
   overflow results (rule `arith_single_operand`): an unsigned COMP-5
@@ -168,16 +183,29 @@ COUNT IN), `inspect_tallying`, `inspect_replacing`, `inspect_converting`.
 Covered forms: DELIMITED BY SIZE / literal, WITH POINTER, ON OVERFLOW;
 UNSTRING with `[ALL] d1 OR [ALL] d2`, no DELIMITED BY, TALLYING IN;
 INSPECT ALL / LEADING / FIRST / CHARACTERS with BEFORE / AFTER INITIAL,
-several phrases in one statement, CONVERTING. Two details:
+several phrases in one statement, CONVERTING. Three details:
 
 * UNSTRING without DELIMITED BY advances the pointer by the characters
   actually taken, not by the receiver size;
+* UNSTRING into a numeric or numeric-edited receiver moves each piece as
+  alphanumeric text, with the conversion described under MOVE (rule
+  `unstring_stmt`);
 * INSPECT with several phrases follows GnuCOBOL 3.1.2: each phrase scans
   the whole field in turn and marks what it matched, and later phrases skip
   marked characters. `INSPECT "ABCABC" TALLYING C1 FOR ALL "BC" C2 FOR ALL
   "AB"` gives C1=2, C2=0. GnuCOBOL tickets #991 and #992 discuss whether
   this matches the ISO rules (see `docs/findings.md`); we have not read the
   standard text and make no claim about it.
+
+## Reference modification (`tests/oracle/test_refmod.py`)
+
+`refmod(item, start, length=None)` returns an alphanumeric view of bytes
+`start .. start + length - 1` (1-based) of the item, sharing its storage,
+so it can be a sender or a receiver. Without a length it runs to the end of
+the item. A start or length that leaves the item raises `Unsupported`
+(GnuCOBOL without runtime checks would read or write outside it). Checked
+with one program of 61 MOVEs between reference-modified alphanumeric and
+numeric DISPLAY items on each compiler version, not by a generated rule.
 
 ## Sequential files
 
@@ -186,6 +214,21 @@ sequential files as byte strings. Observed GnuCOBOL 3.1.2 behaviour for LINE
 SEQUENTIAL: short lines are padded with spaces, long lines truncated, carriage
 returns dropped (also inside a line); WRITE removes trailing spaces. Checked by
 `tests/oracle/test_files.py`.
+
+## ACCEPT from standard input (`tests/oracle/test_accept.py`)
+
+```python
+from cobol_equiv.runtime import Stdin
+inp = Stdin(stdin_bytes)
+inp.accept(ws["N"])
+```
+
+One line per ACCEPT, without its newline; after the last line GnuCOBOL
+supplies a single space. The line is moved to the receiver as alphanumeric
+data (the conversion above for numeric receivers); for a numeric USAGE
+DISPLAY receiver it is first cut to the receiver's length in bytes. Checked
+with one program and 36 input lines on each compiler version, not by a
+generated rule.
 
 ## DISPLAY (rule `display_format`)
 

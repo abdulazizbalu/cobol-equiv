@@ -1,0 +1,7 @@
+{
+  "task": "SEDOLs",
+  "url": "https://raw.githubusercontent.com/acmeism/RosettaCodeData/1d475861d7141ef2fafff293d9339f56e4b0f5db/Task/SEDOLs/COBOL/sedols.cob",
+  "sha256": "1b08181e9309b79c2bc827ccd01a20d6d6762397b61aecb5842487bb0192dc98",
+  "task_url": "https://raw.githubusercontent.com/acmeism/RosettaCodeData/1d475861d7141ef2fafff293d9339f56e4b0f5db/Task/SEDOLs/00-TASK.txt",
+  "task_sha256": "b8e45c4d542de291a12f70520bee4f75396b59a9026e4a95274d10a28ca6ff0f"
+}

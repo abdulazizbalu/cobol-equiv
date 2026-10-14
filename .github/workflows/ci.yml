@@ -55,6 +55,8 @@ jobs:
             | grep -F "cobc (GnuCOBOL) 3.2.0"
       - name: Install package
         run: python -m pip install -e ".[dev]"
+      - name: Fetch Track E sources (pinned URLs, checksums)
+        run: python -m cobol_equiv.benchmark.fetch
       - name: Run tests
         run: python -m pytest -q
 
@@ -107,3 +109,45 @@ jobs:
         run: |
           git diff --exit-code -- results/ README.md
           test -z "$(git status --porcelain -- results/ README.md)"
+
+  benchmark:
+    # Regenerates the benchmark vectors with both compilers and fails if
+    # they differ from the committed ones; checks that every reference
+    # translation passes all its vectors (criterion E4) and that the API
+    # sheet is the committed one.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install GnuCOBOL 3.1.2 (Ubuntu package) and libgmp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnucobol3 libgmp-dev
+          cobc --version | head -1 | grep -F "cobc (GnuCOBOL) 3.1.2.0"
+      - name: Cache GnuCOBOL 3.2 build
+        id: cache32
+        uses: actions/cache@v4
+        with:
+          path: ~/gnucobol-3.2
+          key: gnucobol-3.2-${{ env.GNUCOBOL32_SHA256 }}-ubuntu-24.04-${{ hashFiles('scripts/build-gnucobol-3.2.sh') }}
+      - name: Build GnuCOBOL 3.2 from the pinned tarball
+        if: steps.cache32.outputs.cache-hit != 'true'
+        run: scripts/build-gnucobol-3.2.sh
+      - name: Install package
+        run: python -m pip install -e ".[dev]" -r requirements-repro.txt
+      - name: Fetch Track E sources (pinned URLs, checksums)
+        run: python -m cobol_equiv.benchmark.fetch
+      - name: API sheet is the committed one
+        run: python -m cobol_equiv.benchmark.apisheet --check
+      - name: Keep the committed vectors
+        run: cp -r benchmark/vectors "$RUNNER_TEMP/committed-vectors"
+      - name: Vectors, GnuCOBOL 3.1.2
+        run: python -m cobol_equiv.benchmark.vectors --track E,R,T
+      - name: Vectors, GnuCOBOL 3.2
+        run: COBC=$HOME/gnucobol-3.2/bin/cobc python -m cobol_equiv.benchmark.vectors --track E,R,T
+      - name: Compare with committed vectors (decompressed content)
+        run: python -m cobol_equiv.benchmark.vectors --compare "$RUNNER_TEMP/committed-vectors"
+      - name: Reference translations pass all vectors (E4)
+        run: python -m cobol_equiv.benchmark.refcheck

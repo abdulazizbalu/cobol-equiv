@@ -1,3 +1,11 @@
+"""Track R program (corpus/sizeerr), written for this repository.
+
+Overrides and their reasons: TX-ACCT "A" and three digits (readable IDs);
+TX-OP from the operations the program evaluates (A, S, M, D, Q) plus one it
+reports as invalid (X). These overrides predate the benchmark protocol and
+are kept unchanged.
+"""
+
 from pathlib import Path
 
 from hypothesis import strategies as st

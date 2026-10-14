@@ -6,8 +6,7 @@ HELD-OUT) against GnuCOBOL 3.1.2, run the same way as translations.
 
 Each reference runs with both CobDecimal comparison behaviours (deviation
 D14: "registered", runtime 1.0.0, and "corrected", runtime 1.1.0) and must
-pass with both; the CobDecimal comparison and hash calls it makes are
-printed ("cmp").
+pass with both and make no CobDecimal comparison or hash call ("cmp").
 """
 
 from __future__ import annotations
@@ -34,6 +33,8 @@ def check_program(p, runtime: str | None = None) -> tuple[int, int, list[str], d
         verdict = judge(spec, v["expected"][PRIMARY], r)
         if not verdict.passed:
             bad.append(f"{s} {v['source']}: {verdict.kind}: {verdict.detail[:300]}")
+    if any(cmp.values()):
+        bad.append(f"CobDecimal comparison or hash calls: {cmp}")
     held = len(doc["sets"]["heldout"])
     lost = sum(1 for r in doc["removed"] if r["set"] == "heldout")
     return len(items), held, bad + ([f"{lost} of {held + lost} HELD-OUT inputs removed (over 10%)"]

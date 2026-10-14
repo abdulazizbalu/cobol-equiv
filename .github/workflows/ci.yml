@@ -194,9 +194,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: benchmark/results/.verify-parts
-          key: verify-${{ matrix.runtime }}-${{ matrix.track }}-${{ hashFiles('benchmark/results/verify-inputs.json', 'src/cobol_equiv/benchmark/*.py', 'src/cobol_equiv/runtime/*.py') }}
+          key: verify-${{ matrix.runtime }}-${{ matrix.track }}-${{ hashFiles('benchmark/results/verify-inputs.json', 'src/cobol_equiv/benchmark/*.py', 'src/cobol_equiv/runtime/*.py') }}-${{ github.run_id }}
           restore-keys: verify-${{ matrix.runtime }}-${{ matrix.track }}-
       - name: Changed units and a fixed sample reproduce the committed verdicts
         run: python -m cobol_equiv.benchmark.ci check --runtime ${{ matrix.runtime }} --track ${{ matrix.track }} --base "$BASE" --sample 2
         env:
+          # push to main: the previous commit (squash merges); the weekly full
+          # run covers what a multi-commit push would leave out
           BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || 'HEAD~1' }}

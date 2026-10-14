@@ -400,15 +400,39 @@ def test_driver_runtime_modes(tmp_path):
     assert unb64(plain[0]["stdout"]) == unb64(cor[0]["stdout"]) and not any(plain[0]["cmp"].values())
 
 
-def test_registered_mode_has_no_comparison_methods_beyond_identity():
-    """The registered behaviour is that of a class without comparison methods."""
-    class Plain:
-        pass
+REGISTERED_PROBE = """\
+from decimal import Decimal
+from cobol_equiv.runtime import dec
 
-    a, b = Plain(), Plain()
-    assert (a == b, a != b, a == a, a == 1) == (False, True, True, False)
-    with pytest.raises(TypeError, match="'<' not supported between instances of 'Plain' and 'Plain'"):
-        a < b  # noqa: B015
+def main(stdin, files):
+    a, b = dec(1), dec(1)
+    out = [a == b, a != b, a == a, a != a, a == 1, 1 == a, a != 1, a == Decimal(1), Decimal(1) == a,
+           a == "1", a == None, hash(a) == object.__hash__(a)]
+    for x, y in ((a, b), (a, 1), (1, a), (a, Decimal(1)), (a, "1")):
+        try:
+            x < y
+            out.append("no error")
+        except TypeError as e:
+            out.append(str(e))
+    return repr(out).encode("ascii"), {}
+"""
+
+
+def test_registered_mode_is_runtime_1_0_0(tmp_path):
+    """Registered mode: CobDecimal behaves as a class without comparison
+    methods (runtime 1.0.0), with the same reflected fallbacks and messages."""
+    from cobol_equiv.benchmark.runner import run_translation
+    from cobol_equiv.benchmark.vectors import unb64
+
+    t = tmp_path / "t.py"
+    t.write_text(REGISTERED_PROBE, encoding="utf-8")
+    r = run_translation(t, [{"<stdin>": b""}], timeout=10, condition="A", runtime="registered")[0]
+    msg = "'<' not supported between instances of '{}' and '{}'"
+    expected = [False, True, True, False, False, False, True, False, False, False, False, True,
+                msg.format("CobDecimal", "CobDecimal"), msg.format("CobDecimal", "int"),
+                msg.format("int", "CobDecimal"), msg.format("CobDecimal", "decimal.Decimal"),
+                msg.format("CobDecimal", "str")]
+    assert unb64(r["stdout"]).decode("ascii") == repr(expected)
 
 
 def test_eqscan_finds_comparison_sites():

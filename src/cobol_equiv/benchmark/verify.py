@@ -26,13 +26,15 @@ committed one, ignoring the two counts that depend on the machine's speed
 verification is.
 
 --runtime selects the comparison behaviour of CobDecimal in conditions A
-and B (deviation D14, see _driver.py). "registered" (the default) is that of
-runtime 1.0.0, frozen for the benchmark, and writes verdicts.csv;
-"corrected" is the value comparison of runtime 1.1.0 and writes
-verdicts-corrected.csv. Each mode also writes comparisons[-corrected].csv:
-per translation and round, the CobDecimal comparison calls made on the
-HELD-OUT vectors (GnuCOBOL 3.1.2); --check ignores these counts for rows
-with timed-out vectors, where they depend on how far the run got.
+and B (deviation D14, see _driver.py). This command verifies the
+"registered" mode (runtime 1.0.0, frozen for the benchmark) in full and
+writes verdicts.csv, and comparisons.csv for the units of the D14 scope
+(per translation and round, the CobDecimal comparison calls made on the
+HELD-OUT vectors on GnuCOBOL 3.1.2; --check ignores these counts for rows
+with timed-out vectors, where they depend on how far the run got). The
+"corrected" mode (runtime 1.1.0) is verified within the D14 scope only, by
+`python -m cobol_equiv.benchmark.ci sensitivity` (writes) and
+`ci check --runtime corrected` (checks); this command refuses it.
 """
 
 from __future__ import annotations
@@ -251,7 +253,11 @@ def _row(p, condition, attempt, rnd, label, set_name, res, path) -> dict:
 
 def generate(jobs: int | None = None, fresh: bool = False, progress=None,
              mode: str = "registered") -> tuple[str, str]:
-    """(verdicts CSV, comparisons CSV) of the mode."""
+    """(verdicts CSV of every unit, comparisons CSV of the D14 scope units) of the mode."""
+    from .ci import scope, workers
+
+    affected, sampled = scope()
+    in_scope = set(affected) | set(sampled)
     if fresh and PARTS.exists():
         import shutil
         shutil.rmtree(PARTS)  # saved units and the evaluation cache
@@ -264,7 +270,7 @@ def generate(jobs: int | None = None, fresh: bool = False, progress=None,
     # B units find the A evaluations in the cache instead of repeating them.
     phases = [[u for u in todo if u[2] != "B"], [u for u in todo if u[2] == "B"]]
     i = 0
-    with ProcessPoolExecutor(max_workers=jobs or os.cpu_count() or 1) as ex:
+    with ProcessPoolExecutor(max_workers=jobs or workers()) as ex:
         for phase in phases:
             for f in as_completed([ex.submit(_run_unit, u, mode) for u in phase]):
                 unit, rows = f.result()
@@ -279,7 +285,8 @@ def generate(jobs: int | None = None, fresh: bool = False, progress=None,
     wu.writeheader()
     for u in all_units:
         w.writerows(done[u])
-        wu.writerows(r for r in done[u] if r["set"] == "heldout" and r["version"] == PRIMARY)
+        if u in in_scope:
+            wu.writerows(r for r in done[u] if r["set"] == "heldout" and r["version"] == PRIMARY)
     return buf.getvalue(), usage.getvalue()
 
 
@@ -321,6 +328,10 @@ def main(argv=None) -> int:
     ap.add_argument("--fresh", action="store_true", help="delete saved units and the evaluation cache first")
     ap.add_argument("--runtime", choices=MODES, default="registered")
     a = ap.parse_args(argv)
+    if a.runtime == "corrected":
+        print("the corrected mode is verified within the D14 scope: use "
+              "python -m cobol_equiv.benchmark.ci sensitivity (write) or ci check --runtime corrected")
+        return 2
     texts = generate(a.jobs, a.fresh, progress=lambda m: print(m, file=sys.stderr, flush=True),
                      mode=a.runtime)
     if a.check:

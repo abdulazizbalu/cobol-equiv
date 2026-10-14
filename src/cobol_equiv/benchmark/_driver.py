@@ -96,7 +96,7 @@ def _setup_runtime(mode):
         try:
             v = value_eq(a, b)
         except ArithmeticError:
-            return False
+            return True  # a NaN: False with identity ==, an error with value ==
         return v is not NotImplemented and v != (a is b)
 
     def eq(a, b):

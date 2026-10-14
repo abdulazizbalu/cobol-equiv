@@ -201,7 +201,9 @@ def write_failures(rows: list[dict], path: Path = FAILURES, carry: Path | None =
     filled in, existing manual categories and reasons are kept. With carry
     (failures-corrected.csv: carry=failures.csv), an attempt that fails in
     the same way as in the carry file (same first failure) takes its
-    category and reason from there."""
+    category and reason from there. A row whose first failure is no longer
+    the recorded one loses its manual category and must be classified again
+    (also in failures.csv)."""
     old = _failure_rows(path)
     if carry is not None:
         for key, r in _failure_rows(carry).items():

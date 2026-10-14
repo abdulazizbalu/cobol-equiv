@@ -9,7 +9,8 @@ both modes on every pull request:
 - `inputs` writes benchmark/results/verify-inputs.json: for each runtime mode
   and unit (track, program, condition, attempt), the SHA-256 of what decides
   its verdicts: the translation files of the unit, the vectors file, the
-  runtime mode and, for conditions A and B, the runtime version. It also
+  program's spec, the verification code (verify, runner, driver, vectors),
+  the runtime mode and, for conditions A and B, the runtime version. It also
   records the SHA-256 of the runtime's source: --check fails when the file
   is not current, and with --base REF also when the runtime's source
   differs from that on REF under the same version number.
@@ -65,8 +66,9 @@ def input_hash(unit, mode: str) -> str:
     track, name, condition, attempt = unit
     p = verify._program(track, name)
     runtime = "none" if condition == "C" else f"{mode}|{runtime_version()}"
-    h = hashlib.sha256(f"{track}|{name}|{condition}|{attempt}|{runtime}".encode("utf-8"))
+    h = hashlib.sha256(f"{track}|{name}|{condition}|{attempt}|{runtime}|{verify._code_hash()}".encode("utf-8"))
     h.update(vectors_path(p).read_bytes())
+    h.update((p.dir / "spec.py").read_bytes())
     for path in verify.versions(p, condition, attempt):
         h.update(b"|none|" if path is None else b"|" + path.read_bytes())
     return h.hexdigest()
@@ -123,13 +125,18 @@ def sample(units: list, k: int) -> list:
     return out
 
 
+def _set_parts(path: str) -> None:
+    verify.PARTS = Path(path)  # in each worker, whatever the start method
+
+
 def run_units(units: list, mode: str, jobs: int | None, progress) -> dict:
     done = {u: r for u in units if (r := verify._saved(u, mode)) is not None}
     todo = [u for u in units if u not in done]
     progress(f"{len(units)} units ({mode}): {len(done)} saved, {len(todo)} to run")
     phases = [[u for u in todo if u[2] != "B"], [u for u in todo if u[2] == "B"]]
     i = 0
-    with ProcessPoolExecutor(max_workers=jobs or workers()) as ex:
+    with ProcessPoolExecutor(max_workers=jobs or workers(), initializer=_set_parts,
+                             initargs=(str(verify.PARTS),)) as ex:
         for phase in phases:
             for f in as_completed([ex.submit(verify._run_unit, u, mode) for u in phase]):
                 unit, rows = f.result()
@@ -146,10 +153,10 @@ def check(mode: str, track: str | None, base: str | None, k: int, jobs: int | No
         return 1
     us = [u for u in verify.units() if track is None or u[0] == track]
     bad = 0
+    affected, sampled = scope()
     if mode == "corrected":
         # outside the D14 scope the corrected rows are the registered rows
         # (D14): check the copy instead of running the unit
-        affected, sampled = scope()
         reg = _rows_by_unit(verify.OUT.read_text(encoding="utf-8"))
         cor = _rows_by_unit(verify.OUTS["corrected"][0].read_text(encoding="utf-8"))
         outside = [u for u in us if u not in affected and u not in sampled]
@@ -180,7 +187,16 @@ def check(mode: str, track: str | None, base: str | None, k: int, jobs: int | No
             finally:
                 verify.PARTS = saved_parts
     selected = {unit_id(u) for u in us}
-    for out, field in zip(verify.OUTS[mode], ("verdicts", "comparisons")):
+    if mode == "registered":
+        # the D14 scope rests on the static scan: a unit outside it must make
+        # no CobDecimal comparison or hash call
+        for u in us:
+            if u in affected or u in sampled or u[2] == "C":
+                continue
+            calls = sum(int(r.get(k, 0)) for r in done[u] for k in ("eq", "order", "hash"))
+            if calls:
+                print(f"{unit_id(u)}: outside the D14 scope but made {calls} CobDecimal comparison or hash calls")
+                bad += 1
         committed = _rows_by_unit(out.read_text(encoding="utf-8") if out.exists() else "")
         fields = verify.FIELDS if field == "verdicts" else verify.USAGE_FIELDS
         for u in us:

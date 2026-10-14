@@ -584,7 +584,9 @@ before any translation call.
   from such an A translation; and a fixed sample of 30 other A and B units
   (seed `crc32("d14-sample")`), whose verdicts must not change. The scan is
   approximate (values passed through containers, attributes or parameters
-  are not followed); the sample is the check on what it misses. Condition
+  are not followed); the sample is the check on what it misses, and every
+  full registered verification (benchmark-full.yml) fails if a unit outside
+  the scope makes a CobDecimal comparison or hash call. Condition
   C translations do not import the runtime (none mentions the package, and
   they run with `python -I -S`), so their verdicts cannot change and they
   were not run again. Outside the scope, the corrected verdicts are the

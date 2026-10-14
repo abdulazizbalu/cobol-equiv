@@ -18,27 +18,20 @@
     {
       "id": 3,
       "name": "translation runs and artifacts",
-      "status": "done; in review",
-      "completed_units": [
-        "A1",
-        "A2",
-        "A3",
-        "C1",
-        "C2",
-        "C3",
-        "B1",
-        "B2",
-        "B3"
-      ],
-      "verified": "benchmark/results/verdicts.csv covers all 450 attempts (50 programs x 3 conditions x 3 attempts)"
+      "status": "done (abdulazizbalu/cobol-equiv#8)"
     },
     {
       "id": 4,
       "name": "analysis, taxonomy, report and documentation",
-      "status": "not started"
+      "status": "in review",
+      "done": [
+        "failures.csv: every failing final attempt categorised (manual ones blind to condition, blind-key.csv)",
+        "report: summary.json, docs/benchmark.md and README blocks from analysis.py",
+        "D13 recorded"
+      ]
     }
   ],
-  "next": "review and merge the runs PR; then step 4: failures.csv taxonomy (python -m cobol_equiv.benchmark.analysis failures / blind), report, docs/benchmark.md, README",
+  "next": "review and merge the analysis PR (branch feat/benchmark-analysis); then the benchmark is complete",
   "sources_pinned": {
     "omp_course_commit": "1f037d24326124f4f2c5cd2d31e5220ceb549580",
     "rosettacodedata_commit": "1d475861d7141ef2fafff293d9339f56e4b0f5db",

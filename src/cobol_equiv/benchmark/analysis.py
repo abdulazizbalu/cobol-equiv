@@ -280,7 +280,43 @@ def tables(s: dict) -> str:
         for cat in CATEGORIES + ["unclassified"]:
             lines.append(f"| {cat} | " + " | ".join(str(s["taxonomy"][f"{t}/{c}"][cat]) for t in TRACKS
                                                    for c in CONDITIONS) + " |")
+    crashes = crash_messages()
+    if crashes:
+        lines += ["", "Crash messages (crash or syntax error, by condition):", ""]
+        for (c, msg), n in crashes:
+            lines.append(f"- {c}: {n} x `{msg}`")
+    ex = examples()
+    if ex:
+        lines += ["", "One example per failure category (first attempt in program order; the full list "
+                      "is benchmark/results/failures.csv):", ""]
+        for cat, r in ex:
+            diff = r["first_failure"].replace("|", "\\|")[:220]
+            lines.append(f"- **{cat}** ({r['program']}): {r['reason'] or diff}. First difference: `{diff}`")
     return "\n".join(lines) + "\n"
+
+
+def crash_messages() -> list:
+    if not FAILURES.exists():
+        return []
+    from collections import Counter
+
+    with FAILURES.open(encoding="utf-8", newline="") as fh:
+        rows = [r for r in csv.DictReader(fh) if r["category"] == CATEGORIES[1]]
+    c = Counter((r["condition"], r["first_failure"].split(" (")[0][:100]) for r in rows)
+    return sorted(c.items(), key=lambda kv: (kv[0][0], -kv[1], kv[0][1]))
+
+
+def examples() -> list:
+    if not FAILURES.exists():
+        return []
+    with FAILURES.open(encoding="utf-8", newline="") as fh:
+        rows = sorted(csv.DictReader(fh), key=lambda r: (r["track"], r["program"], r["condition"], r["attempt"]))
+    out = []
+    for cat in CATEGORIES:
+        r = next((r for r in rows if r["category"] == cat), None)
+        if r:
+            out.append((cat, r))
+    return out
 
 
 def _replace_block(text: str, block: str) -> str:

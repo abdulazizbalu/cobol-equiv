@@ -551,6 +551,17 @@ before any translation call.
   later, the vector counted as a time-out. Condition B's DEV
   checks during generation used the original limits; that is unchanged.
 
+- **D13 (API sheet error, found in the analysis).** The frozen API sheet
+  describes `dec` as giving "CobDecimal ... for compute expressions and
+  comparisons", but `CobDecimal` has no ordering operators: `<` and `>`
+  between two `CobDecimal` values raise `TypeError`. Most crashes of
+  condition A raise this error (counts in docs/benchmark.md, from
+  benchmark/results/failures.csv). The
+  sheet and the runtime were not changed after the runs, so condition A
+  (and B, which starts from A) was measured with this error in its
+  material; condition C does not use the sheet. The A vs C comparison is
+  affected by it, and the report says so.
+
 Notes, not deviations: the runtime was extended before the freeze, while
 writing reference translations (ACCEPT from standard input, alphanumeric
 to numeric conversion for items, truncation of arithmetic results stored

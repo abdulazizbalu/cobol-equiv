@@ -156,3 +156,5 @@ jobs:
         run: python -m cobol_equiv.benchmark.audit
       - name: Committed translations reproduce the committed verdicts
         run: python -m cobol_equiv.benchmark.verify --check
+      - name: Benchmark report is generated from the committed data
+        run: python -m cobol_equiv.benchmark.analysis report --check

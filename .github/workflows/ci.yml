@@ -58,6 +58,8 @@ jobs:
       - name: Fetch Track E sources (pinned URLs, checksums)
         run: python -m cobol_equiv.benchmark.fetch
       - name: Run tests
+        env:
+          COBOL_EQUIV_TRAP_COMPARISONS: "1"  # no CobDecimal comparison outside its tests (D14)
         run: python -m pytest -q
 
   reproduce:

@@ -3,6 +3,11 @@ every program passes all of its materialised vectors (VISIBLE, DEV and
 HELD-OUT) against GnuCOBOL 3.1.2, run the same way as translations.
 
     python -m cobol_equiv.benchmark.refcheck [--programs a,b]
+
+Each reference runs with both CobDecimal comparison behaviours (deviation
+D14: "registered", runtime 1.0.0, and "corrected", runtime 1.1.0) and must
+pass with both; the CobDecimal comparison and hash calls it makes are
+printed ("cmp").
 """
 
 from __future__ import annotations
@@ -15,14 +20,15 @@ from .runner import judge, run_translation
 from .vectors import PRIMARY, decode_input, load, vectors_path
 
 
-def check_program(p) -> tuple[int, int, list[str]]:
+def check_program(p, runtime: str | None = None) -> tuple[int, int, list[str], dict]:
     spec = p.spec()
     if not vectors_path(p).exists():
-        return 0, 0, ["no materialised vectors"]
+        return 0, 0, ["no materialised vectors"], {}
     doc = load(p)
     items = [(s, v) for s, vs in doc["sets"].items() for v in vs]
     results = run_translation(p.dir / "reference.py", [decode_input(v["input"]) for _, v in items],
-                              spec.timeout, "A")
+                              spec.timeout, "A", runtime=runtime)
+    cmp = {k: sum(r.get("cmp", {}).get(k, 0) for r in results) for k in ("eq", "eq_diff", "order", "hash")}
     bad = []
     for (s, v), r in zip(items, results):
         verdict = judge(spec, v["expected"][PRIMARY], r)
@@ -31,7 +37,7 @@ def check_program(p) -> tuple[int, int, list[str]]:
     held = len(doc["sets"]["heldout"])
     lost = sum(1 for r in doc["removed"] if r["set"] == "heldout")
     return len(items), held, bad + ([f"{lost} of {held + lost} HELD-OUT inputs removed (over 10%)"]
-                                    if lost * 10 > held + lost else [])
+                                    if lost * 10 > held + lost else []), cmp
 
 
 def main(argv=None) -> int:
@@ -43,11 +49,13 @@ def main(argv=None) -> int:
     for p in all_programs():
         if names and p.name not in names:
             continue
-        n, held, bad = check_program(p)
-        print(f"{p.track} {p.name:40} vectors {n} heldout {held} {'FAIL' if bad else 'pass'}")
-        for b in bad[:5]:
-            print("    " + b)
-        failed += bool(bad)
+        for runtime in ("registered", "corrected"):
+            n, held, bad, cmp = check_program(p, runtime)
+            print(f"{p.track} {p.name:40} {runtime:10} vectors {n} heldout {held} "
+                  f"{'FAIL' if bad else 'pass'} cmp {cmp}")
+            for b in bad[:5]:
+                print("    " + b)
+            failed += bool(bad)
     return 1 if failed else 0
 
 

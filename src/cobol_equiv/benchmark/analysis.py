@@ -1,12 +1,15 @@
 """Measurements and failure taxonomy (docs/benchmark-protocol.md, sections
 5 and 6), computed only from committed data.
 
-    python -m cobol_equiv.benchmark.analysis failures   # write the automatic rows of failures.csv
+    python -m cobol_equiv.benchmark.analysis failures [--runtime corrected]  # automatic rows of failures[-corrected].csv
     python -m cobol_equiv.benchmark.analysis blind      # print the blind classification list
     python -m cobol_equiv.benchmark.analysis report [--check]
 
-`report` writes benchmark/results/summary.json and the generated blocks of
-docs/benchmark.md and README.md (between the BENCHMARK markers).
+`report` writes benchmark/results/summary.json and sensitivity.json and the
+generated blocks of docs/benchmark.md and README.md (between the BENCHMARK
+markers: the results as registered; between the SENSITIVITY markers: the
+same measurements with the CobDecimal comparison defect corrected,
+deviation D14, next to them).
 """
 
 from __future__ import annotations
@@ -26,6 +29,11 @@ RESULTS = ROOT / "benchmark" / "results"
 VERDICTS = RESULTS / "verdicts.csv"
 FAILURES = RESULTS / "failures.csv"
 SUMMARY = RESULTS / "summary.json"
+VERDICTS_CORRECTED = RESULTS / "verdicts-corrected.csv"
+FAILURES_CORRECTED = RESULTS / "failures-corrected.csv"
+SENSITIVITY = RESULTS / "sensitivity.json"
+EQ_SITES = RESULTS / "eq-sites.csv"
+COMPARISONS = RESULTS / "comparisons.csv"
 DOC = ROOT / "docs" / "benchmark.md"
 README = ROOT / "README.md"
 Z = 1.959964
@@ -89,8 +97,8 @@ def holm(ps: list[float]) -> list[float]:
 
 # ---- data ----------------------------------------------------------------------
 
-def load_verdicts() -> list[dict]:
-    with VERDICTS.open(encoding="utf-8", newline="") as fh:
+def load_verdicts(path: Path = VERDICTS) -> list[dict]:
+    with path.open(encoding="utf-8", newline="") as fh:
         return list(csv.DictReader(fh))
 
 
@@ -125,7 +133,7 @@ def pass_at_3(rows: dict, track: str, condition: str) -> dict:
     return {"programs_passed": k, "programs": n, "rate": k / n if n else None, "ci95": [lo, hi]}
 
 
-def compute(rows: list[dict]) -> dict:
+def compute(rows: list[dict], failures: Path = FAILURES) -> dict:
     held, vis = final_rows(rows), final_rows(rows, "visible")
     out: dict = {"by_track": {}, "tests": []}
     for t in TRACKS:
@@ -169,7 +177,7 @@ def compute(rows: list[dict]) -> dict:
         "not_run_no_3_2_outputs": sorted({k[1] for k, r in held.items() if int(r["pass"])
                                           and k not in sec}),
     }
-    out["taxonomy"] = taxonomy()
+    out["taxonomy"] = taxonomy(failures)
     return out
 
 
@@ -180,24 +188,36 @@ def failing_finals(rows: list[dict]) -> list[dict]:
     return [r for k, r in sorted(held.items()) if not int(r["pass"])]
 
 
-def write_failures(rows: list[dict]) -> None:
+def _failure_rows(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    with path.open(encoding="utf-8", newline="") as fh:
+        return {(r["track"], r["program"], r["condition"], r["attempt"]): r for r in csv.DictReader(fh)}
+
+
+def write_failures(rows: list[dict], path: Path = FAILURES, carry: Path | None = None) -> None:
     """Rows for every failing final attempt; the automatic categories are
-    filled in, existing manual categories and reasons are kept."""
-    old = {}
-    if FAILURES.exists():
-        with FAILURES.open(encoding="utf-8", newline="") as fh:
-            old = {(r["track"], r["program"], r["condition"], r["attempt"]): r for r in csv.DictReader(fh)}
+    filled in, existing manual categories and reasons are kept. With carry
+    (failures-corrected.csv: carry=failures.csv), an attempt that fails in
+    the same way as in the carry file (same first failure) takes its
+    category and reason from there."""
+    old = _failure_rows(path)
+    if carry is not None:
+        for key, r in _failure_rows(carry).items():
+            old.setdefault(key, r)
     out = []
     for r in failing_finals(rows):
         key = (r["track"], r["program"], r["condition"], r["attempt"])
         auto = AUTOMATIC.get(r["first_failure_kind"], "")
         prev = old.get(key, {})
+        if prev.get("first_failure", r["first_failure"]) != r["first_failure"]:
+            prev = {}  # fails differently: classify again
         out.append({"track": r["track"], "program": r["program"], "condition": r["condition"],
                     "attempt": r["attempt"], "first_failure_kind": r["first_failure_kind"],
                     "category": auto or prev.get("category", ""),
                     "reason": prev.get("reason", "") if not auto else (prev.get("reason") or r["first_failure"][:120]),
                     "first_failure": r["first_failure"]})
-    with FAILURES.open("w", encoding="utf-8", newline="") as fh:
+    with path.open("w", encoding="utf-8", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=FAILURE_FIELDS, lineterminator="\n")
         w.writeheader()
         w.writerows(out)
@@ -232,10 +252,10 @@ def blind_list(rows: list[dict]) -> list[dict]:
             for i, r in enumerate(finals, 1)]
 
 
-def taxonomy() -> dict:
-    if not FAILURES.exists():
+def taxonomy(failures: Path = FAILURES) -> dict:
+    if not failures.exists():
         return {}
-    with FAILURES.open(encoding="utf-8", newline="") as fh:
+    with failures.open(encoding="utf-8", newline="") as fh:
         rows = list(csv.DictReader(fh))
     counts: dict = {}
     for t in TRACKS:
@@ -335,8 +355,122 @@ def examples() -> list:
     return out
 
 
-def _replace_block(text: str, block: str) -> str:
-    start, end = "<!-- BENCHMARK:START -->", "<!-- BENCHMARK:END -->"
+# ---- sensitivity to the CobDecimal comparison defect (D14) ---------------------
+
+def _category(failures: dict, key) -> str:
+    r = failures.get(tuple(map(str, key)))
+    return "pass" if r is None else (r["category"] or "unclassified")
+
+
+def usage() -> dict:
+    """Per condition (A, B): translation files, and how many of them compare
+    CobDecimal values in their code (eq-sites.csv) and in their HELD-OUT run
+    with the registered runtime (comparisons.csv)."""
+    from .eqscan import translations
+
+    files = defaultdict(set)
+    for _, _, c, _, _, path in translations():
+        files[c].add(path.relative_to(ROOT).as_posix())
+    out = {}
+    with EQ_SITES.open(encoding="utf-8", newline="") as fh:
+        sites = list(csv.DictReader(fh))
+    with COMPARISONS.open(encoding="utf-8", newline="") as fh:
+        runs = [r for r in csv.DictReader(fh) if r["translation"]]
+    for c in ("A", "B"):
+        own = files[c]  # B: the repair-round translations (round 0 of B is the A translation)
+        st = {k: sorted({r["translation"] for r in sites if r["condition"] == c and r["kind"] == k})
+              for k in ("eq", "order", "in", "hash")}
+        dyn_rows = [r for r in runs if r["translation"] in own]
+        dyn = {k: sorted({r["translation"] for r in dyn_rows if int(r[k])})
+               for k in ("eq", "eq_diff", "order", "hash")}
+        out[c] = {"files": len(own),
+                  "static": {k: len(v) for k, v in st.items()},
+                  "static_sites": {k: sum(1 for r in sites if r["condition"] == c and r["kind"] == k)
+                                   for k in st},
+                  "dynamic": {k: len(v) for k, v in dyn.items()},
+                  "static_eq_files": st["eq"], "dynamic_eq_diff_files": dyn["eq_diff"]}
+    return out
+
+
+def sensitivity() -> dict:
+    reg_rows, cor_rows = load_verdicts(VERDICTS), load_verdicts(VERDICTS_CORRECTED)
+    reg, cor = compute(reg_rows), compute(cor_rows, FAILURES_CORRECTED)
+    reg_f, cor_f = _failure_rows(FAILURES), _failure_rows(FAILURES_CORRECTED)
+    a, b = final_rows(reg_rows), final_rows(cor_rows)
+    flips = []
+    for key in sorted(set(a) | set(b)):
+        before, after = _category(reg_f, key), _category(cor_f, key)
+        pa, pb = int(a[key]["pass"]), int(b[key]["pass"])
+        if pa != pb or before != after:
+            flips.append({"track": key[0], "program": key[1], "condition": key[2], "attempt": key[3],
+                          "registered": before, "corrected": after,
+                          "corrected_first_failure": b[key]["first_failure"][:200]})
+    def held(rows):
+        keys = ("track", "program", "condition", "attempt", "round")
+        return {tuple(r[k] for k in keys): r["pass"] for r in rows
+                if r["set"] == "heldout" and r["version"] == "3.1.2"}
+
+    ha, hb = held(reg_rows), held(cor_rows)
+    rounds = ["/".join(k) for k in sorted(set(ha) | set(hb)) if ha.get(k) != hb.get(k)]
+    return {"registered": reg, "corrected": cor, "flips": flips, "flipped_rows_heldout_3_1_2": rounds,
+            "usage": usage()}
+
+
+def sensitivity_tables(x: dict) -> str:
+    reg, cor = x["registered"], x["corrected"]
+    lines = ["| track | condition | HELD-OUT pass, as registered | 95% CI | HELD-OUT pass, defect corrected | "
+             "95% CI | pass@3, as registered | pass@3, corrected |", "|---|---|---|---|---|---|---|---|"]
+    for t in TRACKS:
+        for c in CONDITIONS:
+            h, h2 = reg["by_track"][t]["heldout"][c], cor["by_track"][t]["heldout"][c]
+            p, p2 = reg["by_track"][t]["pass_at_3"][c], cor["by_track"][t]["pass_at_3"][c]
+            lines.append(f"| {t} | {c} | {h['passed']}/{h['attempts']} ({_pct(h['rate'])}) | {_ci(h['ci95'])} | "
+                         f"{h2['passed']}/{h2['attempts']} ({_pct(h2['rate'])}) | {_ci(h2['ci95'])} | "
+                         f"{p['programs_passed']}/{p['programs']} | {p2['programs_passed']}/{p2['programs']} |")
+    lines += ["", "| track | comparison | A only / other only, as registered | McNemar p | Holm p | "
+                  "A only / other only, corrected | McNemar p | Holm p | sign test p, as registered / corrected |",
+              "|---|---|---|---|---|---|---|---|---|"]
+    for r, k in zip(reg["tests"], cor["tests"]):
+        m, m2 = r["mcnemar"], k["mcnemar"]
+        lines.append(f"| {r['track']} | {r['comparison']} | {m['first_only']} / {m['second_only']} | {_p(m['p'])} | "
+                     f"{_p(m['p_holm'])} | {m2['first_only']} / {m2['second_only']} | {_p(m2['p'])} | "
+                     f"{_p(m2['p_holm'])} | {_p(r['sign_test']['p'])} / {_p(k['sign_test']['p'])} |")
+    lines += ["", "| track | B after round 0, as registered / corrected | 1 | 2 | 3 |", "|---|---|---|---|---|"]
+    for t in TRACKS:
+        cells = [f"{r['passed']}/{r['attempts']} / {k['passed']}/{k['attempts']}"
+                 for r, k in zip(reg["by_track"][t]["b_by_round"], cor["by_track"][t]["b_by_round"])]
+        lines.append(f"| {t} | " + " | ".join(cells) + " |")
+    u = x["usage"]
+    lines += ["", "| condition | translation files | with == / != on CobDecimal in the code | "
+                  "whose HELD-OUT run made an == / != call the defect answers differently | "
+                  "with an ordering of CobDecimal in the code | in / set / dict / hash in the code |",
+              "|---|---|---|---|---|---|"]
+    for c in ("A", "B"):
+        v = u[c]
+        lines.append(f"| {c} | {v['files']} | {v['static']['eq']} ({v['static_sites']['eq']} sites) | "
+                     f"{v['dynamic']['eq_diff']} | {v['static']['order']} | "
+                     f"{v['static']['in'] + v['static']['hash']} |")
+    lines += ["", f"Final attempts whose HELD-OUT verdict or failure category changes ({len(x['flips'])}; "
+                  "category \"pass\" means the attempt passes):", ""]
+    if x["flips"]:
+        lines += ["| track | program | condition | attempt | as registered | defect corrected |",
+                  "|---|---|---|---|---|---|"]
+        for f in x["flips"]:
+            lines.append(f"| {f['track']} | {f['program']} | {f['condition']} | {f['attempt']} | "
+                         f"{f['registered']} | {f['corrected']} |")
+    else:
+        lines.append("none")
+    sec = cor["secondary"]
+    lines += ["", f"Defect corrected, GnuCOBOL 3.2 re-run of the final translations that pass HELD-OUT on 3.1.2: "
+                  f"{sec['pass']} of {sec['run']} pass; fail on 3.2: {', '.join(sec['fail_on_3_2']) or 'none'}."]
+    return "\n".join(lines) + "\n"
+
+
+BLOCKS = ("BENCHMARK", "SENSITIVITY")
+
+
+def _replace_block(text: str, block: str, name: str = "BENCHMARK") -> str:
+    start, end = f"<!-- {name}:START -->", f"<!-- {name}:END -->"
     a, b = text.index(start) + len(start), text.index(end)
     return text[:a] + "\n" + block + text[b:]
 
@@ -344,19 +478,22 @@ def _replace_block(text: str, block: str) -> str:
 def report(check: bool) -> int:
     s = compute(load_verdicts())
     summary = json.dumps(s, indent=1, sort_keys=True) + "\n"  # no links in the JSON
-    block = tables(s)
-    targets = {SUMMARY: summary}
+    x = sensitivity()
+    blocks = {"BENCHMARK": tables(s), "SENSITIVITY": sensitivity_tables(x)}
+    targets = {SUMMARY: summary, SENSITIVITY: json.dumps(x, indent=1, sort_keys=True) + "\n"}
     missing = []
     for path in (DOC, README):
         text = path.read_text(encoding="utf-8") if path.exists() else ""
-        if "<!-- BENCHMARK:START -->" in text and "<!-- BENCHMARK:END -->" in text:
-            rel = "semantic-traps.md" if path == DOC else "docs/semantic-traps.md"
-            targets[path] = _replace_block(text, block.replace(TRAPS_LINK, rel))
-        else:
-            missing.append(path)
+        rel = "semantic-traps.md" if path == DOC else "docs/semantic-traps.md"
+        for name in BLOCKS:
+            if f"<!-- {name}:START -->" in text and f"<!-- {name}:END -->" in text:
+                text = _replace_block(text, blocks[name].replace(TRAPS_LINK, rel), name)
+            else:
+                missing.append((path, name))
+        targets[path] = text
     if missing:
-        for p in missing:
-            print(f"{p} has no BENCHMARK:START/END block")
+        for p, name in missing:
+            print(f"{p} has no {name}:START/END block")
         return 1
     bad = [p for p, t in targets.items() if not p.exists() or p.read_text(encoding="utf-8") != t]
     if check:
@@ -372,9 +509,13 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("command", choices=["failures", "blind", "report"])
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--runtime", choices=["registered", "corrected"], default="registered")
     a = ap.parse_args(argv)
     if a.command == "failures":
-        write_failures(load_verdicts())
+        if a.runtime == "corrected":
+            write_failures(load_verdicts(VERDICTS_CORRECTED), FAILURES_CORRECTED, carry=FAILURES)
+        else:
+            write_failures(load_verdicts())
         return 0
     if a.command == "blind":
         for item in blind_list(load_verdicts()):

@@ -130,6 +130,56 @@ class CobDecimal:
     def __pos__(self):
         return self
 
+    # ---- comparison ---------------------------------------------------
+    # COBOL compares numeric operands by algebraic value: the scale does not
+    # matter (1.50 = 1.5) and there is no negative zero. The other operand
+    # may be a CobDecimal, an int or a finite Decimal; anything else (a
+    # FieldRef, a string, a float) is not compared (== gives False, < raises
+    # TypeError), so that equal values always have equal hashes. Wrap fields
+    # and literals with dec(). A NaN intermediate (division by zero) has no
+    # value and cannot be compared or hashed.
+    def _cmp(self, other) -> int | None:
+        if isinstance(other, CobDecimal):
+            pass
+        elif isinstance(other, int) and not isinstance(other, bool):
+            other = CobDecimal(other, 0)
+        elif isinstance(other, Decimal) and other.is_finite():
+            other = CobDecimal.of(other)
+        else:
+            return None
+        if self.nan or other.nan:
+            raise ArithmeticError("NaN intermediate (division by zero) cannot be compared")
+        a, b, _ = self._align(other)
+        return (a > b) - (a < b)
+
+    def __eq__(self, other):
+        c = self._cmp(other)
+        return NotImplemented if c is None else c == 0
+
+    def __ne__(self, other):
+        c = self._cmp(other)
+        return NotImplemented if c is None else c != 0
+
+    def __lt__(self, other):
+        c = self._cmp(other)
+        return NotImplemented if c is None else c < 0
+
+    def __le__(self, other):
+        c = self._cmp(other)
+        return NotImplemented if c is None else c <= 0
+
+    def __gt__(self, other):
+        c = self._cmp(other)
+        return NotImplemented if c is None else c > 0
+
+    def __ge__(self, other):
+        c = self._cmp(other)
+        return NotImplemented if c is None else c >= 0
+
+    def __hash__(self):
+        # equal to hash(int) and hash(Decimal) of the same value
+        return hash(self.to_decimal())
+
 
 def scaled_decimal(value: int, scale: int) -> Decimal:
     """value * 10**-scale as an exact Decimal (Decimal.scaleb would round to

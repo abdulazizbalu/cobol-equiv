@@ -288,11 +288,11 @@ def _fake_evaluate(monkeypatch, results):
     from cobol_equiv.benchmark import verify
     from cobol_equiv.benchmark.vectors import b64
 
-    monkeypatch.setattr(verify, "_results", lambda path, condition, items, timeout: results)
+    monkeypatch.setattr(verify, "_results", lambda path, condition, items, timeout, mode: results)
     p = next(p for p in ALL if p.name == "acctpost")
     exp = {"3.1.2": {"stdout": b64(b"x\n"), "files": {}}}
     items = [{"input": {}, "expected": exp} for _ in results]
-    return verify._evaluate(p, Path(__file__), "A", items, "3.1.2")
+    return verify._evaluate(p, Path(__file__), "A", items, "3.1.2", "registered")
 
 
 def test_timeout_precedence(monkeypatch):
@@ -362,3 +362,71 @@ def test_report_check_fails_without_the_generated_block(tmp_path, monkeypatch):
     doc.write_text("no block here\n", encoding="utf-8")
     monkeypatch.setattr(analysis, "DOC", doc)
     assert analysis.report(check=True) == 1
+
+
+COMPARING_TRANSLATION = """\
+from cobol_equiv.runtime import dec
+
+def main(stdin, files):
+    a, b = dec("1.50"), dec("1.5")
+    out = [a == b, a != b, a == a, dec(2) == 2, hash(a) == hash(b)]
+    if stdin == b"order":
+        out.append(a < dec(2))
+    return repr(out).encode("ascii"), {}
+"""
+
+
+def test_driver_runtime_modes(tmp_path):
+    """registered: CobDecimal as in runtime 1.0.0 (identity ==, no ordering);
+    corrected: value comparison; both count the calls (D14)."""
+    from cobol_equiv.benchmark.runner import run_translation
+    from cobol_equiv.benchmark.vectors import unb64
+
+    t = tmp_path / "t.py"
+    t.write_text(COMPARING_TRANSLATION, encoding="utf-8")
+    inputs = [{"<stdin>": b""}, {"<stdin>": b"order"}]
+    reg = run_translation(t, inputs, timeout=10, condition="A", runtime="registered")
+    cor = run_translation(t, inputs, timeout=10, condition="A", runtime="corrected")
+    assert unb64(reg[0]["stdout"]) == b"[False, True, True, False, False]"
+    assert reg[1]["error"] == "TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'"
+    assert unb64(cor[0]["stdout"]) == b"[True, False, True, True, True]"
+    assert unb64(cor[1]["stdout"]) == b"[True, False, True, True, True, True]"
+    # a == b, a != b and dec(2) == 2 answer differently in the two modes; a == a does not
+    for r in (reg[0], cor[0]):
+        assert (r["cmp"]["eq"], r["cmp"]["eq_diff"], r["cmp"]["hash"]) == (4, 3, 2)
+    assert reg[1]["cmp"]["order"] == cor[1]["cmp"]["order"] == 1
+    # without a mode the installed runtime is used and nothing is counted
+    plain = run_translation(t, inputs[:1], timeout=10, condition="A")
+    assert unb64(plain[0]["stdout"]) == unb64(cor[0]["stdout"]) and not any(plain[0]["cmp"].values())
+
+
+def test_registered_mode_has_no_comparison_methods_beyond_identity():
+    """The registered behaviour is that of a class without comparison methods."""
+    class Plain:
+        pass
+
+    a, b = Plain(), Plain()
+    assert (a == b, a != b, a == a, a == 1) == (False, True, True, False)
+    with pytest.raises(TypeError, match="'<' not supported between instances of 'Plain' and 'Plain'"):
+        a < b  # noqa: B015
+
+
+def test_eqscan_finds_comparison_sites():
+    from cobol_equiv.benchmark.eqscan import scan
+
+    src = (
+        "from cobol_equiv.runtime import dec as D\n"
+        "def total(ws):\n    return D(ws['A']) + 1\n"
+        "def main(stdin, files):\n"
+        "    x = D(1)\n"
+        "    if x == 0: pass\n"
+        "    if total(None) != D(2): pass\n"
+        "    while D(3) < x: pass\n"
+        "    s = {x}\n"
+        "    if x in s: pass\n"
+        "    y = max(x, D(4))\n"
+        "    if 1 == 2: pass\n"
+        "    if x.to_decimal() == 0: pass\n"
+    )
+    kinds = [(line, kind) for line, kind, _ in scan(src)]
+    assert kinds == [(6, "eq"), (7, "eq"), (8, "order"), (9, "hash"), (10, "in"), (11, "order")]

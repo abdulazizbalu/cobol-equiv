@@ -176,6 +176,33 @@ runtime's `CobDecimal` overloads `+ - * /` with Python precedence, which is
 the same as COBOL's for these operators. Exponentiation (`**`) is not
 implemented.
 
+### Comparison (`tests/oracle/test_compare.py`)
+
+Since runtime 1.1.0, `CobDecimal` compares by algebraic value, as a COBOL
+numeric relation condition does: `==`, `!=`, `<`, `<=`, `>`, `>=` against
+another `CobDecimal`, an `int` or a finite `Decimal`. The scale does not
+matter (`dec("1.50") == dec("1.5")`) and a negative zero equals zero.
+`hash` is that of the same value as an `int` or `Decimal`, so equal values
+are one set element or dict key. Other operands (a `FieldRef`, a string,
+a float) are not compared: `==` gives `False` and `<` raises `TypeError`;
+wrap them with `dec()`. A NaN intermediate (division by zero) raises
+`ArithmeticError` when compared or hashed. Checked with one program of 1128
+pairs of DISPLAY, COMP-3 and COMP items (negative zero included), each
+compared with the six relations directly and as arithmetic expressions, on
+each compiler version; not a generated rule.
+
+## Versions
+
+`cobol_equiv.runtime.__version__`:
+
+- **1.0.0**: the runtime of commit 50456a3, frozen for the benchmark
+  (`docs/benchmark-protocol.md`). `CobDecimal` has no comparison methods:
+  `==` and `!=` compare object identity, `<`, `<=`, `>`, `>=` raise
+  `TypeError`, and the hash is the identity hash. The version number was
+  assigned afterwards (deviation D14).
+- **1.1.0**: value comparison and hash of `CobDecimal` (above). Nothing else
+  changed.
+
 ## STRING, UNSTRING, INSPECT (rules `string_stmt`, `unstring_stmt`, `inspect_stmt`)
 
 `runtime/text.py`: `string`, `unstring` (with `Into` for DELIMITER IN /

@@ -33,7 +33,7 @@
     {
       "id": 5,
       "name": "sensitivity to the CobDecimal comparison defect (D14)",
-      "status": "in review",
+      "status": "done (abdulazizbalu/cobol-equiv#10)",
       "done": [
         "runtime 1.1.0: value comparison and hash of CobDecimal, oracle test against GnuCOBOL",
         "driver modes registered (runtime 1.0.0) and corrected (1.1.0); eq-sites.csv, comparisons*.csv",
@@ -42,7 +42,7 @@
       ]
     }
   ],
-  "next": "review and merge the sensitivity PR (branch feat/eq-sensitivity)",
+  "next": "none: the benchmark and the D14 sensitivity analysis are merged",
   "sources_pinned": {
     "omp_course_commit": "1f037d24326124f4f2c5cd2d31e5220ceb549580",
     "rosettacodedata_commit": "1d475861d7141ef2fafff293d9339f56e4b0f5db",

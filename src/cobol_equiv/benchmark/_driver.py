@@ -15,6 +15,16 @@ is recorded as timed out and the process ends; the parent records the
 vectors not reached as timed out too ("abandoned"). The file paths are
 removed from sys.argv before the translation is loaded, and the result file
 is not in the working directory.
+
+The request's "runtime" selects the comparison behaviour of CobDecimal
+(deviation D14): "registered" is that of runtime 1.0.0, frozen for the
+benchmark (no comparison methods: == and != compare identity, ordering
+raises TypeError, hash is the identity hash); "corrected" is the value
+comparison of the installed runtime (1.1.0). In both modes each result line
+carries "cmp": the == / != calls on a CobDecimal ("eq"), how many of them a
+runtime of the other mode would answer differently ("eq_diff"), and the
+ordering and hash calls. Calls made while the module is loaded are added
+to the counts of every vector, like its Unsupported hits.
 """
 
 import base64
@@ -179,15 +189,22 @@ def main() -> int:
         _disarm()
         load_error = _err(e)
     import_hits = _hits()
+    # comparisons made while the module was loaded: added to every vector's
+    # counts, like the Unsupported hits of the import
+    import_cmp = _cmp_counts()
+
+    def cmp_with_import(counts):
+        return {k: counts.get(k, 0) + import_cmp[k] for k in import_cmp}
+
     timeouts = 0
     for vec in req["vectors"]:
         if req.get("max_timeouts") and timeouts >= req["max_timeouts"]:
             break  # the parent marks the rest as timed out without running them
         if load_error == "timeout":
-            emit({"timeout": True, "unsupported": import_hits})
+            emit({"timeout": True, "unsupported": import_hits, "cmp": cmp_with_import({})})
             continue
         if load_error is not None:
-            emit({"error": load_error, "unsupported": import_hits})
+            emit({"error": load_error, "unsupported": import_hits, "cmp": cmp_with_import({})})
             continue
         stdin = base64.b64decode(vec.get("stdin", ""))
         files = {k: base64.b64decode(v) for k, v in vec.get("files", {}).items()}
@@ -216,7 +233,7 @@ def main() -> int:
             _disarm()
             r = {"error": _err(e), "trace": traceback.format_exc()[-1500:]}
         r["unsupported"] = _hits() + import_hits
-        r["cmp"] = _cmp_counts()
+        r["cmp"] = cmp_with_import(_cmp_counts())
         emit(r)
     sys.stdout = real_stdout
     out_fh.close()

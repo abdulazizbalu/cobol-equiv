@@ -192,6 +192,7 @@ def unit_key(unit, mode: str = "registered") -> str:
                        .encode("utf-8"))
     from .vectors import vectors_path
     h.update(vectors_path(p).read_bytes())
+    h.update(b"|spec|" + (p.dir / "spec.py").read_bytes())  # outputs, layouts and time limit
     for path in versions(p, condition, attempt):
         h.update(b"|none|" if path is None else path.read_bytes())
     return h.hexdigest()

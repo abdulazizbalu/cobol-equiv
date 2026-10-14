@@ -41,4 +41,4 @@ jobs:
           path: benchmark/results/.verify-parts
           # a new key per run: cache entries cannot be overwritten; the
           # pull-request jobs restore the newest entry by its prefix
-          key: verify-${{ matrix.runtime }}-${{ matrix.track }}-${{ hashFiles('benchmark/results/verify-inputs.json', 'src/cobol_equiv/benchmark/*.py', 'src/cobol_equiv/runtime/*.py') }}-full-${{ github.run_id }}
+          key: verify-${{ matrix.runtime }}-${{ matrix.track }}-${{ hashFiles('benchmark/results/verify-inputs.json', 'src/cobol_equiv/benchmark/*.py', 'src/cobol_equiv/runtime/*.py', '**/spec.py') }}-full-${{ github.run_id }}

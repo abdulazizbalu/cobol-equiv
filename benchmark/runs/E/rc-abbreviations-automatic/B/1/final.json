@@ -1,0 +1,9 @@
+{
+ "final": "benchmark/runs/E/rc-abbreviations-automatic/B/1/round-1/translation.py",
+ "rounds": [
+  {
+   "round": 1,
+   "dev_failure_kind": "difference"
+  }
+ ]
+}

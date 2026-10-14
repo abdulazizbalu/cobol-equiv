@@ -1,0 +1,493 @@
+Translate the COBOL program below into a Python module.
+
+The module must behave exactly like the program compiled with GnuCOBOL 3.1.2
+(cobc -x -std=default): for every input whose records fit the program's
+record descriptions, it must produce byte for byte the same standard output
+and output files.
+
+Use the Python package cobol_equiv.runtime, documented in the API reference
+below, for COBOL data and statements. Besides it, use only the Python
+standard library.
+
+## IO contract
+The Python module must define
+
+    def main(stdin: bytes, input_files: dict[str, bytes]) -> tuple[bytes, dict[str, bytes]]
+
+- stdin: everything the program reads with ACCEPT (one ACCEPT reads one line).
+- input_files: for every file the program reads, the name in its ASSIGN
+  clause mapped to the full content of the file. LINE SEQUENTIAL files are
+  lines that end with "\n"; SEQUENTIAL files are fixed-length records
+  without separators.
+- The return value is all bytes the program writes to standard output, and
+  a dict that maps the ASSIGN name of every file the program opens for
+  output to the full content of that file.
+- The module must not read the clock, random sources, the network or the
+  file system, and must not start processes. It runs on Python 3.12.
+
+## Examples
+These are inputs and the exact outputs of the COBOL program.
+### Example 1
+stdin = b''
+input_files = {'EMPLOYEES.DAT': b'E0000          000000000A000000p\n'}
+expected stdout = b'E0000            +0000000.00 +0000000.00 +00050.00 -0000050.00\nEMPLOYEES 001\nTOTAL GROSS +000000000.00\nTOTAL NET   -000000050.00\nNEGATIVE NET 001\n'
+expected output_files = {'PAYOUT.DAT': b'E0000\x00\x00\x00\x00\x0c\x00\x00\x05\x00\r00000500pN'}
+
+### Example 2
+stdin = b''
+input_files = {'EMPLOYEES.DAT': b'E4000          000000000A000000p\n'}
+expected stdout = b'E4000            +0000000.00 +0000000.00 +00050.00 -0000050.00\nEMPLOYEES 001\nTOTAL GROSS +000000000.00\nTOTAL NET   -000000050.00\nNEGATIVE NET 001\n'
+expected output_files = {'PAYOUT.DAT': b'E4000\x00\x00\x00\x00\x0c\x00\x00\x05\x00\r00000500pN'}
+
+## API reference: cobol_equiv.runtime
+# API reference: cobol_equiv.runtime
+
+`cobol_equiv.runtime` models COBOL data items and statements in Python.
+Data is described with Storage, Group, Num, Alnum, Edited and Filler;
+every item is a FieldRef at a fixed offset of one bytearray, so REDEFINES,
+group moves and record I/O work on the actual bytes. Statements are
+functions. Numeric operands may be FieldRefs, ints, Decimals, numeric
+strings ("0.05") or CobDecimal values from dec(). A function raises
+Unsupported, MoveError or PicError for a case outside the modelled subset.
+
+```python
+from cobol_equiv.runtime import Storage, Group, Num, Alnum, Edited, COMP3, move, add, compute, dec
+ws = Storage("WS", [
+    Num("AMOUNT", "S9(5)V99", usage=COMP3, value="0"),
+    Group("IN-DATE", [Num("YYYY", "9(4)"), Num("MM", "99"), Num("DD", "99")]),
+    Num("IN-DATE-N", "9(8)", redefines="IN-DATE"),
+    Group("ENTRY", [Alnum("CODE", "X(3)"), Num("QTY", "9(3)")], occurs=10),
+])
+ws["AMOUNT"]       # FieldRef
+ws.f("QTY", 3)     # QTY (3); subscripts are 1-based, outermost first
+compute(ws["AMOUNT"], dec(ws.f("QTY", 3)) * dec("1.5"), rounded=True)
+```
+
+### Storage(name: str, items: list[Item], area: bytearray | None = None)
+
+A record or WORKING-STORAGE area. `items`: list of Item from Num, Alnum, Edited, Filler, Group. Without `area` the storage is initialised as COBOL does (VALUE clauses applied). `st[name]` returns the FieldRef of a data name (first occurrence); `st.f(name, *subs)` the FieldRef of a subscripted item; `st.record()` the whole area as one FieldRef (for READ ... INTO it). Data names must be unique within one Storage.
+
+### Group(name, children, occurs=None, redefines=None) -> Item
+
+Group item. `children`: list of Item. `occurs`: OCCURS n. `redefines`: name of an earlier sibling.
+
+### Num(name, pic, usage='DISPLAY', value=None, occurs=None, redefines=None) -> Item
+
+Numeric item, e.g. Num("BAL", "S9(5)V99", usage=COMP3, value="0"). usage: DISPLAY (default), COMP, COMP3, COMP5. value: VALUE clause (number, numeric string or figurative constant).
+
+### Alnum(name, pic, value=None, occurs=None, redefines=None) -> Item
+
+Alphanumeric (PIC X) or alphabetic (PIC A) item.
+
+### Edited(name, pic, value=None, occurs=None, redefines=None) -> Item
+
+Numeric-edited item, e.g. Edited("OUT", "ZZ,ZZ9.99-").
+
+### Filler(pic, value=None) -> Item
+
+Unnamed item (FILLER), e.g. Filler("X(3)", " - ").
+
+### FieldRef
+
+One item at a position in a storage area. Properties: `raw` (bytes), `text` (str, latin-1), `value` (Decimal, numeric items only), `pic`, `usage`, `category`. `set_raw(bytes)` replaces the bytes (same length). `int(ref)` gives the integer value.
+
+### refmod(f: FieldRef, start: int, length: int | None = None) -> FieldRef
+
+Reference modification: refmod(ref, start, length) is `ref (start:length)`, refmod(ref, start) is `ref (start:)`. The result is an alphanumeric FieldRef sharing the item's storage, usable as sender or receiver.
+
+### move(src, *dsts: FieldRef) -> None
+
+MOVE src TO each of dsts. src: a FieldRef, an alphanumeric literal (str or bytes), a numeric literal (int or Decimal) or a figurative constant (SPACES, ZEROS, HIGH_VALUES, LOW_VALUES, All("x")).
+
+### initialize(f: FieldRef) -> None
+
+INITIALIZE f (no REPLACING phrase).
+
+### add(operands, targets, *, rounded=False, on_size_error=False) -> bool
+
+ADD operands TO targets. operands: one operand or a list. targets: a FieldRef, (FieldRef, rounded) or a list of these. Returns True if a size error occurred; pass on_size_error=True when the statement has ON SIZE ERROR or NOT ON SIZE ERROR.
+
+### add_giving(operands, giving, *, rounded=False, on_size_error=False) -> bool
+
+ADD operands GIVING giving; ADD a TO b GIVING c is add_giving([a, b], c).
+
+### subtract(operands, targets, *, rounded=False, on_size_error=False) -> bool
+
+SUBTRACT operands FROM targets. Arguments and result as for add.
+
+### subtract_giving(operands, minuend, giving, *, rounded=False, on_size_error=False) -> bool
+
+SUBTRACT operands FROM minuend GIVING giving.
+
+### multiply(operand, targets, *, rounded=False, on_size_error=False) -> bool
+
+MULTIPLY operand BY targets.
+
+### multiply_giving(a, b, giving, *, rounded=False, on_size_error=False) -> bool
+
+MULTIPLY a BY b GIVING giving.
+
+### divide_into(divisor, targets, *, rounded=False, on_size_error=False) -> bool
+
+DIVIDE divisor INTO targets.
+
+### divide_giving(dividend, divisor, giving, *, rounded=False, on_size_error=False) -> bool
+
+DIVIDE dividend BY divisor GIVING giving (also DIVIDE divisor INTO dividend GIVING giving).
+
+### divide_remainder(dividend, divisor, quotient: FieldRef, remainder: FieldRef, *, rounded=False, on_size_error=False) -> bool
+
+DIVIDE dividend BY divisor GIVING quotient REMAINDER remainder.
+
+### compute(targets, value, *, rounded=False, on_size_error=False) -> bool
+
+COMPUTE targets = value. value is an expression of CobDecimal values, e.g. compute(x, dec(a) * dec(b) / 100 - dec(c), rounded=True); +, -, *, / and unary minus are available, written in the COBOL order of evaluation.
+
+### dec(x) -> CobDecimal
+
+CobDecimal from a FieldRef, int, Decimal or numeric string, for compute expressions and comparisons.
+
+### CobDecimal
+
+Intermediate result of compute expressions. `to_decimal()` gives a Decimal.
+
+### display_line(*items) -> bytes
+
+The bytes DISPLAY item ... writes, newline included. Items: FieldRefs and literals (str or bytes; a numeric literal is passed as its text, e.g. "12").
+
+### display_bytes(item) -> bytes
+
+The bytes DISPLAY writes for one item, without newline.
+
+### string(parts, into: FieldRef, pointer: FieldRef | None = None) -> bool
+
+STRING ... INTO into [WITH POINTER pointer]. parts: list of (source, delimiter); delimiter None means DELIMITED BY SIZE. Returns True on overflow.
+
+### unstring(source, delimiters, targets, pointer: FieldRef | None = None, tallying: FieldRef | None = None) -> bool
+
+UNSTRING source [DELIMITED BY ...] INTO targets [WITH POINTER pointer] [TALLYING IN tallying]. delimiters: list of str, bytes or FieldRef, or (delimiter, True) for ALL delimiter; an empty list means no DELIMITED BY. targets: FieldRef or Into. Returns True on overflow.
+
+### Into(field: FieldRef, delimiter_in: FieldRef | None = None, count_in: FieldRef | None = None) -> None
+
+One UNSTRING receiver with optional DELIMITER IN and COUNT IN items.
+
+### Phrase(mode: str, pattern: object = None, by: object = None, counter: FieldRef | None = None, before: object = None, after: object = None) -> None
+
+One INSPECT phrase. mode: "ALL", "LEADING", "FIRST" (REPLACING only) or "CHARACTERS"; pattern: searched text; by: replacement (REPLACING); counter: FieldRef (TALLYING); before / after: INITIAL delimiters.
+
+### inspect_tallying(field, phrases: list[Phrase]) -> None
+
+INSPECT field TALLYING with a list of Phrase (each with counter).
+
+### inspect_replacing(field: FieldRef, phrases: list[Phrase]) -> None
+
+INSPECT field REPLACING with a list of Phrase (each with by).
+
+### inspect_converting(field: FieldRef, from_chars, to_chars, before=None, after=None) -> None
+
+INSPECT field CONVERTING from_chars TO to_chars [BEFORE|AFTER INITIAL x].
+
+### Stdin(data: bytes)
+
+Standard input for ACCEPT: inp = Stdin(stdin_bytes); inp.accept(ref) is ACCEPT ref.
+
+### accept_line(line: bytes, ref: FieldRef) -> None
+
+Store one input line (without newline) into ref as ACCEPT does.
+
+### SPACES
+
+Figurative constant SPACE / SPACES.
+
+### ZEROS
+
+Figurative constant ZERO / ZEROS / ZEROES.
+
+### HIGH_VALUES
+
+Figurative constant HIGH-VALUE / HIGH-VALUES.
+
+### LOW_VALUES
+
+Figurative constant LOW-VALUE / LOW-VALUES.
+
+### All(lit: str | bytes)
+
+ALL "literal" as a sender.
+
+### DISPLAY
+
+USAGE DISPLAY.
+
+### COMP
+
+USAGE COMP / BINARY.
+
+### COMP3
+
+USAGE COMP-3 / PACKED-DECIMAL.
+
+### COMP5
+
+USAGE COMP-5.
+
+### Unsupported
+
+Raised for a construct or data case outside the modelled subset.
+
+### MoveError
+
+Raised for a MOVE outside the modelled subset.
+
+### PicError
+
+Raised for a PICTURE outside the modelled subset.
+
+### DataError
+
+Raised when an item holds bytes that are not valid for its USAGE.
+
+## cobol_equiv.runtime.files
+
+### LineSequentialReader(data: bytes, record_size: int, long_lines: str = 'truncate')
+
+LINE SEQUENTIAL input file: LineSequentialReader(data, record_size), record_size being the record length in bytes; leave long_lines at its default. read(into) reads the next record into the FieldRef `into` and returns its bytes, or returns None at end of file.
+
+### LineSequentialWriter()
+
+LINE SEQUENTIAL output file. write(record) with a FieldRef or bytes; getvalue() returns the file contents.
+
+### RecordSequentialReader(data: bytes, record_size: int)
+
+ORGANIZATION SEQUENTIAL (fixed-length records) input file; read as for LineSequentialReader.
+
+### RecordSequentialWriter()
+
+ORGANIZATION SEQUENTIAL output file; write and getvalue as for LineSequentialWriter.
+
+## COBOL program
+```cobol
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. PAYROLL.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT EMP-FILE ASSIGN TO "EMPLOYEES.DAT"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT PAY-FILE ASSIGN TO "PAYOUT.DAT"
+               ORGANIZATION IS SEQUENTIAL.
+       DATA DIVISION.
+       FILE SECTION.
+       FD EMP-FILE.
+       01 EMP-REC.
+          05 EMP-ID         PIC X(5).
+          05 EMP-NAME       PIC X(10).
+          05 EMP-HOURS      PIC 9(3)V9.
+          05 EMP-RATE       PIC 9(3)V99.
+          05 EMP-DED-CODE   PIC X.
+          05 EMP-ADJUST     PIC S9(5)V99.
+       FD PAY-FILE.
+       01 PAY-REC.
+          05 PAY-ID         PIC X(5).
+          05 PAY-GROSS      PIC S9(7)V99 COMP-3.
+          05 PAY-NET        PIC S9(7)V99 COMP-3.
+          05 PAY-NET-D      PIC S9(7)V99.
+          05 PAY-FLAG       PIC X.
+       WORKING-STORAGE SECTION.
+       01 WS-EOF            PIC X VALUE "N".
+       01 WS-OT-HOURS       PIC S9(3)V9 COMP-3.
+       01 WS-GROSS          PIC S9(7)V99 COMP-3.
+       01 WS-TAX            PIC S9(7)V99 COMP-3.
+       01 WS-DED            PIC S9(5)V99 COMP-3.
+       01 WS-NET            PIC S9(7)V99 COMP-3.
+       01 WS-TOT-GROSS      PIC S9(9)V99 COMP-3 VALUE 0.
+       01 WS-TOT-NET        PIC S9(9)V99 COMP-3 VALUE 0.
+       01 WS-NEG-COUNT      PIC 9(3) COMP-3 VALUE 0.
+       01 WS-EMP-COUNT      PIC 9(3) COMP-3 VALUE 0.
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           OPEN INPUT EMP-FILE OUTPUT PAY-FILE
+           PERFORM UNTIL WS-EOF = "Y"
+               READ EMP-FILE
+                   AT END MOVE "Y" TO WS-EOF
+                   NOT AT END PERFORM PAY-ONE
+               END-READ
+           END-PERFORM
+           CLOSE EMP-FILE PAY-FILE
+           DISPLAY "EMPLOYEES " WS-EMP-COUNT
+           DISPLAY "TOTAL GROSS " WS-TOT-GROSS
+           DISPLAY "TOTAL NET   " WS-TOT-NET
+           DISPLAY "NEGATIVE NET " WS-NEG-COUNT
+           STOP RUN.
+
+       PAY-ONE.
+           ADD 1 TO WS-EMP-COUNT
+           IF EMP-HOURS > 40
+               COMPUTE WS-OT-HOURS = EMP-HOURS - 40
+               COMPUTE WS-GROSS ROUNDED =
+                   40 * EMP-RATE + WS-OT-HOURS * EMP-RATE * 1.5
+           ELSE
+               MOVE 0 TO WS-OT-HOURS
+               COMPUTE WS-GROSS ROUNDED = EMP-HOURS * EMP-RATE
+           END-IF
+           EVALUATE TRUE
+               WHEN WS-GROSS <= 1000
+                   COMPUTE WS-TAX ROUNDED = WS-GROSS * 0.10
+               WHEN WS-GROSS <= 5000
+                   COMPUTE WS-TAX ROUNDED =
+                       100 + (WS-GROSS - 1000) * 0.25
+               WHEN OTHER
+                   COMPUTE WS-TAX ROUNDED =
+                       1100 + (WS-GROSS - 5000) * 0.35
+           END-EVALUATE
+           EVALUATE EMP-DED-CODE
+               WHEN "A"
+                   MOVE 50 TO WS-DED
+               WHEN "B"
+                   COMPUTE WS-DED ROUNDED = WS-GROSS * 0.045
+               WHEN "C"
+                   MOVE 0 TO WS-DED
+               WHEN OTHER
+                   MOVE 25.50 TO WS-DED
+           END-EVALUATE
+           COMPUTE WS-NET = WS-GROSS - WS-TAX - WS-DED + EMP-ADJUST
+           MOVE SPACE TO PAY-FLAG
+           IF WS-NET < 0
+               ADD 1 TO WS-NEG-COUNT
+               MOVE "N" TO PAY-FLAG
+           END-IF
+           ADD WS-GROSS TO WS-TOT-GROSS
+           ADD WS-NET TO WS-TOT-NET
+           MOVE EMP-ID TO PAY-ID
+           MOVE WS-GROSS TO PAY-GROSS
+           MOVE WS-NET TO PAY-NET
+           MOVE WS-NET TO PAY-NET-D
+           WRITE PAY-REC
+           DISPLAY EMP-ID " " EMP-NAME " " WS-GROSS " " WS-TAX " "
+               WS-DED " " WS-NET.
+```
+
+## Your previous translation
+```python
+from decimal import Decimal
+
+from cobol_equiv.runtime import (
+    Storage, Group, Num, Alnum, COMP3, move, add, compute, dec,
+    display_line, SPACES,
+)
+from cobol_equiv.runtime.files import LineSequentialReader, RecordSequentialWriter
+
+
+def main(stdin: bytes, input_files: dict) -> tuple:
+    emp = Storage("EMP-FILE", [
+        Group("EMP-REC", [
+            Alnum("EMP-ID", "X(5)"),
+            Alnum("EMP-NAME", "X(10)"),
+            Num("EMP-HOURS", "9(3)V9"),
+            Num("EMP-RATE", "9(3)V99"),
+            Alnum("EMP-DED-CODE", "X"),
+            Num("EMP-ADJUST", "S9(5)V99"),
+        ]),
+    ])
+    pay = Storage("PAY-FILE", [
+        Group("PAY-REC", [
+            Alnum("PAY-ID", "X(5)"),
+            Num("PAY-GROSS", "S9(7)V99", usage=COMP3),
+            Num("PAY-NET", "S9(7)V99", usage=COMP3),
+            Num("PAY-NET-D", "S9(7)V99"),
+            Alnum("PAY-FLAG", "X"),
+        ]),
+    ])
+    ws = Storage("WS", [
+        Alnum("WS-EOF", "X", value="N"),
+        Num("WS-OT-HOURS", "S9(3)V9", usage=COMP3),
+        Num("WS-GROSS", "S9(7)V99", usage=COMP3),
+        Num("WS-TAX", "S9(7)V99", usage=COMP3),
+        Num("WS-DED", "S9(5)V99", usage=COMP3),
+        Num("WS-NET", "S9(7)V99", usage=COMP3),
+        Num("WS-TOT-GROSS", "S9(9)V99", usage=COMP3, value=0),
+        Num("WS-TOT-NET", "S9(9)V99", usage=COMP3, value=0),
+        Num("WS-NEG-COUNT", "9(3)", usage=COMP3, value=0),
+        Num("WS-EMP-COUNT", "9(3)", usage=COMP3, value=0),
+    ])
+
+    out = bytearray()
+    reader = LineSequentialReader(input_files.get("EMPLOYEES.DAT", b""), 32)
+    writer = RecordSequentialWriter()
+
+    emp_rec = emp["EMP-REC"]
+    emp_id = emp["EMP-ID"]
+    emp_name = emp["EMP-NAME"]
+    hours = emp["EMP-HOURS"]
+    rate = emp["EMP-RATE"]
+    dcode = emp["EMP-DED-CODE"]
+    adjust = emp["EMP-ADJUST"]
+
+    ot = ws["WS-OT-HOURS"]
+    gross = ws["WS-GROSS"]
+    tax = ws["WS-TAX"]
+    ded = ws["WS-DED"]
+    net = ws["WS-NET"]
+
+    def pay_one():
+        add(1, ws["WS-EMP-COUNT"])
+        if dec(hours) > dec(40):
+            compute(ot, dec(hours) - dec(40))
+            compute(gross, dec(40) * dec(rate) + dec(ot) * dec(rate) * dec("1.5"),
+                    rounded=True)
+        else:
+            move(0, ot)
+            compute(gross, dec(hours) * dec(rate), rounded=True)
+        if dec(gross) <= dec(1000):
+            compute(tax, dec(gross) * dec("0.10"), rounded=True)
+        elif dec(gross) <= dec(5000):
+            compute(tax, dec(100) + (dec(gross) - dec(1000)) * dec("0.25"), rounded=True)
+        else:
+            compute(tax, dec(1100) + (dec(gross) - dec(5000)) * dec("0.35"), rounded=True)
+        code = dcode.raw
+        if code == b"A":
+            move(50, ded)
+        elif code == b"B":
+            compute(ded, dec(gross) * dec("0.045"), rounded=True)
+        elif code == b"C":
+            move(0, ded)
+        else:
+            move(Decimal("25.50"), ded)
+        compute(net, dec(gross) - dec(tax) - dec(ded) + dec(adjust))
+        move(SPACES, pay["PAY-FLAG"])
+        if dec(net) < dec(0):
+            add(1, ws["WS-NEG-COUNT"])
+            move("N", pay["PAY-FLAG"])
+        add(gross, ws["WS-TOT-GROSS"])
+        add(net, ws["WS-TOT-NET"])
+        move(emp_id, pay["PAY-ID"])
+        move(gross, pay["PAY-GROSS"])
+        move(net, pay["PAY-NET"])
+        move(net, pay["PAY-NET-D"])
+        writer.write(pay["PAY-REC"])
+        out.extend(display_line(emp_id, " ", emp_name, " ", gross, " ", tax, " ",
+                                ded, " ", net))
+
+    while ws["WS-EOF"].raw != b"Y":
+        r = reader.read(emp_rec)
+        if r is None:
+            move("Y", ws["WS-EOF"])
+        else:
+            pay_one()
+
+    out.extend(display_line("EMPLOYEES ", ws["WS-EMP-COUNT"]))
+    out.extend(display_line("TOTAL GROSS ", ws["WS-TOT-GROSS"]))
+    out.extend(display_line("TOTAL NET   ", ws["WS-TOT-NET"]))
+    out.extend(display_line("NEGATIVE NET ", ws["WS-NEG-COUNT"]))
+    return bytes(out), {"PAYOUT.DAT": writer.getvalue()}
+```
+
+## Test result
+The previous translation was run on a test input that is not one of the
+examples above.
+stdin = b''
+input_files = {'EMPLOYEES.DAT': b'E0001ADAMS     040002500A0000000\nE0002BAKER     045503333B001234u\nE0003CRUZ      000000000C999999y\nE0004DIAZ      999999999X9999999\nE0005EVANS     040101000 000000p\n'}
+The translation raised TypeError: '>' not supported between instances of 'CobDecimal' and 'CobDecimal'
+
+Fix the translation. Reply with the complete corrected Python module in one
+```python code block. Do not write anything after the code block.

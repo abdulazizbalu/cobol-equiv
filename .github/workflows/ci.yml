@@ -151,3 +151,7 @@ jobs:
         run: python -m cobol_equiv.benchmark.vectors --compare "$RUNNER_TEMP/committed-vectors"
       - name: Reference translations pass all vectors (E4)
         run: python -m cobol_equiv.benchmark.refcheck
+      - name: Translation artifacts are consistent with the manifest
+        run: python -m cobol_equiv.benchmark.audit
+      - name: Committed translations reproduce the committed verdicts
+        run: python -m cobol_equiv.benchmark.verify --check

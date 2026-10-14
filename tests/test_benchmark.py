@@ -172,3 +172,15 @@ def test_statistics():
     assert holm([0.01, 0.04, 0.03, 0.2]) == [0.04, 0.09, 0.09, 0.2]
     m = mcnemar([(True, False)] * 6 + [(True, True)] * 3 + [(False, True)])
     assert (m["first_only"], m["second_only"]) == (6, 1) and m["p"] == binom_two_sided(1, 7)
+
+
+def test_committed_artifacts_are_consistent_with_the_manifest():
+    from cobol_equiv.benchmark import audit
+
+    if not (audit.RUNS / "E").exists():
+        pytest.skip("no translation runs committed")
+    if not all(fetched(p) for p in ALL):
+        pytest.skip("Track E sources not fetched (python -m cobol_equiv.benchmark.fetch)")
+    problems, suspects, counts = audit.check()
+    assert problems == []
+    assert counts["prompts_rebuilt"] == 2 * 3 * len(ALL)

@@ -38,13 +38,28 @@ def adapt(source: str, edits: list) -> str:
     return source
 
 
+def _download(url: str, attempts: int = 5) -> bytes:
+    """GET with retries (2, 4, 8, 16 s apart) on network errors."""
+    import time
+    import urllib.error
+
+    for i in range(attempts):
+        try:
+            with urllib.request.urlopen(url, timeout=60) as r:  # noqa: S310 (pinned URL)
+                return r.read()
+        except (urllib.error.URLError, OSError):
+            if i == attempts - 1:
+                raise
+            time.sleep(2 ** (i + 1))
+    raise AssertionError("unreachable")
+
+
 def _get(path: Path, url: str, sha: str, offline: bool) -> bytes:
     data = path.read_bytes() if path.exists() else b""
     if _sha(data) != sha:
         if offline:
             raise SystemExit(f"{path}: missing or changed")
-        with urllib.request.urlopen(url, timeout=60) as r:  # noqa: S310 (pinned URL)
-            data = r.read()
+        data = _download(url)
         if _sha(data) != sha:
             raise SystemExit(f"SHA-256 mismatch for {url}")
         path.write_bytes(data)

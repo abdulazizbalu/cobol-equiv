@@ -197,6 +197,7 @@ def check(mode: str, track: str | None, base: str | None, k: int, jobs: int | No
             if calls:
                 print(f"{unit_id(u)}: outside the D14 scope but made {calls} CobDecimal comparison or hash calls")
                 bad += 1
+    for out, field in zip(verify.OUTS[mode], ("verdicts", "comparisons")):
         committed = _rows_by_unit(out.read_text(encoding="utf-8") if out.exists() else "")
         fields = verify.FIELDS if field == "verdicts" else verify.USAGE_FIELDS
         for u in us:

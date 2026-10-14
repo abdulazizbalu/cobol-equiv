@@ -498,3 +498,34 @@ def test_corrected_verdicts_differ_only_inside_the_d14_scope():
     for out in (verify.OUTS["registered"][1], verify.OUTS["corrected"][1]):
         assert set(ci._rows_by_unit(out.read_text(encoding="utf-8"))) == scope_ids
     assert ci.c_uses_runtime() == []
+
+
+def test_ci_check_compares_with_the_committed_rows(monkeypatch):
+    """ci.check on rows equal to the committed ones passes and a changed
+    verdict fails (units are not run: run_units returns committed rows)."""
+    from cobol_equiv.benchmark import ci, verify
+
+    def fake(changed=None):
+        def run_units(units, mode, jobs, progress):
+            committed = ci._rows_by_unit(verify.OUTS[mode][0].read_text(encoding="utf-8"))
+            usage = ci._rows_by_unit(verify.OUTS[mode][1].read_text(encoding="utf-8"))
+            out = {}
+            for u in units:
+                rows = [dict(r) for r in committed[ci.unit_id(u)]]
+                counts = {(r["round"]): r for r in usage.get(ci.unit_id(u), [])}
+                for r in rows:
+                    c = counts.get(r["round"]) if r["set"] == "heldout" and r["version"] == verify.PRIMARY else None
+                    for k in verify.CMP:
+                        r[k] = c[k] if c else "0"
+                    if changed and ci.unit_id(u) == changed:
+                        r["pass"] = "1" if r["pass"] == "0" else "0"
+                out[u] = rows
+            return out
+        return run_units
+
+    for mode in verify.MODES:
+        monkeypatch.setattr(ci, "run_units", fake())
+        assert ci.check(mode, "R", None, 2, 1, lambda m: None) == 0
+    unit = next(u for u in ci.scope()[0] if u[0] == "R")
+    monkeypatch.setattr(ci, "run_units", fake(ci.unit_id(unit)))
+    assert ci.check("corrected", "R", None, 2, 1, lambda m: None) == 1

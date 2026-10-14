@@ -564,6 +564,38 @@ before any translation call.
   condition C does not use the sheet. The A vs C comparison is affected by
   it, and the report says so.
 
+- **D14 (runtime defect corrected, sensitivity analysis, after the
+  analysis).** The cause of D13 is a defect of the runtime, not only of
+  the sheet: COBOL compares numeric values algebraically, and `CobDecimal`
+  did not. Runtime 1.1.0 adds value-based `==`, `!=`, `<`, `<=`, `>`, `>=`
+  and a hash consistent with them, checked against GnuCOBOL
+  (`tests/oracle/test_compare.py`, docs/runtime.md). The runtime frozen for
+  the benchmark (commit 50456a3) is called 1.0.0; that number was assigned
+  afterwards. The registered results are unchanged and stay the primary
+  results. The committed translations, unchanged, were verified again with
+  the corrected runtime as a sensitivity analysis; the driver reproduces
+  runtime 1.0.0 ("registered" mode: identity `==`, no ordering, identity
+  hash) and 1.1.0 ("corrected" mode) in the same process setup, and counts
+  the CobDecimal comparison calls each vector makes. Scope of the
+  corrected-mode verification: the A and B translations in which the static
+  scan (`python -m cobol_equiv.benchmark.eqscan`, results in
+  benchmark/results/eq-sites.csv) finds a CobDecimal compared with `==`,
+  `!=`, `<`, `<=`, `>`, `>=` or `in`, or hashed; every B attempt derived
+  from such an A translation; and a fixed sample of 30 other A and B units
+  (seed `crc32("d14-sample")`), whose verdicts must not change. The scan is
+  approximate (values passed through containers, attributes or parameters
+  are not followed); the sample is the check on what it misses. Condition
+  C translations do not import the runtime (none mentions the package, and
+  they run with `python -I -S`), so their verdicts cannot change and they
+  were not run again. Outside the scope, the corrected verdicts are the
+  registered ones. The registered mode was run on the same units and must
+  reproduce verdicts.csv (it was reproduced in full on
+  abdulazizbalu/cobol-equiv#8). The failures that change were categorised
+  with the rules of section 6; a failure identical to a registered one
+  keeps its category. Results are in docs/benchmark.md ("Sensitivity to
+  the CobDecimal comparison defect"), generated from
+  benchmark/results/verdicts-corrected.csv and failures-corrected.csv.
+
 Notes, not deviations: the runtime was extended before the freeze, while
 writing reference translations (ACCEPT from standard input, alphanumeric
 to numeric conversion for items, truncation of arithmetic results stored

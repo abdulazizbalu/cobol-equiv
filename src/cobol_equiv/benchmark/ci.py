@@ -50,6 +50,11 @@ INPUTS = verify.RESULTS / "verify-inputs.json"
 SEED = zlib.crc32(b"ci-sample")
 
 
+def workers() -> int:
+    """CPU cores minus one, at least one."""
+    return max(1, (os.cpu_count() or 2) - 1)
+
+
 def runtime_version() -> str:
     from .. import runtime
 
@@ -123,7 +128,7 @@ def run_units(units: list, mode: str, jobs: int | None, progress) -> dict:
     progress(f"{len(units)} units ({mode}): {len(done)} saved, {len(todo)} to run")
     phases = [[u for u in todo if u[2] != "B"], [u for u in todo if u[2] == "B"]]
     i = 0
-    with ProcessPoolExecutor(max_workers=jobs or os.cpu_count() or 1) as ex:
+    with ProcessPoolExecutor(max_workers=jobs or workers()) as ex:
         for phase in phases:
             for f in as_completed([ex.submit(verify._run_unit, u, mode) for u in phase]):
                 unit, rows = f.result()
@@ -139,6 +144,20 @@ def check(mode: str, track: str | None, base: str | None, k: int, jobs: int | No
         print("missing: " + ", ".join(f.relative_to(verify.ROOT).as_posix() for f in missing))
         return 1
     us = [u for u in verify.units() if track is None or u[0] == track]
+    bad = 0
+    if mode == "corrected":
+        # outside the D14 scope the corrected rows are the registered rows
+        # (D14): check the copy instead of running the unit
+        affected, sampled = scope()
+        reg = _rows_by_unit(verify.OUT.read_text(encoding="utf-8"))
+        cor = _rows_by_unit(verify.OUTS["corrected"][0].read_text(encoding="utf-8"))
+        outside = [u for u in us if u not in affected and u not in sampled]
+        for u in outside:
+            if reg.get(unit_id(u)) != cor.get(unit_id(u)):
+                print(f"verdicts-corrected.csv {unit_id(u)}: outside the D14 scope but not the registered rows")
+                bad += 1
+        progress(f"{len(outside)} units outside the D14 scope: rows checked as copies")
+        us = [u for u in us if u not in outside]
     picked: list = []
     if base is not None:
         changed = [u for u in changed_units(mode, base) if u in us]
@@ -160,11 +179,12 @@ def check(mode: str, track: str | None, base: str | None, k: int, jobs: int | No
             finally:
                 verify.PARTS = saved_parts
     selected = {unit_id(u) for u in us}
-    bad = 0
     for out, field in zip(verify.OUTS[mode], ("verdicts", "comparisons")):
         committed = _rows_by_unit(out.read_text(encoding="utf-8") if out.exists() else "")
         fields = verify.FIELDS if field == "verdicts" else verify.USAGE_FIELDS
         for u in us:
+            if field == "comparisons" and unit_id(u) not in committed:
+                continue  # the comparisons files hold the D14 scope only
             rows = done[u] if field == "verdicts" else [r for r in done[u] if r["set"] == "heldout"
                                                       and r["version"] == verify.PRIMARY]
             fresh = io.StringIO()
@@ -183,6 +203,110 @@ def check(mode: str, track: str | None, base: str | None, k: int, jobs: int | No
     return 1 if bad else 0
 
 
+# ---- the scope of the corrected-mode verification (deviation D14) ------------
+
+D14_SAMPLE = 30
+D14_SEED = zlib.crc32(b"d14-sample")
+
+
+def affected_units() -> list:
+    """Units whose translation compares CobDecimal values (==, !=, <, <=, >,
+    >=, in) or hashes them, by the static scan (eqscan), and every condition B
+    attempt derived from such an A translation."""
+    from .eqscan import scan, translations
+
+    hit = set()
+    for track, name, cond, attempt, _, path in translations():
+        if scan(path.read_text(encoding="utf-8")):
+            hit.add((track, name, cond, attempt))
+            if cond == "A":
+                hit.add((track, name, "B", attempt))  # round 0 of B is the A translation
+    return [u for u in verify.units() if u in hit]
+
+
+def d14_sample(affected: list) -> list:
+    """D14_SAMPLE units of conditions A and B outside the affected ones, fixed seed."""
+    rest = [u for u in verify.units() if u[2] != "C" and u not in affected]
+    picked = set(random.Random(D14_SEED).sample(rest, min(D14_SAMPLE, len(rest))))
+    return [u for u in rest if u in picked]
+
+
+def scope() -> tuple[list, list]:
+    """(affected units, sample units) of the corrected-mode verification."""
+    affected = affected_units()
+    return affected, d14_sample(affected)
+
+
+def c_uses_runtime() -> list[str]:
+    """Condition C translations that mention the runtime package (none may:
+    they run with python -I -S, where it cannot be imported, so the
+    comparison behaviour of CobDecimal cannot reach them)."""
+    from .programs import programs
+
+    out = []
+    for track in ("E", "R"):
+        for p in programs(track):
+            for attempt in (1, 2, 3):
+                f = verify.RUNS / track / p.name / "C" / str(attempt) / "translation.py"
+                if f.exists() and "cobol_equiv" in f.read_text(encoding="utf-8"):
+                    out.append(f.relative_to(verify.ROOT).as_posix())
+    return out
+
+
+def _csv(rows_by_unit: dict, units: list, fields: list) -> str:
+    buf = io.StringIO()
+    w = csv.DictWriter(buf, fieldnames=fields, lineterminator="\n", extrasaction="ignore")
+    w.writeheader()
+    for u in units:
+        w.writerows(rows_by_unit.get(u, []))
+    return buf.getvalue()
+
+
+def _usage(rows: list) -> list:
+    return [r for r in rows if r["set"] == "heldout" and r["version"] == verify.PRIMARY]
+
+
+def sensitivity(jobs: int | None, progress) -> int:
+    """Runs the D14 scope in both modes and writes verdicts-corrected.csv
+    (the registered rows, with the rows of the scope units replaced by
+    their corrected-mode rows), comparisons.csv and comparisons-corrected.csv
+    (scope units only) and verify-inputs.json."""
+    bad = c_uses_runtime()
+    for f in bad:
+        print(f"condition C translation mentions the runtime: {f}")
+    if bad:
+        return 1
+    progress("condition C: no translation mentions the runtime package")
+    affected, picked = scope()
+    us = [u for u in verify.units() if u in affected or u in picked]
+    progress(f"scope: {len(affected)} affected units, {len(picked)} sample units")
+    reg = run_units(us, "registered", jobs, progress)
+    committed = _rows_by_unit(verify.OUT.read_text(encoding="utf-8"))
+    status = 0
+    for u in us:
+        diffs = verify.compare(_csv({u: committed.get(unit_id(u), [])}, [u], verify.FIELDS),
+                               _csv(reg, [u], verify.FIELDS))
+        if diffs:
+            print(f"registered mode does not reproduce verdicts.csv for {unit_id(u)}: {diffs[0]}")
+            status = 1
+    cor = run_units(us, "corrected", jobs, progress)
+    for u in picked:
+        diffs = verify.compare(_csv(reg, [u], verify.FIELDS), _csv(cor, [u], verify.FIELDS))
+        if diffs:
+            print(f"sample unit {unit_id(u)} changes under the corrected runtime: {diffs[0]}")
+            status = 1
+    all_units = verify.units()
+    merged = {u: (cor[u] if u in cor else committed.get(unit_id(u), [])) for u in all_units}
+    out_v, out_c = verify.OUTS["corrected"]
+    out_v.write_text(_csv(merged, all_units, verify.FIELDS), encoding="utf-8")
+    out_c.write_text(_csv({u: _usage(r) for u, r in cor.items()}, us, verify.USAGE_FIELDS), encoding="utf-8")
+    verify.OUTS["registered"][1].write_text(_csv({u: _usage(r) for u, r in reg.items()}, us,
+                                                 verify.USAGE_FIELDS), encoding="utf-8")
+    INPUTS.write_text(json.dumps(inputs_doc(), indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"{len(us)} units in both modes; {sum(1 for u in us if u in picked)} sample units")
+    return status
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="command", required=True)
@@ -195,6 +319,8 @@ def main(argv=None) -> int:
     c.add_argument("--base", help="git ref of the base branch (pull requests)")
     c.add_argument("--sample", type=int, default=2)
     c.add_argument("--jobs", type=int, default=None)
+    t = sub.add_parser("sensitivity")
+    t.add_argument("--jobs", type=int, default=None)
     a = ap.parse_args(argv)
     progress = lambda m: print(m, file=sys.stderr, flush=True)  # noqa: E731
     if a.command == "inputs":
@@ -218,6 +344,8 @@ def main(argv=None) -> int:
             return 0
         INPUTS.write_text(text, encoding="utf-8")
         return 0
+    if a.command == "sensitivity":
+        return sensitivity(a.jobs, progress)
     return check(a.runtime, a.track, a.base, a.sample, a.jobs, progress)
 
 

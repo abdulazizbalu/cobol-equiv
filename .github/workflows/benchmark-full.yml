@@ -1,8 +1,8 @@
 name: Benchmark full verification
 
-# Re-verifies every committed translation in both CobDecimal runtime modes
-# (deviation D14), split into one job per runtime mode and track
-# (docs/benchmark.md, "Verification in CI"). Each job starts with an empty
+# Re-verifies every committed translation in the registered runtime mode and
+# the D14 scope in the corrected mode (deviation D14), split into one job
+# per runtime mode and track (docs/benchmark.md, "Verification in CI"). Each job starts with an empty
 # cache, so every unit is run; the saved units are then cached for the
 # pull-request jobs of ci.yml.
 

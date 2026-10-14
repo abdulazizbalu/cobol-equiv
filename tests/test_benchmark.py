@@ -452,3 +452,25 @@ def test_ci_input_hash_keys(monkeypatch):
     before = ci.input_hash(a, "corrected"), ci.input_hash(c, "corrected")
     monkeypatch.setattr(ci, "runtime_version", lambda: "0.0.0-test")
     assert ci.input_hash(a, "corrected") != before[0] and ci.input_hash(c, "corrected") == before[1]
+
+
+def test_corrected_verdicts_differ_only_inside_the_d14_scope():
+    """Outside the D14 scope, verdicts-corrected.csv holds the registered rows;
+    the sample units have the same verdicts in both modes; the comparisons
+    files cover exactly the scope."""
+    from cobol_equiv.benchmark import ci, verify
+
+    reg = ci._rows_by_unit(verify.OUT.read_text(encoding="utf-8"))
+    cor = ci._rows_by_unit(verify.OUTS["corrected"][0].read_text(encoding="utf-8"))
+    affected, sampled = ci.scope()
+    assert set(reg) == set(cor)
+    for u in verify.units():
+        i = ci.unit_id(u)
+        if u not in affected and u not in sampled:
+            assert reg[i] == cor[i], i
+        elif u in sampled:
+            assert [r["pass"] for r in reg[i]] == [r["pass"] for r in cor[i]], i
+    scope_ids = {ci.unit_id(u) for u in affected + sampled}
+    for out in (verify.OUTS["registered"][1], verify.OUTS["corrected"][1]):
+        assert set(ci._rows_by_unit(out.read_text(encoding="utf-8"))) == scope_ids
+    assert ci.c_uses_runtime() == []

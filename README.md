@@ -54,7 +54,11 @@ Details: [results/SUMMARY.md](results/SUMMARY.md).
 
 Produced by `python -m cobol_equiv.benchmark.analysis report` from
 `benchmark/results/`; read the limits in [docs/benchmark.md](docs/benchmark.md)
-before the numbers.
+before the numbers. The intervals and the McNemar tests treat the three
+attempts of a program as independent, which they are not; the sign test
+over programs does not. The API sheet given in conditions A and B contains
+an error that causes most of condition A's failures (deviation D13), so the
+A vs C comparison is affected by it.
 
 <!-- BENCHMARK:START -->
 | track | condition | HELD-OUT pass (attempts) | 95% CI | pass@3 (programs) | 95% CI | VISIBLE pass (attempts) | time-out (attempts) | passes needing the extended time limit (depends on machine speed) |
@@ -85,10 +89,10 @@ GnuCOBOL 3.2 re-run of the final translations that pass HELD-OUT on 3.1.2: 408 o
 | unsupported runtime feature | 0 | 0 | 0 | 0 | 0 | 0 |
 | crash or syntax error | 4 | 0 | 0 | 7 | 0 | 0 |
 | time-out | 2 | 0 | 0 | 0 | 0 | 0 |
-| rounding | 0 | 0 | 0 | 0 | 0 | 0 |
-| truncation | 0 | 0 | 4 | 0 | 0 | 0 |
+| rounding | 0 | 0 | 2 | 0 | 0 | 0 |
+| truncation | 0 | 0 | 2 | 0 | 0 | 6 |
 | sign handling | 0 | 0 | 0 | 0 | 0 | 1 |
-| PICTURE editing | 0 | 0 | 0 | 0 | 0 | 6 |
+| PICTURE editing | 0 | 0 | 0 | 0 | 0 | 0 |
 | string statements | 0 | 0 | 0 | 0 | 0 | 0 |
 | file handling | 0 | 0 | 0 | 0 | 0 | 0 |
 | loop or branch logic | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -103,12 +107,12 @@ Crash messages (crash or syntax error, by condition):
 
 One example per failure category (first attempt in program order; the full list is benchmark/results/failures.csv):
 
-- **crash or syntax error** (rc-fibonacci-sequence): TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'. First difference: `TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'`
-- **time-out** (rc-soloways-recurring-rainfall): timed out. First difference: `timed out`
-- **truncation** (rc-formatted-numeric-output): ACCEPT into 9(5)V9(3): the input line is not cut to the 8-byte receiver before conversion. First difference: `<stdout> line 1, column 9: expected b'82474.140', got b'82474.147'`
-- **sign handling** (matrix): a negative zero cell is edited with a minus sign; GnuCOBOL edits zero without sign. First difference: `<stdout> line 1, column 16: expected b'     0     0     0     0      ', got b'     0    -0     0     0      '`
-- **PICTURE editing** (redef): zero suppression of the edited amount: a leading 0 expected where the translation suppresses it. First difference: `<stdout> line 1, column 15: expected b'IL 7Z6Z1  09,493,978.10', got b'IL 7Z6Z1   9,493,978.10'`
-- **other** (rc-a-plus-b): conversion of non-numeric ACCEPT input text ('A') to a number differs. First difference: `<stdout> line 1, column 6: expected b'+00000', got b'+00001'`
+- **crash or syntax error** (rc-fibonacci-sequence): TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'. First difference: `TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'`.
+- **time-out** (rc-soloways-recurring-rainfall): the loop ends on dec(x) == dec(99999), which is never true: CobDecimal has no equality operator (D13). First difference: `timed out`.
+- **rounding** (rc-formatted-numeric-output): ACCEPT into 9(5)V9(3) cuts the input line to the 8-byte receiver, dropping the last decimal digit; the translation keeps it. First difference: `<stdout> line 1, column 9: expected b'82474.140', got b'82474.147'`. See [semantic trap 3](docs/semantic-traps.md#3-without-rounded-extra-decimals-are-cut-never-rounded).
+- **truncation** (rc-integer-comparison): ACCEPT into 9(10): the 11-character input line is not cut to the receiver length before conversion. First difference: `<stdout> line 1, column 54: expected b'less than 0126133773', got b'less than 1261337734'`. See [semantic trap 4](docs/semantic-traps.md#4-overflow-on-size-error-keeps-the-old-value-otherwise-digits-are-lost-on-the-left).
+- **sign handling** (matrix): a negative zero cell is edited with a minus sign; GnuCOBOL edits zero without sign. First difference: `<stdout> line 1, column 16: expected b'     0     0     0     0      ', got b'     0    -0     0     0      '`. See [semantic trap 6](docs/semantic-traps.md#6-negative-zero-exists).
+- **other** (rc-a-plus-b): conversion of non-numeric ACCEPT input text ('A') to a number differs. First difference: `<stdout> line 1, column 6: expected b'+00000', got b'+00001'`.
 <!-- BENCHMARK:END -->
 
 ## Reproduce

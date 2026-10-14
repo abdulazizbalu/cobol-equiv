@@ -553,14 +553,16 @@ before any translation call.
 
 - **D13 (API sheet error, found in the analysis).** The frozen API sheet
   describes `dec` as giving "CobDecimal ... for compute expressions and
-  comparisons", but `CobDecimal` has no ordering operators: `<` and `>`
-  between two `CobDecimal` values raise `TypeError`. Most crashes of
-  condition A raise this error (counts in docs/benchmark.md, from
-  benchmark/results/failures.csv). The
-  sheet and the runtime were not changed after the runs, so condition A
-  (and B, which starts from A) was measured with this error in its
-  material; condition C does not use the sheet. The A vs C comparison is
-  affected by it, and the report says so.
+  comparisons", but `CobDecimal` defines no comparison operators: `<` and
+  `>` between two `CobDecimal` values raise `TypeError`, and `==` compares
+  object identity, so `dec(x) == dec(y)` is always false. Most crashes of
+  condition A raise the `TypeError`, and the time-outs of condition A are
+  loops whose end test is such an equality (reasons in
+  benchmark/results/failures.csv, counts in docs/benchmark.md). The sheet
+  and the runtime were not changed after the runs, so condition A (and B,
+  which starts from A) was measured with this error in its material;
+  condition C does not use the sheet. The A vs C comparison is affected by
+  it, and the report says so.
 
 Notes, not deviations: the runtime was extended before the freeze, while
 writing reference translations (ACCEPT from standard input, alphanumeric

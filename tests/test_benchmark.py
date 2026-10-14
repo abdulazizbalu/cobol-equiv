@@ -332,3 +332,33 @@ def test_b_versions_carry_the_last_code_forward():
                              .read_text(encoding="utf-8"))
             last = vs[-1]
             assert (None if last is None else last.relative_to(ROOT).as_posix()) == fin["final"]
+
+
+def test_report_parts_come_from_the_failures_file():
+    from cobol_equiv.benchmark import analysis
+
+    if not analysis.FAILURES.exists():
+        pytest.skip("no failures.csv committed")
+    with analysis.FAILURES.open(encoding="utf-8", newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    assert all(r["category"] in analysis.CATEGORIES for r in rows)
+    crashes = analysis.crash_messages()
+    assert sum(n for _, n in crashes) == sum(r["category"] == "crash or syntax error" for r in rows)
+    ex = dict(analysis.examples())
+    assert set(ex) == {r["category"] for r in rows}
+    block = analysis.tables(analysis.compute(analysis.load_verdicts()))
+    for cat, (num, anchor) in analysis.TRAPS.items():
+        if cat in ex:
+            assert f"{analysis.TRAPS_LINK}#{anchor}" in block
+            assert f"### {num}." in (ROOT / "docs" / "semantic-traps.md").read_text(encoding="utf-8")
+
+
+def test_report_check_fails_without_the_generated_block(tmp_path, monkeypatch):
+    from cobol_equiv.benchmark import analysis
+
+    if not analysis.VERDICTS.exists():
+        pytest.skip("no verdicts committed")
+    doc = tmp_path / "benchmark.md"
+    doc.write_text("no block here\n", encoding="utf-8")
+    monkeypatch.setattr(analysis, "DOC", doc)
+    assert analysis.report(check=True) == 1

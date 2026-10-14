@@ -24,7 +24,8 @@ comparison of the installed runtime (1.1.0). In both modes each result line
 carries "cmp": the == / != calls on a CobDecimal ("eq"), how many of them a
 runtime of the other mode would answer differently ("eq_diff"), and the
 ordering and hash calls. Calls made while the module is loaded are added
-to the counts of every vector, like its Unsupported hits.
+to the counts of every vector the driver reports, like its Unsupported
+hits (vectors the parent fills in after a stop carry no counts).
 """
 
 import base64
@@ -43,7 +44,7 @@ class VectorTimeout(BaseException):
     pass
 
 
-_state = {"fired": False, "emit": None}
+_state = {"fired": False, "emit": None, "cmp": None}
 
 
 def _alarm(signum, frame):
@@ -52,7 +53,8 @@ def _alarm(signum, frame):
         signal.alarm(GRACE)
         raise VectorTimeout()
     # the translation caught the time-out and kept running
-    _state["emit"]({"timeout": True, "unsupported": 0})
+    _state["emit"]({"timeout": True, "unsupported": 0,
+                    "cmp": _state["cmp"](_cmp_counts()) if _state["cmp"] else _cmp_counts()})
     _state["emit"]({"abandoned": True})
     os._exit(0)
 
@@ -195,6 +197,8 @@ def main() -> int:
 
     def cmp_with_import(counts):
         return {k: counts.get(k, 0) + import_cmp[k] for k in import_cmp}
+
+    _state["cmp"] = cmp_with_import
 
     timeouts = 0
     for vec in req["vectors"]:

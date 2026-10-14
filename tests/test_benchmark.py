@@ -545,10 +545,12 @@ def test_unit_key_covers_the_spec(tmp_path, monkeypatch):
     shutil.copytree(p.dir, copy, ignore=shutil.ignore_patterns("__pycache__"))
     fake = Program(p.track, copy)
     monkeypatch.setattr(verify, "_program", lambda track, name: fake)
-    before = verify.unit_key(unit)
+    from cobol_equiv.benchmark import ci
+
+    before = verify.unit_key(unit), ci.input_hash(unit, "registered")
     (copy / "spec.py").write_text((copy / "spec.py").read_text(encoding="utf-8") + "\n# changed\n",
                                   encoding="utf-8")
-    assert verify.unit_key(unit) != before
+    assert verify.unit_key(unit) != before[0] and ci.input_hash(unit, "registered") != before[1]
 
 
 IMPORT_TIME_COMPARISON = """\
@@ -572,3 +574,13 @@ def test_import_time_comparisons_are_counted(tmp_path):
         for r in res:
             assert unb64(r["stdout"]) == value
             assert (r["cmp"]["eq"], r["cmp"]["eq_diff"]) == (1, 1)
+
+
+def test_import_time_comparisons_are_counted_on_a_load_error(tmp_path):
+    from cobol_equiv.benchmark.runner import run_translation
+
+    t = tmp_path / "t.py"
+    t.write_text("from cobol_equiv.runtime import dec\nSAME = dec(1) == dec(1)\nraise ValueError('x')\n",
+                 encoding="utf-8")
+    for r in run_translation(t, [{"<stdin>": b""}] * 2, timeout=10, condition="A", runtime="corrected"):
+        assert r["error"].startswith("ValueError") and r["cmp"]["eq"] == 1

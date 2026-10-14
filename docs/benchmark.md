@@ -243,10 +243,13 @@ runner, so CI does not run it on every pull request.
   `python -m cobol_equiv.benchmark.ci sensitivity` runs the scope in both
   modes and writes `verdicts-corrected.csv`, `comparisons.csv`,
   `comparisons-corrected.csv` (scope units only) and `verify-inputs.json`.
+  The comparisons files sum the calls over the HELD-OUT vectors; a call
+  made while the translation module is loaded is counted once per vector.
 - `benchmark/results/verify-inputs.json` holds, for each runtime mode and
   unit (track, program, condition, attempt), the SHA-256 of the unit's
   translation files, its vectors file, the program's spec, the verification
-  code, the runtime mode and, for conditions A and B, the runtime version,
+  code (the benchmark's verify, runner, driver, vectors and programs modules
+  and the harness modules that load specs and compare outputs), the runtime mode and, for conditions A and B, the runtime version,
   and the SHA-256 of the runtime's source. A change of the verification
   code therefore marks every unit as changed. CI
   fails when the file is not current, and when the runtime's source changed
@@ -257,12 +260,11 @@ runner, so CI does not run it on every pull request.
   mode, within the D14 scope), plus a fixed sample of the other units: 2
   per (track, condition), seed `crc32("ci-sample")`. Their rows must equal
   the committed ones, apart from the machine-dependent counts.
-- Finished units are cached with `actions/cache`. The cache key is the hash
-  of `verify-inputs.json`, of the benchmark and runtime code and of the
-  programs' `spec.py` files; each saved unit also carries verify's own key
-  (content of the translation files, vectors, spec, runtime and
-  verification code), so a unit is taken from the
-  cache only if none of these changed. The sample units are always run
+- Finished units are cached with `actions/cache` (each run saves a new
+  entry; a job restores the newest one). The check is verify's own key,
+  which each saved unit carries (content of the translation files,
+  vectors, spec, runtime and verification code, as above): a unit is taken
+  from the cache only if none of these changed. The sample units are always run
   again with an empty cache.
 - `benchmark-full.yml`, started by hand and every Monday, runs every unit
   of the registered mode and the D14 scope of the corrected mode, in four

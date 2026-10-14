@@ -62,7 +62,8 @@ OUTS = {"registered": (OUT, RESULTS / "comparisons.csv"),
         "corrected": (RESULTS / "verdicts-corrected.csv", RESULTS / "comparisons-corrected.csv")}
 PARTS = RESULTS / ".verify-parts"
 UNIT_VERSION = "4"  # change when the rows of a unit are computed differently
-_CODE = ("verify.py", "runner.py", "_driver.py", "vectors.py")
+_CODE = ("verify.py", "runner.py", "_driver.py", "vectors.py", "programs.py")
+HARNESS_DIR = Path(__file__).resolve().parents[1] / "harness"  # spec loading and output comparison
 RUNTIME_DIR = Path(__file__).resolve().parents[1] / "runtime"
 
 
@@ -71,6 +72,8 @@ def _code_hash() -> str:
     h = hashlib.sha256(UNIT_VERSION.encode("utf-8"))
     for name in _CODE:
         h.update((Path(__file__).with_name(name)).read_bytes())
+    for f in sorted(HARNESS_DIR.glob("*.py")):
+        h.update(f.name.encode("utf-8") + b"\0" + f.read_bytes())
     return h.hexdigest()
 
 

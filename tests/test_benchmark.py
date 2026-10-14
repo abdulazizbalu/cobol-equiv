@@ -239,3 +239,96 @@ def test_extended_run_stops_after_repeated_timeouts(tmp_path, monkeypatch):
     res = runner.run_extended(t, [{"<stdin>": b"30"}] * 4, timeout=1, condition="A")
     assert all(r.get("timeout") for r in res)
     assert [bool(r.get("not_rerun")) for r in res] == [False, False, True, True]
+
+
+SWALLOWING_TRANSLATION = """
+import time
+
+def main(stdin, input_files):
+    if stdin == b"loop":
+        while True:
+            try:
+                time.sleep(100)
+            except BaseException:
+                pass
+    return b"ok\\n", {}
+"""
+
+
+def test_a_swallowed_timeout_still_ends_the_vector(tmp_path):
+    from cobol_equiv.benchmark.runner import run_translation
+
+    t = tmp_path / "t.py"
+    t.write_text(SWALLOWING_TRANSLATION, encoding="utf-8")
+    res = run_translation(t, [{"<stdin>": b""}, {"<stdin>": b"loop"}, {"<stdin>": b""}], timeout=1,
+                          condition="A", total=60)
+    assert "stdout" in res[0]
+    assert res[1].get("timeout") and res[2].get("timeout") and res[2].get("abandoned")
+
+
+def test_slow_module_load_is_a_timeout(tmp_path):
+    from cobol_equiv.benchmark.runner import run_translation
+
+    t = tmp_path / "t.py"
+    t.write_text("import time\ntime.sleep(30)\ndef main(s, f):\n    return b'', {}\n", encoding="utf-8")
+    res = run_translation(t, [{"<stdin>": b""}] * 2, timeout=1, condition="A", total=60)
+    assert all(r.get("timeout") for r in res)
+
+
+def test_crashed_process_and_extra_results(tmp_path):
+    from cobol_equiv.benchmark.runner import run_translation
+
+    t = tmp_path / "t.py"
+    t.write_text("import os\ndef main(s, f):\n    os._exit(3)\n", encoding="utf-8")
+    res = run_translation(t, [{"<stdin>": b""}] * 2, timeout=5, condition="A", total=60)
+    assert all("ended without a result" in r["error"] for r in res)
+
+
+def _fake_evaluate(monkeypatch, results):
+    from cobol_equiv.benchmark import verify
+    from cobol_equiv.benchmark.vectors import b64
+
+    monkeypatch.setattr(verify, "_results", lambda path, condition, items, timeout: results)
+    p = next(p for p in ALL if p.name == "acctpost")
+    exp = {"3.1.2": {"stdout": b64(b"x\n"), "files": {}}}
+    items = [{"input": {}, "expected": exp} for _ in results]
+    return verify._evaluate(p, Path(__file__), "A", items, "3.1.2")
+
+
+def test_timeout_precedence(monkeypatch):
+    from cobol_equiv.benchmark.vectors import b64
+
+    ok, slow = {"stdout": b64(b"x\n"), "files": {}}, {"stdout": b64(b"x\n"), "files": {}, "slow": True}
+    bad, late = {"stdout": b64(b"y\n"), "files": {}}, {"timeout": True}
+    r = _fake_evaluate(monkeypatch, [ok, late, bad])
+    assert (r["pass"], r["first_failure_kind"], r["timeout_vectors"]) == (0, "difference", 1)
+    r = _fake_evaluate(monkeypatch, [ok, late])
+    assert (r["pass"], r["first_failure_kind"]) == (0, "timeout")
+    r = _fake_evaluate(monkeypatch, [ok, slow])
+    assert (r["pass"], r["slow_vectors"], r["first_failure_kind"]) == (1, 1, "")
+
+
+def test_verify_compare_ignores_machine_dependent_counts():
+    from cobol_equiv.benchmark import verify
+
+    head = ",".join(verify.FIELDS) + "\n"
+    a = head + "E,p,A,1,0,3.1.2,heldout,3,3,1,1,0,,,t\n"
+    b = head + "E,p,A,1,0,3.1.2,heldout,3,3,1,0,0,,,t\n"
+    c = head + "E,p,A,1,0,3.1.2,heldout,3,2,0,0,0,difference,x,t\n"
+    assert verify.compare(a, b) == []
+    assert len(verify.compare(a, c)) == 1
+
+
+def test_b_versions_carry_the_last_code_forward():
+    from cobol_equiv.benchmark import verify
+
+    for p in ALL:
+        for attempt in (1, 2, 3):
+            vs = verify.versions(p, "B", attempt)
+            if vs is None:
+                continue
+            assert len(vs) == 4
+            fin = json.loads((verify.RUNS / p.track / p.name / "B" / str(attempt) / "final.json")
+                             .read_text(encoding="utf-8"))
+            last = vs[-1]
+            assert (None if last is None else last.relative_to(ROOT).as_posix()) == fin["final"]

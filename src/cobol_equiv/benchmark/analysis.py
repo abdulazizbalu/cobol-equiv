@@ -195,17 +195,27 @@ def write_failures(rows: list[dict]) -> None:
         w.writerows(out)
 
 
+BLIND_KEY = RESULTS / "blind-key.csv"
+
+
 def blind_list(rows: list[dict]) -> list[dict]:
     """Failures that need a manual category, in random order (seed
-    crc32("taxonomy")), without the condition."""
-    finals = {(r["track"], r["program"], r["condition"], r["attempt"]): r for r in failing_finals(rows)}
-    todo = [r for k, r in finals.items() if r["first_failure_kind"] not in AUTOMATIC]
-    todo.sort(key=lambda r: (r["track"], r["program"], r["condition"], r["attempt"]))
-    random.Random(zlib.crc32(b"taxonomy")).shuffle(todo)
-    return [{"item": i, "id": zlib.crc32(f"{r['track']}/{r['program']}/{r['condition']}/{r['attempt']}"
-                                       .encode("utf-8")),
-             "program": r["program"], "translation": r["translation"], "difference": r["first_failure"]}
-            for i, r in enumerate(todo, 1)]
+    crc32("taxonomy")). Each item shows the program, the translation code and
+    the difference, never the condition, attempt or file path; the mapping
+    from item number to attempt is written to blind-key.csv, which is read
+    only to merge the categories back."""
+    finals = [r for r in failing_finals(rows) if r["first_failure_kind"] not in AUTOMATIC]
+    finals.sort(key=lambda r: (r["track"], r["program"], r["condition"], r["attempt"]))
+    random.Random(zlib.crc32(b"taxonomy")).shuffle(finals)
+    with BLIND_KEY.open("w", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh, lineterminator="\n")
+        w.writerow(["item", "track", "program", "condition", "attempt"])
+        for i, r in enumerate(finals, 1):
+            w.writerow([i, r["track"], r["program"], r["condition"], r["attempt"]])
+    return [{"item": i, "program": r["program"],
+             "translation": (ROOT / r["translation"]).read_text(encoding="utf-8"),
+             "difference": r["first_failure"]}
+            for i, r in enumerate(finals, 1)]
 
 
 def taxonomy() -> dict:
@@ -238,7 +248,8 @@ def _p(p: float) -> str:
 
 def tables(s: dict) -> str:
     lines = ["| track | condition | HELD-OUT pass (attempts) | 95% CI | pass@3 (programs) | 95% CI | "
-             "VISIBLE pass (attempts) | time-out (attempts) | passes needing the extended time limit |",
+             "VISIBLE pass (attempts) | time-out (attempts) | passes needing the extended time limit "
+             "(depends on machine speed) |",
              "|---|---|---|---|---|---|---|---|---|"]
     for t in TRACKS:
         for c in CONDITIONS:

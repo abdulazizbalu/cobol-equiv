@@ -17,8 +17,9 @@ The work is split into units, one per (program, condition, attempt), run in
 parallel (--jobs, default: number of CPUs). Each finished unit is written
 to benchmark/results/.verify-parts/ (not committed) under a key made of the
 translation files, the vectors file and this module's unit version, so an
-interrupted run resumes with the units not yet done; --fresh ignores the
-saved units. verdicts.csv is assembled from the units in a fixed order.
+interrupted run resumes with the units not yet done; --fresh deletes the
+saved units and the evaluation cache. Cache keys include the code of this
+module, the runner, the driver and the vectors module. verdicts.csv is assembled from the units in a fixed order.
 With --check the file is assembled the same way and compared with the
 committed one, ignoring the two counts that depend on the machine's speed
 (vectors that needed the extended time limit, vectors still timed out). Generation of translations is not reproducible; this
@@ -46,6 +47,15 @@ RUNS = ROOT / "benchmark" / "runs"
 OUT = ROOT / "benchmark" / "results" / "verdicts.csv"
 PARTS = ROOT / "benchmark" / "results" / ".verify-parts"
 UNIT_VERSION = "3"  # change when the rows of a unit are computed differently
+_CODE = ("verify.py", "runner.py", "_driver.py", "vectors.py")
+
+
+def _code_hash() -> str:
+    """The code that produces the verdicts; part of every cache key."""
+    h = hashlib.sha256(UNIT_VERSION.encode("utf-8"))
+    for name in _CODE:
+        h.update((Path(__file__).with_name(name)).read_bytes())
+    return h.hexdigest()
 SECONDARY = "3.2"
 ROUNDS = 3
 FIELDS = ["track", "program", "condition", "attempt", "round", "version", "set", "vectors", "passed",
@@ -83,7 +93,7 @@ def _results(path: Path, condition: str, items: list, timeout: float) -> list[di
     translation is also round 0 of B)."""
     python = "C" if condition == "C" else "A"
     inputs = [v["input"] for v in items]
-    h = hashlib.sha256(f"{UNIT_VERSION}|{python}|{timeout}|".encode("utf-8"))
+    h = hashlib.sha256(f"{_code_hash()}|{python}|{timeout}|".encode("utf-8"))
     h.update(path.read_bytes())
     h.update(json.dumps(inputs, sort_keys=True).encode("utf-8"))
     cache = PARTS / "evals" / f"{h.hexdigest()}.json"
@@ -146,7 +156,7 @@ def _program(track: str, name: str) -> Program:
 def unit_key(unit) -> str:
     track, name, condition, attempt = unit
     p = _program(track, name)
-    h = hashlib.sha256(f"{UNIT_VERSION}|{track}|{name}|{condition}|{attempt}".encode("utf-8"))
+    h = hashlib.sha256(f"{_code_hash()}|{track}|{name}|{condition}|{attempt}".encode("utf-8"))
     from .vectors import vectors_path
     h.update(vectors_path(p).read_bytes())
     for path in versions(p, condition, attempt):
@@ -209,17 +219,24 @@ def _row(p, condition, attempt, rnd, label, set_name, res, path) -> dict:
 
 
 def generate(jobs: int | None = None, fresh: bool = False, progress=None) -> str:
+    if fresh and PARTS.exists():
+        import shutil
+        shutil.rmtree(PARTS)  # saved units and the evaluation cache
     all_units = units()
-    done = {} if fresh else {u: r for u in all_units if (r := _saved(u)) is not None}
+    done = {u: r for u in all_units if (r := _saved(u)) is not None}
     todo = [u for u in all_units if u not in done]
     if progress:
         progress(f"{len(all_units)} units: {len(done)} saved, {len(todo)} to run")
-    if todo:
-        with ProcessPoolExecutor(max_workers=jobs or os.cpu_count() or 1) as ex:
-            futures = [ex.submit(_run_unit, u) for u in todo]
-            for i, f in enumerate(as_completed(futures), 1):
+    # B round 0 is the A translation: run the A and C units first, so that the
+    # B units find the A evaluations in the cache instead of repeating them.
+    phases = [[u for u in todo if u[2] != "B"], [u for u in todo if u[2] == "B"]]
+    i = 0
+    with ProcessPoolExecutor(max_workers=jobs or os.cpu_count() or 1) as ex:
+        for phase in phases:
+            for f in as_completed([ex.submit(_run_unit, u) for u in phase]):
                 unit, rows = f.result()
                 done[unit] = rows
+                i += 1
                 if progress:
                     progress(f"{i}/{len(todo)} {'/'.join(map(str, unit))}")
     buf = io.StringIO()
@@ -250,7 +267,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--jobs", type=int, default=None)
-    ap.add_argument("--fresh", action="store_true", help="ignore saved units")
+    ap.add_argument("--fresh", action="store_true", help="delete saved units and the evaluation cache first")
     a = ap.parse_args(argv)
     text = generate(a.jobs, a.fresh, progress=lambda m: print(m, file=sys.stderr, flush=True))
     if a.check:

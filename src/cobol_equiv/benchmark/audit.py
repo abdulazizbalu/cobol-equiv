@@ -9,7 +9,8 @@ For every call under benchmark/runs/{E,R}/ it checks that
   from the committed sources, vectors and API sheet (and the sheet's
   SHA-256 is the one in the manifest);
 - translation.py is exactly the code extracted from reply.json;
-- every program has the attempts 1-3 of A, B and C;
+- every program has the attempts 1-3 of A, B and C, and each B attempt's
+  final.json matches its round directories;
 and lists translations whose code touches the file system, processes or
 the interpreter's arguments (protocol, notes on the child process).
 Exit status 1 if any check fails.
@@ -49,7 +50,9 @@ def check() -> tuple[list[str], list[str], dict]:
                     if cond == "B":
                         if not (d / "final.json").exists():
                             problems.append(f"{d}: missing final.json")
+                            continue
                         calls = sorted(d.glob("round-*/call.json"))
+                        _check_final(d, base, attempt, calls, problems)
                     else:
                         calls = [d / "call.json"]
                         if not calls[0].exists():
@@ -63,6 +66,22 @@ def check() -> tuple[list[str], list[str], dict]:
                         counts["calls"] += 1
                         _check_call(c.parent, frozen, problems, suspects)
     return problems, suspects, counts
+
+
+def _check_final(d: Path, base: Path, attempt: int, calls: list, problems: list) -> None:
+    """final.json names the last version with code, and its rounds are the
+    round directories."""
+    fin = json.loads((d / "final.json").read_text(encoding="utf-8"))
+    if [r["round"] for r in fin["rounds"]] != list(range(1, len(calls) + 1)):
+        problems.append(f"{d}: final.json rounds do not match the round directories")
+    current = base / "A" / str(attempt) / "translation.py"
+    current = current if current.exists() else None
+    for c in calls:
+        if (c.parent / "translation.py").exists():
+            current = c.parent / "translation.py"
+    expected = None if current is None else current.relative_to(ROOT).as_posix()
+    if fin["final"] != expected:
+        problems.append(f"{d}: final.json names {fin['final']}, expected {expected}")
 
 
 def _check_call(d: Path, frozen: dict, problems: list, suspects: list) -> None:

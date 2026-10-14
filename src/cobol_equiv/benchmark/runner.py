@@ -49,8 +49,10 @@ def run_translation(path: Path, inputs: list[dict], timeout: float, condition: s
     req = {"module": str(path.resolve()), "timeout": timeout, "max_timeouts": max_timeouts,
            "vectors": [{"stdin": b64(inp.get(STDIN, b"")),
                         "files": {k: b64(v) for k, v in inp.items() if k != STDIN}} for inp in inputs]}
-    with tempfile.TemporaryDirectory(prefix="cobol-equiv-run-") as d:
-        rq, rs = Path(d) / "request.json", Path(d) / "result.json"
+    with tempfile.TemporaryDirectory(prefix="cobol-equiv-run-") as d, \
+            tempfile.TemporaryDirectory(prefix="cobol-equiv-io-") as io_dir:
+        # the request and result files are outside the child's working directory
+        rq, rs = Path(io_dir) / "request.json", Path(io_dir) / "result.json"
         rq.write_text(json.dumps(req), encoding="utf-8")
         stopped = False
         try:
@@ -59,17 +61,26 @@ def run_translation(path: Path, inputs: list[dict], timeout: float, condition: s
                            preexec_fn=_limits)
         except subprocess.TimeoutExpired:
             stopped = True
-        results = []
+        results, abandoned = [], False
         if rs.exists():
             for line in rs.read_text(encoding="utf-8").splitlines():
                 try:
-                    results.append(json.loads(line))
+                    r = json.loads(line)
                 except json.JSONDecodeError:
                     break  # a line cut by the stop
+                if r.get("abandoned"):
+                    abandoned = True
+                    break
+                results.append(r)
+    if len(results) > len(inputs):
+        return [{"error": "the result file has more results than inputs", "unsupported": 0}
+                for _ in inputs]
     missing = len(inputs) - len(results)
     if missing:
         if stopped:
             fill = {"timeout": True, "total": True, "unsupported": 0}
+        elif abandoned:
+            fill = {"timeout": True, "abandoned": True, "unsupported": 0}
         elif max_timeouts and sum(1 for r in results if r.get("timeout")) >= max_timeouts:
             fill = {"timeout": True, "not_rerun": True, "unsupported": 0}
         else:

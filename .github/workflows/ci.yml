@@ -111,6 +111,7 @@ jobs:
           test -z "$(git status --porcelain -- results/ README.md)"
 
   benchmark:
+    timeout-minutes: 300
     # Regenerates the benchmark vectors with both compilers and fails if
     # they differ from the committed ones; checks that every reference
     # translation passes all its vectors (criterion E4) and that the API

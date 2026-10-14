@@ -48,7 +48,7 @@ ENV_ALLOWLIST = ("PATH", "LANG", "LC_ALL", "HTTPS_PROXY", "https_proxy", "HTTP_P
                  "NO_PROXY", "no_proxy", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS", "REQUESTS_CA_BUNDLE",
                  "CURL_CA_BUNDLE", "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN",
                  "CLAUDE_CODE_OAUTH_TOKEN")
-AUTH_FAILURE = re.compile(r"\b401\b|authenticat|api key|oauth token|log ?in", re.I)
+AUTH_FAILURE = re.compile(r"\b401\b|authenticat|api key|oauth token|log ?in|session limit|usage limit", re.I)
 
 
 def client_env(home: str) -> dict:
@@ -116,7 +116,7 @@ def call(prompt: str, model: str) -> dict:
         attempts.append(entry)
         if problem and AUTH_FAILURE.search(problem):
             # not a failure of the translator: stop instead of scoring "no code"
-            raise RunStopped(f"authentication failed: {problem}")
+            raise RunStopped(f"authentication or account limit: {problem}")
         if not problem:
             return {"raw": raw, "result": doc.get("result", ""), "model_ids": models,
                     "started_utc": started, "calls": attempts}

@@ -1,0 +1,31 @@
+{
+ "calls": [
+  {
+   "model_ids": [
+    "claude-opus-5-5"
+   ],
+   "problem": "",
+   "started_utc": "2026-10-14T00:13:47+00:00"
+  }
+ ],
+ "client_version": "2.1.296 (Claude Code)",
+ "environment_variables": [
+  "ANTHROPIC_BASE_URL",
+  "CURL_CA_BUNDLE",
+  "HOME",
+  "HTTPS_PROXY",
+  "NODE_EXTRA_CA_CERTS",
+  "NO_PROXY",
+  "PATH",
+  "REQUESTS_CA_BUNDLE",
+  "SSL_CERT_FILE",
+  "https_proxy",
+  "no_proxy"
+ ],
+ "has_code": true,
+ "model_id_configured": "claude-opus-5-5",
+ "model_ids_reported": [
+  "claude-opus-5-5"
+ ],
+ "started_utc": "2026-10-14T00:13:47+00:00"
+}

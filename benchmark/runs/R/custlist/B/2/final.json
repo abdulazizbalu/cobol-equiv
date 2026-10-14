@@ -1,0 +1,9 @@
+{
+ "final": "benchmark/runs/R/custlist/B/2/round-1/translation.py",
+ "rounds": [
+  {
+   "round": 1,
+   "dev_failure_kind": "error"
+  }
+ ]
+}

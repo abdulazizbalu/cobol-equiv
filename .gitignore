@@ -11,3 +11,4 @@ dist/
 benchmark/corpus-e/rc-*/original.cob
 benchmark/corpus-e/rc-*/program.cob
 benchmark/corpus-e/rc-*/task.txt
+benchmark/results/.verify-parts/

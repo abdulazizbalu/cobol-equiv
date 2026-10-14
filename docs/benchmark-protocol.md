@@ -510,6 +510,47 @@ before any translation call.
   status 71 on every input under GnuCOBOL 3.2 (see its spec), so it has no
   3.2 expected outputs and is left out of the 3.2 re-run.
 
+- **D11 (account limit).** During condition C, 18 calls failed because
+  the account's usage limit was reached ("session limit"); the retries
+  failed the same way. They are listed in
+  `benchmark/results/account-limit-reruns.csv` (taken from the call records
+  before they were deleted; those records were never committed). These are failures of the account, not of the
+  translator: their artifacts were deleted and the calls were made again
+  after the limit reset, under the same attempt numbers. The runner now stops on such a message instead
+  of recording a call without code.
+
+- **D12 (time limits).** (a)-(c) were decided after the translation runs,
+  before any verification result was computed; (d) was added later, while
+  the verification was running (units of it had been computed, but no
+  aggregated result had been looked at), because the extended re-runs of
+  translations that loop took hours. (a) A translation that is correct but slower than
+  the limits of section 4 is not counted as failing: every vector that
+  exceeds the per-vector limit (spec timeout, 10 s) or is not reached
+  within the 600 s total is run again with 120 s per vector and 7200 s in
+  total (`EXTENDED_TIMEOUT`, `EXTENDED_TOTAL` in `benchmark/runner.py`);
+  if its output is then correct, the vector passes and is counted as
+  "slow". (b) A vector that still times out is a time-out, a separate
+  outcome: a translation whose only failing vectors are time-outs gets the
+  verdict "timeout", which is reported in its own column and as its own
+  failure category, not as "crash or syntax error" and not as a semantic
+  failure. It does not count as a pass. (c) When the total limit stops a
+  run, the results of the vectors finished before it are kept (before,
+  all vectors of the run were marked as timed out). (d) The extended run
+  of a translation stops after 3 vectors time out again
+  (`EXTENDED_MAX_TIMEOUTS`); its remaining late vectors stay time-outs
+  without being run again. Such a translation cannot pass, so this only
+  saves time; a late vector that would have given a wrong output is then
+  counted as a time-out, not as a difference. (e) Consequently the failure
+  of an attempt (for its verdict and its taxonomy category) is the first
+  failing HELD-OUT vector in list order that is not a time-out, and
+  "timeout" only when all failing vectors are time-outs; this replaces
+  "first failing vector" of section 6 for attempts with time-outs. A vector
+  that timed out after raising the runtime's `Unsupported` is counted as
+  "unsupported". (f) The per-vector limit also covers loading the module,
+  and a translation that catches the time-out exception is stopped 2 s
+  later, the vector counted as a time-out. Condition B's DEV
+  checks during generation used the original limits; that is unchanged.
+
 Notes, not deviations: the runtime was extended before the freeze, while
 writing reference translations (ACCEPT from standard input, alphanumeric
 to numeric conversion for items, truncation of arithmetic results stored

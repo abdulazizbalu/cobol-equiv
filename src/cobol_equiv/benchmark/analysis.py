@@ -34,6 +34,7 @@ FAILURES_CORRECTED = RESULTS / "failures-corrected.csv"
 SENSITIVITY = RESULTS / "sensitivity.json"
 EQ_SITES = RESULTS / "eq-sites.csv"
 COMPARISONS = RESULTS / "comparisons.csv"
+COMPARISONS_CORRECTED = RESULTS / "comparisons-corrected.csv"
 DOC = ROOT / "docs" / "benchmark.md"
 README = ROOT / "README.md"
 Z = 1.959964
@@ -365,7 +366,8 @@ def _category(failures: dict, key) -> str:
 def usage() -> dict:
     """Per condition (A, B): translation files, and how many of them compare
     CobDecimal values in their code (eq-sites.csv) and in their HELD-OUT run
-    with the registered runtime (comparisons.csv)."""
+    with the corrected runtime (comparisons-corrected.csv, D14 scope only; with
+    the registered runtime a run stops at the first ordering, which raises)."""
     from .eqscan import translations
 
     files = defaultdict(set)
@@ -374,7 +376,7 @@ def usage() -> dict:
     out = {}
     with EQ_SITES.open(encoding="utf-8", newline="") as fh:
         sites = list(csv.DictReader(fh))
-    with COMPARISONS.open(encoding="utf-8", newline="") as fh:
+    with COMPARISONS_CORRECTED.open(encoding="utf-8", newline="") as fh:
         runs = [r for r in csv.DictReader(fh) if r["translation"]]
     for c in ("A", "B"):
         own = files[c]  # B: the repair-round translations (round 0 of B is the A translation)
@@ -388,8 +390,20 @@ def usage() -> dict:
                   "static_sites": {k: sum(1 for r in sites if r["condition"] == c and r["kind"] == k)
                                    for k in st},
                   "dynamic": {k: len(v) for k, v in dyn.items()},
+                  "sample_units_with_calls": _sample_calls(runs, c),
                   "static_eq_files": st["eq"], "dynamic_eq_diff_files": dyn["eq_diff"]}
     return out
+
+
+def _sample_calls(runs: list, condition: str) -> list:
+    """D14 sample units of the condition whose corrected run made any
+    CobDecimal comparison or hash call (the static scan missed them)."""
+    from .ci import d14_sample, affected_units, unit_id
+
+    ids = {unit_id(u) for u in d14_sample(affected_units()) if u[2] == condition}
+    return sorted({"/".join(r[k] for k in ("track", "program", "condition", "attempt")) for r in runs
+                   if "/".join(r[k] for k in ("track", "program", "condition", "attempt")) in ids
+                   and any(int(r[k]) for k in ("eq", "order", "hash"))})
 
 
 def sensitivity() -> dict:
@@ -441,15 +455,24 @@ def sensitivity_tables(x: dict) -> str:
                  for r, k in zip(reg["by_track"][t]["b_by_round"], cor["by_track"][t]["b_by_round"])]
         lines.append(f"| {t} | " + " | ".join(cells) + " |")
     u = x["usage"]
-    lines += ["", "| condition | translation files | with == / != on CobDecimal in the code | "
-                  "whose HELD-OUT run made an == / != call the defect answers differently | "
-                  "with an ordering of CobDecimal in the code | in / set / dict / hash in the code |",
-              "|---|---|---|---|---|---|"]
+    lines += ["", "Translation files that compare CobDecimal values (static scan of the code; HELD-OUT run "
+                  "with the corrected runtime, D14 scope units):", "",
+              "| condition | translation files | == / != in the code | ordering in the code | "
+              "in / set / dict / hash in the code | run made an == / != call the defect answers differently | "
+              "run made an ordering call |",
+              "|---|---|---|---|---|---|---|"]
     for c in ("A", "B"):
         v = u[c]
         lines.append(f"| {c} | {v['files']} | {v['static']['eq']} ({v['static_sites']['eq']} sites) | "
-                     f"{v['dynamic']['eq_diff']} | {v['static']['order']} | "
-                     f"{v['static']['in'] + v['static']['hash']} |")
+                     f"{v['static']['order']} ({v['static_sites']['order']} sites) | "
+                     f"{v['static']['in'] + v['static']['hash']} | {v['dynamic']['eq_diff']} | "
+                     f"{v['dynamic']['order']} |")
+    from .ci import d14_sample, affected_units
+
+    sample = d14_sample(affected_units())
+    missed = u["A"]["sample_units_with_calls"] + u["B"]["sample_units_with_calls"]
+    lines += ["", f"D14 sample ({len(sample)} A and B units outside the scan): units whose corrected run made a "
+                  f"CobDecimal comparison or hash call: {', '.join(missed) or 'none'}."]
     lines += ["", f"Final attempts whose HELD-OUT verdict or failure category changes ({len(x['flips'])}; "
                   "category \"pass\" means the attempt passes):", ""]
     if x["flips"]:

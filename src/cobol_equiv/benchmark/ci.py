@@ -97,16 +97,17 @@ def _rows_by_unit(text: str | None) -> dict:
 
 def changed_units(mode: str, base: str) -> list:
     """Units whose input hash, or committed verdict or comparison rows, differ
-    from those on the git ref base (all units when base has no record)."""
+    from those on the git ref base. When base has no verify-inputs.json (it
+    predates this record), only the rows are compared."""
     old_inputs = _git_show(base, INPUTS)
-    old = json.loads(old_inputs)["units"].get(mode, {}) if old_inputs else {}
+    old = json.loads(old_inputs)["units"].get(mode, {}) if old_inputs else None
     out_v, out_c = verify.OUTS[mode]
     rows_old = [_rows_by_unit(_git_show(base, out_v)), _rows_by_unit(_git_show(base, out_c))]
     rows_new = [_rows_by_unit(f.read_text(encoding="utf-8") if f.exists() else "") for f in (out_v, out_c)]
     changed = []
     for u in verify.units():
         i = unit_id(u)
-        if old.get(i) != input_hash(u, mode) or any(a.get(i) != b.get(i) for a, b in zip(rows_old, rows_new)):
+        if (old is not None and old.get(i) != input_hash(u, mode)) or any(a.get(i) != b.get(i) for a, b in zip(rows_old, rows_new)):
             changed.append(u)
     return changed
 

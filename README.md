@@ -58,7 +58,8 @@ before the numbers. The intervals and the McNemar tests treat the three
 attempts of a program as independent, which they are not; the sign test
 over programs does not. The API sheet given in conditions A and B contains
 an error that causes most of condition A's failures (deviation D13), so the
-A vs C comparison is affected by it.
+A vs C comparison is affected by it; the results with the runtime defect
+corrected (D14) follow the registered ones.
 
 <!-- BENCHMARK:START -->
 | track | condition | HELD-OUT pass (attempts) | 95% CI | pass@3 (programs) | 95% CI | VISIBLE pass (attempts) | time-out (attempts) | passes needing the extended time limit (depends on machine speed) |
@@ -114,6 +115,72 @@ One example per failure category (first attempt in program order; the full list 
 - **sign handling** (matrix): a negative zero cell is edited with a minus sign; GnuCOBOL edits zero without sign. First difference: `<stdout> line 1, column 16: expected b'     0     0     0     0      ', got b'     0    -0     0     0      '`. See [semantic trap 6](docs/semantic-traps.md#6-negative-zero-exists).
 - **other** (rc-a-plus-b): conversion of non-numeric ACCEPT input text ('A') to a number differs. First difference: `<stdout> line 1, column 6: expected b'+00000', got b'+00001'`.
 <!-- BENCHMARK:END -->
+
+### Sensitivity to the runtime defect (D14)
+
+The results above are the registered ones and stay primary. The same
+committed translations, not changed, verified with the corrected runtime
+(1.1.0, value comparison of `CobDecimal`) within the scope given in D14;
+details in [docs/benchmark.md](docs/benchmark.md).
+
+<!-- SENSITIVITY:START -->
+| track | condition | HELD-OUT pass, as registered | 95% CI | HELD-OUT pass, defect corrected | 95% CI | pass@3, as registered | pass@3, corrected |
+|---|---|---|---|---|---|---|---|
+| E | A | 83/90 (92.2%) | 84.8-96.2% | 89/90 (98.9%) | 94.0-99.8% | 30/30 | 30/30 |
+| E | B | 90/90 (100.0%) | 95.9-100.0% | 90/90 (100.0%) | 95.9-100.0% | 30/30 | 30/30 |
+| E | C | 82/90 (91.1%) | 83.4-95.4% | 82/90 (91.1%) | 83.4-95.4% | 29/30 | 29/30 |
+| R | A | 53/60 (88.3%) | 77.8-94.2% | 59/60 (98.3%) | 91.1-99.7% | 20/20 | 20/20 |
+| R | B | 60/60 (100.0%) | 94.0-100.0% | 60/60 (100.0%) | 94.0-100.0% | 20/20 | 20/20 |
+| R | C | 49/60 (81.7%) | 70.1-89.4% | 49/60 (81.7%) | 70.1-89.4% | 17/20 | 17/20 |
+
+| track | comparison | A only / other only, as registered | McNemar p | Holm p | A only / other only, corrected | McNemar p | Holm p | sign test p, as registered / corrected |
+|---|---|---|---|---|---|---|---|---|
+| E | A vs C | 8 / 7 | 1 | 1 | 8 / 1 | 0.0391 | 0.117 | 1 / 0.375 |
+| E | A vs B | 0 / 7 | 0.0156 | 0.0625 | 0 / 1 | 1 | 1 | 0.0312 / 1 |
+| R | A vs C | 11 / 7 | 0.481 | 0.961 | 11 / 1 | 0.00635 | 0.0254 | 1 / 0.219 |
+| R | A vs B | 0 / 7 | 0.0156 | 0.0625 | 0 / 1 | 1 | 1 | 0.0625 / 1 |
+
+| track | B after round 0, as registered / corrected | 1 | 2 | 3 |
+|---|---|---|---|---|
+| E | 83/90 / 89/90 | 90/90 / 90/90 | 90/90 / 90/90 | 90/90 / 90/90 |
+| R | 53/60 / 59/60 | 60/60 / 60/60 | 60/60 / 60/60 | 60/60 / 60/60 |
+
+Translation files that compare CobDecimal values (static scan of the code; HELD-OUT run with the corrected runtime, D14 scope units):
+
+| condition | translation files | == / != in the code | ordering in the code | in / set / dict / hash in the code | run made an == / != call the defect answers differently | run made an ordering call |
+|---|---|---|---|---|---|---|
+| A | 150 | 8 (11 sites) | 10 (27 sites) | 0 | 8 | 10 |
+| B | 16 | 0 (0 sites) | 0 (0 sites) | 0 | 0 | 0 |
+
+D14 sample (30 A and B units outside the scan): units whose corrected run made a CobDecimal comparison or hash call: none.
+
+Final attempts whose HELD-OUT verdict or failure category changes (12; category "pass" means the attempt passes):
+
+| track | program | condition | attempt | as registered | defect corrected |
+|---|---|---|---|---|---|
+| E | rc-fibonacci-sequence | A | 3 | crash or syntax error | pass |
+| E | rc-greatest-common-divisor | A | 1 | crash or syntax error | pass |
+| E | rc-integer-comparison | A | 3 | crash or syntax error | pass |
+| E | rc-roman-numerals-encode | A | 1 | crash or syntax error | pass |
+| E | rc-soloways-recurring-rainfall | A | 2 | time-out | pass |
+| E | rc-soloways-recurring-rainfall | A | 3 | time-out | pass |
+| R | custlist | A | 1 | crash or syntax error | pass |
+| R | custlist | A | 2 | crash or syntax error | pass |
+| R | matrix | A | 1 | crash or syntax error | pass |
+| R | payroll | A | 3 | crash or syntax error | pass |
+| R | stockupd | A | 1 | crash or syntax error | pass |
+| R | stockupd | A | 3 | crash or syntax error | pass |
+
+Defect corrected, GnuCOBOL 3.2 re-run of the final translations that pass HELD-OUT on 3.1.2: 420 of 420 pass; fail on 3.2: none.
+<!-- SENSITIVITY:END -->
+
+Changes with the correction: condition A passes where it failed because of
+the defect (crashes and time-outs); the registered A vs B difference almost
+disappears; A passes on more pairs than C on both tracks (McNemar below 0.05
+after Holm on track R only; the sign test over programs is not significant
+on either track). No change: condition C, pass@3, the B results, the 3.2
+re-run. The corrected analysis was not pre-registered; the registered
+results stay primary.
 
 ## Reproduce
 

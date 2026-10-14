@@ -227,3 +227,15 @@ def test_slow_but_correct_vector_passes_under_the_extended_limit(tmp_path, monke
     monkeypatch.setattr(runner, "EXTENDED_TOTAL", 30)
     res = runner.run_extended(t, [{"<stdin>": b"0"}, {"<stdin>": b"2"}], timeout=1, condition="A")
     assert "stdout" in res[1] and res[1]["slow"] and not res[0].get("slow")
+
+
+def test_extended_run_stops_after_repeated_timeouts(tmp_path, monkeypatch):
+    from cobol_equiv.benchmark import runner
+
+    t = tmp_path / "t.py"
+    t.write_text(SLOW_TRANSLATION, encoding="utf-8")
+    monkeypatch.setattr(runner, "EXTENDED_TIMEOUT", 1)
+    monkeypatch.setattr(runner, "EXTENDED_MAX_TIMEOUTS", 2)
+    res = runner.run_extended(t, [{"<stdin>": b"30"}] * 4, timeout=1, condition="A")
+    assert all(r.get("timeout") for r in res)
+    assert [bool(r.get("not_rerun")) for r in res] == [False, False, True, True]

@@ -72,7 +72,10 @@ def main() -> int:
         out_fh.write(json.dumps(r) + "\n")
         out_fh.flush()
 
+    timeouts = 0
     for vec in req["vectors"]:
+        if req.get("max_timeouts") and timeouts >= req["max_timeouts"]:
+            break  # the parent marks the rest as timed out without running them
         if load_error is not None:
             emit({"error": load_error, "unsupported": import_hits})
             continue
@@ -93,6 +96,7 @@ def main() -> int:
             r = {"stdout": base64.b64encode(bytes(out)).decode("ascii"), "files": enc_files}
         except VectorTimeout:
             r = {"timeout": True}
+            timeouts += 1
         except BaseException as e:  # noqa: BLE001
             signal.alarm(0)
             r = {"error": _err(e), "trace": traceback.format_exc()[-1500:]}

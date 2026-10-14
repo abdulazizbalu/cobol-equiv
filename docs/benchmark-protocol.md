@@ -530,7 +530,12 @@ before any translation call.
   failure category, not as "crash or syntax error" and not as a semantic
   failure. It does not count as a pass. (c) When the total limit stops a
   run, the results of the vectors finished before it are kept (before,
-  all vectors of the run were marked as timed out). Condition B's DEV
+  all vectors of the run were marked as timed out). (d) The extended run
+  of a translation stops after 3 vectors time out again
+  (`EXTENDED_MAX_TIMEOUTS`); its remaining late vectors stay time-outs
+  without being run again. Such a translation cannot pass, so this only
+  saves time; a late vector that would have given a wrong output is then
+  counted as a time-out, not as a difference. Condition B's DEV
   checks during generation used the original limits; that is unchanged.
 
 Notes, not deviations: the runtime was extended before the freeze, while

@@ -1,12 +1,14 @@
 """Numeric comparison: CobDecimal (==, !=, <, <=, >, >=) vs GnuCOBOL IF.
 
-Pairs of values are moved through a wide DISPLAY item into items of different PICTUREs, scales, signs
-and usages (negative zero included, semantic trap 6); for each pair the
-program displays one letter per relation of IF A rel B and of IF A * 2 rel
-B + 1 (an arithmetic expression on both sides). The runtime computes the
-same letters with dec(a) rel dec(b), and with the six operators against an
-int and a Decimal operand."""
+Pairs of values are moved through a wide DISPLAY item into items of
+different PICTUREs, scales, signs and usages (negative zero included,
+semantic trap 6); for each pair the program displays one letter per
+relation of IF A rel B and of IF A * 2 rel B + 1 (an arithmetic expression
+on both sides). The runtime computes the same letters with the six
+operators on dec(a) and dec(b). test_value_semantics covers int and
+Decimal operands, hashing and the operands that are not compared."""
 
+import operator
 import random
 import subprocess
 from decimal import Decimal
@@ -19,7 +21,8 @@ from cobol_equiv.runtime import COMP, COMP3, Num, Storage, dec, move
 ITEMS = [("A", "S9(4)V99", "DISPLAY"), ("B", "S9(3)V9(3)", "COMP-3"), ("C", "S9(6)", "COMP"),
          ("D", "9(3)V9", "DISPLAY")]
 USAGE = {"DISPLAY": None, "COMP-3": COMP3, "COMP": COMP}
-RELS = [("=", "=="), ("NOT =", "!="), ("<", "<"), ("<=", "<="), (">", ">"), (">=", ">=")]
+RELS = [("=", operator.eq), ("NOT =", operator.ne), ("<", operator.lt), ("<=", operator.le), (">", operator.gt),
+        (">=", operator.ge)]
 EXPR = {"A": "A * 2", "B": "B + 1"}
 
 
@@ -70,7 +73,7 @@ def python_lines(cases) -> tuple[bytes, int]:
         negative_zeros += sum(ws[n].sign_mag() == (True, 0) for n in (left, right))
         a, b = dec(ws[left]), dec(ws[right])
         ea, eb = a * 2, b + 1
-        res = [eval(f"a {op} b") for _, op in RELS] + [eval(f"ea {op} eb") for _, op in RELS]
+        res = [op(a, b) for _, op in RELS] + [op(ea, eb) for _, op in RELS]
         out += "".join("y" if r else "n" for r in res).encode("ascii") + b"\n"
     return out, negative_zeros
 

@@ -196,3 +196,34 @@ def test_verify_covers_every_attempt():
         with verify.OUT.open(encoding="utf-8", newline="") as fh:
             got = {(r["track"], r["program"], r["condition"], int(r["attempt"])) for r in csv.DictReader(fh)}
         assert got == set(verify.units())
+
+
+SLOW_TRANSLATION = """
+import time
+
+def main(stdin, input_files):
+    time.sleep(float(stdin or b"0"))
+    return b"done " + stdin + b"\\n", {}
+"""
+
+
+def test_total_limit_keeps_finished_vectors(tmp_path):
+    from cobol_equiv.benchmark.runner import run_translation
+
+    t = tmp_path / "t.py"
+    t.write_text(SLOW_TRANSLATION, encoding="utf-8")
+    inputs = [{"<stdin>": b"0"}, {"<stdin>": b"30"}, {"<stdin>": b"0"}]
+    res = run_translation(t, inputs, timeout=60, condition="A", total=3)
+    assert "stdout" in res[0]
+    assert res[1].get("timeout") and res[2].get("timeout")
+
+
+def test_slow_but_correct_vector_passes_under_the_extended_limit(tmp_path, monkeypatch):
+    from cobol_equiv.benchmark import runner
+
+    t = tmp_path / "t.py"
+    t.write_text(SLOW_TRANSLATION, encoding="utf-8")
+    monkeypatch.setattr(runner, "EXTENDED_TIMEOUT", 10)
+    monkeypatch.setattr(runner, "EXTENDED_TOTAL", 30)
+    res = runner.run_extended(t, [{"<stdin>": b"0"}, {"<stdin>": b"2"}], timeout=1, condition="A")
+    assert "stdout" in res[1] and res[1]["slow"] and not res[0].get("slow")

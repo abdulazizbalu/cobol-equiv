@@ -517,6 +517,22 @@ before any translation call.
   after the limit reset, under the same attempt numbers. The runner now stops on such a message instead
   of recording a call without code.
 
+- **D12 (time limits).** Decided after the translation runs, before any
+  result was computed. (a) A translation that is correct but slower than
+  the limits of section 4 is not counted as failing: every vector that
+  exceeds the per-vector limit (spec timeout, 10 s) or is not reached
+  within the 600 s total is run again with 120 s per vector and 7200 s in
+  total (`EXTENDED_TIMEOUT`, `EXTENDED_TOTAL` in `benchmark/runner.py`);
+  if its output is then correct, the vector passes and is counted as
+  "slow". (b) A vector that still times out is a time-out, a separate
+  outcome: a translation whose only failing vectors are time-outs gets the
+  verdict "timeout", which is reported in its own column and as its own
+  failure category, not as "crash or syntax error" and not as a semantic
+  failure. It does not count as a pass. (c) When the total limit stops a
+  run, the results of the vectors finished before it are kept (before,
+  all vectors of the run were marked as timed out). Condition B's DEV
+  checks during generation used the original limits; that is unchanged.
+
 Notes, not deviations: the runtime was extended before the freeze, while
 writing reference translations (ACCEPT from standard input, alphanumeric
 to numeric conversion for items, truncation of arithmetic results stored

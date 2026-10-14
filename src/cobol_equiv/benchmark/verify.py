@@ -37,18 +37,18 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 from .programs import Program, programs
-from .runner import judge, run_translation
+from .runner import judge, run_extended
 from .vectors import PRIMARY, decode_input, load
 
 ROOT = Path(__file__).resolve().parents[3]
 RUNS = ROOT / "benchmark" / "runs"
 OUT = ROOT / "benchmark" / "results" / "verdicts.csv"
 PARTS = ROOT / "benchmark" / "results" / ".verify-parts"
-UNIT_VERSION = "1"  # change when the rows of a unit are computed differently
+UNIT_VERSION = "2"  # change when the rows of a unit are computed differently
 SECONDARY = "3.2"
 ROUNDS = 3
 FIELDS = ["track", "program", "condition", "attempt", "round", "version", "set", "vectors", "passed",
-          "pass", "first_failure_kind", "first_failure", "translation"]
+          "pass", "slow_vectors", "timeout_vectors", "first_failure_kind", "first_failure", "translation"]
 
 
 def versions(p: Program, condition: str, attempt: int) -> list[Path | None] | None:
@@ -76,23 +76,54 @@ def versions(p: Program, condition: str, attempt: int) -> list[Path | None] | No
     return out
 
 
+def _results(path: Path, condition: str, items: list, timeout: float) -> list[dict]:
+    """Outputs of the translation on the items, run with run_extended; cached
+    under PARTS/evals by the translation's bytes and the inputs (an A
+    translation is also round 0 of B)."""
+    python = "C" if condition == "C" else "A"
+    inputs = [v["input"] for v in items]
+    h = hashlib.sha256(f"{UNIT_VERSION}|{python}|{timeout}|".encode("utf-8"))
+    h.update(path.read_bytes())
+    h.update(json.dumps(inputs, sort_keys=True).encode("utf-8"))
+    cache = PARTS / "evals" / f"{h.hexdigest()}.json"
+    if cache.exists():
+        return json.loads(cache.read_text(encoding="utf-8"))
+    results = run_extended(path, [decode_input(x) for x in inputs], timeout, python)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    tmp = cache.with_name(f"{cache.stem}.{os.getpid()}.tmp")
+    tmp.write_text(json.dumps(results), encoding="utf-8")
+    tmp.replace(cache)
+    return results
+
+
 def _evaluate(p: Program, path: Path | None, condition: str, items: list, label: str) -> dict:
+    """Summary of one translation on one set. A vector that exceeds the
+    protocol's time limits but gives the right output under the extended
+    limits passes (counted in slow_vectors). A vector still timed out there
+    is not a semantic failure: the set then fails with kind "timeout", but
+    only when no vector fails for another reason (D12)."""
     spec = p.spec()
     if path is None:
-        return {"vectors": len(items), "passed": 0, "pass": 0, "first_failure_kind": "no code",
-                "first_failure": ""}
-    results = run_translation(path, [decode_input(v["input"]) for v in items], spec.timeout,
-                              "C" if condition == "C" else "A")
-    passed, first = 0, None
+        return {"vectors": len(items), "passed": 0, "pass": 0, "slow_vectors": 0, "timeout_vectors": 0,
+                "first_failure_kind": "no code", "first_failure": ""}
+    results = _results(path, condition, items, spec.timeout)
+    passed = slow = timeouts = 0
+    first = first_timeout = None
     for v, r in zip(items, results):
         verdict = judge(spec, v["expected"][label], r)
         if verdict.passed:
             passed += 1
+            slow += bool(r.get("slow"))
+        elif verdict.kind == "timeout":
+            timeouts += 1
+            first_timeout = first_timeout or verdict
         elif first is None:
             first = verdict
-    return {"vectors": len(items), "passed": passed, "pass": int(first is None and bool(items)),
-            "first_failure_kind": "" if first is None else first.kind,
-            "first_failure": "" if first is None else first.detail[:300].replace("\n", " ")}
+    failure = first or first_timeout
+    return {"vectors": len(items), "passed": passed, "pass": int(failure is None and bool(items)),
+            "slow_vectors": slow, "timeout_vectors": timeouts,
+            "first_failure_kind": "" if failure is None else failure.kind,
+            "first_failure": "" if failure is None else failure.detail[:300].replace("\n", " ")}
 
 
 def units() -> list[tuple[str, str, str, int]]:

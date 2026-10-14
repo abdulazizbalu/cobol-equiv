@@ -31,11 +31,13 @@ README = ROOT / "README.md"
 Z = 1.959964
 TRACKS = ("E", "R")
 CONDITIONS = ("A", "B", "C")
-CATEGORIES = ["unsupported runtime feature", "crash or syntax error", "rounding", "truncation",
+CATEGORIES = ["unsupported runtime feature", "crash or syntax error", "time-out", "rounding", "truncation",
               "sign handling", "PICTURE editing", "string statements", "file handling",
               "loop or branch logic", "other"]
-AUTOMATIC = {"unsupported": CATEGORIES[0], "error": CATEGORIES[1], "timeout": CATEGORIES[1],
-             "no code": CATEGORIES[1]}
+# A time-out that persists under the extended limits is its own category,
+# not a crash and not a semantic failure (deviation D12).
+AUTOMATIC = {"unsupported": CATEGORIES[0], "error": CATEGORIES[1], "no code": CATEGORIES[1],
+             "timeout": CATEGORIES[2]}
 FAILURE_FIELDS = ["track", "program", "condition", "attempt", "first_failure_kind", "category",
                   "reason", "first_failure"]
 
@@ -100,7 +102,9 @@ def rate(rows: dict, track: str, condition: str) -> dict:
     sel = [r for (t, _, c, _), r in rows.items() if t == track and c == condition]
     k, n = sum(int(r["pass"]) for r in sel), len(sel)
     lo, hi = wilson(k, n)
-    return {"passed": k, "attempts": n, "rate": k / n if n else None, "ci95": [lo, hi]}
+    return {"passed": k, "attempts": n, "rate": k / n if n else None, "ci95": [lo, hi],
+            "timeouts": sum(1 for r in sel if r["first_failure_kind"] == "timeout"),
+            "slow_passes": sum(1 for r in sel if int(r["pass"]) and int(r["slow_vectors"]))}
 
 
 def pass_at_3(rows: dict, track: str, condition: str) -> dict:
@@ -234,13 +238,15 @@ def _p(p: float) -> str:
 
 def tables(s: dict) -> str:
     lines = ["| track | condition | HELD-OUT pass (attempts) | 95% CI | pass@3 (programs) | 95% CI | "
-             "VISIBLE pass (attempts) |", "|---|---|---|---|---|---|---|"]
+             "VISIBLE pass (attempts) | time-out (attempts) | passes needing the extended time limit |",
+             "|---|---|---|---|---|---|---|---|---|"]
     for t in TRACKS:
         for c in CONDITIONS:
             h, p3, v = (s["by_track"][t][k][c] for k in ("heldout", "pass_at_3", "visible"))
             lines.append(f"| {t} | {c} | {h['passed']}/{h['attempts']} ({_pct(h['rate'])}) | {_ci(h['ci95'])} | "
                          f"{p3['programs_passed']}/{p3['programs']} ({_pct(p3['rate'])}) | {_ci(p3['ci95'])} | "
-                         f"{v['passed']}/{v['attempts']} ({_pct(v['rate'])}) |")
+                         f"{v['passed']}/{v['attempts']} ({_pct(v['rate'])}) | {h['timeouts']} | "
+                         f"{h['slow_passes']} |")
     lines += ["", "| track | comparison | pairs | A only / other only | McNemar p | Holm p | "
                   "sign test (A better / worse, p) | pass@3 McNemar p |", "|---|---|---|---|---|---|---|---|"]
     for x in s["tests"]:

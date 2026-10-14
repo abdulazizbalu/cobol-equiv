@@ -4,7 +4,9 @@
 
 The request holds the translation path, the inputs (never the expected
 outputs), the per-vector time limit and whether the runtime's Unsupported
-counter should be read. The result holds, per vector, the outputs or the
+counter should be read. The result file gets one JSON line per vector, written
+as soon as the vector is done (so the results of finished vectors survive if
+the parent stops the process at its total time limit): the outputs or the
 exception, and the number of Unsupported errors raised.
 """
 
@@ -49,7 +51,6 @@ def main() -> int:
     req_path, res_path = sys.argv[1], sys.argv[2]
     with open(req_path, encoding="utf-8") as fh:
         req = json.load(fh)
-    results = []
     signal.signal(signal.SIGALRM, _alarm)
     real_stdout = sys.stdout
     sys.stdout = io.StringIO()  # prints of the translation are not its output
@@ -65,9 +66,15 @@ def main() -> int:
     except BaseException as e:  # noqa: BLE001 (any failure of the translation is a result)
         load_error = _err(e)
     import_hits = _hits()
+    out_fh = open(res_path, "w", encoding="utf-8")
+
+    def emit(r):
+        out_fh.write(json.dumps(r) + "\n")
+        out_fh.flush()
+
     for vec in req["vectors"]:
         if load_error is not None:
-            results.append({"error": load_error, "unsupported": import_hits})
+            emit({"error": load_error, "unsupported": import_hits})
             continue
         stdin = base64.b64decode(vec.get("stdin", ""))
         files = {k: base64.b64decode(v) for k, v in vec.get("files", {}).items()}
@@ -90,10 +97,9 @@ def main() -> int:
             signal.alarm(0)
             r = {"error": _err(e), "trace": traceback.format_exc()[-1500:]}
         r["unsupported"] = _hits() + import_hits
-        results.append(r)
+        emit(r)
     sys.stdout = real_stdout
-    with open(res_path, "w", encoding="utf-8") as fh:
-        json.dump({"results": results}, fh)
+    out_fh.close()
     return 0
 
 

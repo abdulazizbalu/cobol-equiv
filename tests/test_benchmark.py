@@ -430,3 +430,25 @@ def test_eqscan_finds_comparison_sites():
     )
     kinds = [(line, kind) for line, kind, _ in scan(src)]
     assert kinds == [(6, "eq"), (7, "eq"), (8, "order"), (9, "hash"), (10, "in"), (11, "order")]
+
+
+def test_ci_sample_is_fixed_and_stratified():
+    from cobol_equiv.benchmark import ci, verify
+
+    us = verify.units()
+    a, b = ci.sample(us, 2), ci.sample(list(us), 2)
+    assert a == b and len(a) == 12
+    strata = {(u[0], u[2]) for u in a}
+    assert strata == {(t, c) for t in "ER" for c in "ABC"}
+
+
+def test_ci_input_hash_keys(monkeypatch):
+    from cobol_equiv.benchmark import ci, verify
+
+    a = next(u for u in verify.units() if u[2] == "A")
+    c = next(u for u in verify.units() if u[2] == "C")
+    assert ci.input_hash(a, "registered") != ci.input_hash(a, "corrected")
+    assert ci.input_hash(c, "registered") == ci.input_hash(c, "corrected")
+    before = ci.input_hash(a, "corrected"), ci.input_hash(c, "corrected")
+    monkeypatch.setattr(ci, "runtime_version", lambda: "0.0.0-test")
+    assert ci.input_hash(a, "corrected") != before[0] and ci.input_hash(c, "corrected") == before[1]

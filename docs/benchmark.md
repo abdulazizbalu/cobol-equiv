@@ -121,7 +121,41 @@ client's default settings and is not available offline. Verifying them is:
     python -m cobol_equiv.benchmark.analysis report --check
     python -m cobol_equiv.benchmark.audit          # artifacts vs manifest
 
-CI runs these.
+CI runs these, with the verification split as described below.
+
+### Verification in CI
+
+A full verification of one runtime mode (D14) takes hours on a
+GitHub runner, so the two modes are not verified in full on every pull
+request.
+
+- `benchmark/results/verify-inputs.json` (written by
+  `python -m cobol_equiv.benchmark.ci inputs`) holds, for each runtime mode
+  and each unit (track, program, condition, attempt), the SHA-256 of the
+  unit's translation files, its vectors file, the runtime mode and, for
+  conditions A and B, the runtime version. It also holds the SHA-256 of the
+  runtime's source; CI fails when that changes under the same version
+  number, and when the file is not current.
+- On pull requests and pushes to main, the `verify` jobs of `ci.yml` (one
+  per runtime mode and track) re-verify the units whose input hash or
+  committed rows differ from those of the base branch, plus a fixed sample
+  of the other units: 2 per (track, condition), drawn with the seed
+  `crc32("ci-sample")`. The rows of these units must equal the committed
+  ones in `verdicts.csv` / `verdicts-corrected.csv` and the comparisons
+  files, apart from the machine-dependent counts.
+- Finished units are cached with `actions/cache`. The cache key is the hash
+  of `verify-inputs.json` and of the benchmark and runtime code; each saved
+  unit also carries verify's own key, which includes the content of the
+  translation files, the vectors, the runtime and the verification code, so
+  a unit is taken from the cache only if none of these changed. The sample
+  units are always run again with an empty cache.
+- `benchmark-full.yml` re-verifies every unit of both modes, in four
+  parallel jobs (mode x track), with an empty cache, when started by hand
+  and every Monday. It is the check that covers the units the pull-request
+  sample does not draw.
+
+Locally, `python -m cobol_equiv.benchmark.verify --runtime registered|corrected
+--check` verifies one mode in full.
 
 ## Limits
 

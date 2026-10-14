@@ -510,6 +510,13 @@ before any translation call.
   status 71 on every input under GnuCOBOL 3.2 (see its spec), so it has no
   3.2 expected outputs and is left out of the 3.2 re-run.
 
+- **D11 (account limit).** During condition C, 18 calls failed because
+  the account's usage limit was reached ("session limit"); the retries
+  failed the same way. These are failures of the account, not of the
+  translator: their artifacts were deleted and the calls were made again
+  after the limit reset, under the same attempt numbers. The runner now stops on such a message instead
+  of recording a call without code.
+
 Notes, not deviations: the runtime was extended before the freeze, while
 writing reference translations (ACCEPT from standard input, alphanumeric
 to numeric conversion for items, truncation of arithmetic results stored

@@ -184,3 +184,15 @@ def test_committed_artifacts_are_consistent_with_the_manifest():
     problems, suspects, counts = audit.check()
     assert problems == []
     assert counts["prompts_rebuilt"] == 2 * 3 * len(ALL)
+
+
+def test_verify_covers_every_attempt():
+    from cobol_equiv.benchmark import verify
+
+    if not (verify.RUNS / "E").exists():
+        pytest.skip("no translation runs committed")
+    assert len(verify.units()) == 3 * 3 * len(ALL)
+    if verify.OUT.exists():
+        with verify.OUT.open(encoding="utf-8", newline="") as fh:
+            got = {(r["track"], r["program"], r["condition"], int(r["attempt"])) for r in csv.DictReader(fh)}
+        assert got == set(verify.units())

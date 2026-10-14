@@ -20,7 +20,8 @@ translation files, the vectors file and this module's unit version, so an
 interrupted run resumes with the units not yet done; --fresh ignores the
 saved units. verdicts.csv is assembled from the units in a fixed order.
 With --check the file is assembled the same way and compared with the
-committed one. Generation of translations is not reproducible; this
+committed one, ignoring the two counts that depend on the machine's speed
+(vectors that needed the extended time limit, vectors still timed out). Generation of translations is not reproducible; this
 verification is.
 """
 
@@ -229,6 +230,22 @@ def generate(jobs: int | None = None, fresh: bool = False, progress=None) -> str
     return buf.getvalue()
 
 
+# How many vectors needed the extended time limit, or were still timed out,
+# depends on the speed of the machine; the verdicts do not.
+MACHINE_DEPENDENT = ("slow_vectors", "timeout_vectors")
+
+
+def compare(committed: str, fresh: str) -> list[str]:
+    def rows(text):
+        return [{k: v for k, v in r.items() if k not in MACHINE_DEPENDENT}
+                for r in csv.DictReader(io.StringIO(text))]
+
+    a, b = rows(committed), rows(fresh)
+    if len(a) != len(b):
+        return [f"row count {len(a)} committed, {len(b)} fresh"]
+    return [f"committed {x}\nfresh     {y}" for x, y in zip(a, b) if x != y]
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true")
@@ -238,8 +255,11 @@ def main(argv=None) -> int:
     text = generate(a.jobs, a.fresh, progress=lambda m: print(m, file=sys.stderr, flush=True))
     if a.check:
         committed = OUT.read_text(encoding="utf-8") if OUT.exists() else ""
-        if committed != text:
-            print(f"{OUT} differs from a fresh verification run")
+        diffs = compare(committed, text)
+        for d in diffs[:20]:
+            print(d)
+        if diffs:
+            print(f"{OUT} differs from a fresh verification run ({len(diffs)} rows)")
             return 1
         print("verdicts reproduced")
         return 0

@@ -58,6 +58,8 @@ jobs:
       - name: Fetch Track E sources (pinned URLs, checksums)
         run: python -m cobol_equiv.benchmark.fetch
       - name: Run tests
+        env:
+          COBOL_EQUIV_TRAP_COMPARISONS: "1"  # no CobDecimal comparison outside its tests (D14)
         run: python -m pytest -q
 
   reproduce:
@@ -119,6 +121,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -154,7 +158,47 @@ jobs:
         run: python -m cobol_equiv.benchmark.refcheck
       - name: Translation artifacts are consistent with the manifest
         run: python -m cobol_equiv.benchmark.audit
-      - name: Committed translations reproduce the committed verdicts
-        run: python -m cobol_equiv.benchmark.verify --check
+      - name: Comparison scan of the translations is the committed one (D14)
+        run: python -m cobol_equiv.benchmark.eqscan --check
+      - name: Verification inputs record is current
+        run: python -m cobol_equiv.benchmark.ci inputs --check --base "$BASE"
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || 'HEAD~1' }}
       - name: Benchmark report is generated from the committed data
         run: python -m cobol_equiv.benchmark.analysis report --check
+
+  verify:
+    # Re-verifies the committed translations against the committed verdicts:
+    # the units whose inputs changed since the base, plus a fixed sample of
+    # the rest (docs/benchmark.md, "Verification in CI"). The full
+    # re-verification of both runtime modes is benchmark-full.yml.
+    timeout-minutes: 300
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [registered, corrected]
+        track: [E, R]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install package
+        run: python -m pip install -e ".[dev]" -r requirements-repro.txt
+      - name: Fetch Track E sources (pinned URLs, checksums)
+        run: python -m cobol_equiv.benchmark.fetch
+      - name: Restore saved verification units
+        uses: actions/cache@v4
+        with:
+          path: benchmark/results/.verify-parts
+          key: verify-${{ matrix.runtime }}-${{ matrix.track }}-${{ hashFiles('benchmark/results/verify-inputs.json', 'src/cobol_equiv/benchmark/*.py', 'src/cobol_equiv/runtime/*.py') }}-${{ github.run_id }}
+          restore-keys: verify-${{ matrix.runtime }}-${{ matrix.track }}-
+      - name: Changed units and a fixed sample reproduce the committed verdicts
+        run: python -m cobol_equiv.benchmark.ci check --runtime ${{ matrix.runtime }} --track ${{ matrix.track }} --base "$BASE" --sample 2
+        env:
+          # push to main: the previous commit (squash merges); the weekly full
+          # run covers what a multi-commit push would leave out
+          BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || 'HEAD~1' }}

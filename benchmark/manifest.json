@@ -2,7 +2,7 @@
   "schema": 1,
   "protocol": {
     "file": "docs/benchmark-protocol.md",
-    "status": "merged (abdulazizbalu/cobol-equiv#6); deviations D1-D7 recorded in its last section"
+    "status": "merged (abdulazizbalu/cobol-equiv#6); deviations D1-D14 recorded in its last section"
   },
   "steps": [
     {
@@ -23,15 +23,26 @@
     {
       "id": 4,
       "name": "analysis, taxonomy, report and documentation",
-      "status": "in review",
+      "status": "done (abdulazizbalu/cobol-equiv#9)",
       "done": [
         "failures.csv: every failing final attempt categorised (manual ones blind to condition, blind-key.csv)",
         "report: summary.json, docs/benchmark.md and README blocks from analysis.py",
         "D13 recorded"
       ]
+    },
+    {
+      "id": 5,
+      "name": "sensitivity to the CobDecimal comparison defect (D14)",
+      "status": "in review",
+      "done": [
+        "runtime 1.1.0: value comparison and hash of CobDecimal, oracle test against GnuCOBOL",
+        "driver modes registered (runtime 1.0.0) and corrected (1.1.0); eq-sites.csv, comparisons*.csv",
+        "D14 scope verified in both modes; verdicts-corrected.csv, failures-corrected.csv, sensitivity.json",
+        "CI: partial verification on pull requests, benchmark-full.yml for full runs"
+      ]
     }
   ],
-  "next": "review and merge the analysis PR (branch feat/benchmark-analysis); then the benchmark is complete",
+  "next": "review and merge the sensitivity PR (branch feat/eq-sensitivity)",
   "sources_pinned": {
     "omp_course_commit": "1f037d24326124f4f2c5cd2d31e5220ceb549580",
     "rosettacodedata_commit": "1d475861d7141ef2fafff293d9339f56e4b0f5db",
@@ -106,5 +117,10 @@
     "runner_test": [
       "tally"
     ]
+  },
+  "runtime_versions": {
+    "frozen_benchmark": "1.0.0",
+    "frozen_benchmark_note": "the runtime of runtime_harness_commit; the number was assigned afterwards (D14)",
+    "current": "1.1.0"
   }
 }

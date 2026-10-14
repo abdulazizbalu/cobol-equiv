@@ -1,5 +1,11 @@
 """COBOL numeric and data runtime (see docs/runtime.md for the supported subset)."""
 
+# Runtime versions (docs/runtime.md, "Versions"):
+# 1.0.0  the runtime frozen for the benchmark (commit 50456a3); CobDecimal has
+#        no comparison operators (== compares identity, < raises TypeError)
+# 1.1.0  CobDecimal compares by value (==, !=, <, <=, >, >=) and hashes by value
+__version__ = "1.1.0"
+
 from .accept import Stdin, accept_line
 from .arith import (add, add_giving, compute, divide_giving, divide_into, divide_remainder,
                     multiply, multiply_giving, subtract, subtract_giving)

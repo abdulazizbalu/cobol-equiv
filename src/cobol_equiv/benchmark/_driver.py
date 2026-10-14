@@ -73,6 +73,74 @@ def _reset():
     reset_unsupported_hits()
 
 
+_CMP = {"eq": 0, "eq_diff": 0, "order": 0, "hash": 0}
+_ORDER = {"__lt__": "<", "__le__": "<=", "__gt__": ">", "__ge__": ">="}
+
+
+def _setup_runtime(mode):
+    """Install the comparison methods of the mode on CobDecimal, counting
+    the calls in _CMP. Nothing to do when the runtime is not importable
+    (condition C)."""
+    if mode is None:
+        return
+    try:
+        from cobol_equiv.runtime.cobdec import CobDecimal
+    except ImportError:
+        return
+    value_eq = CobDecimal.__eq__
+    registered = mode == "registered"
+    if not registered and mode != "corrected":
+        raise ValueError(f"unknown runtime mode {mode!r}")
+
+    def differs(a, b):
+        try:
+            v = value_eq(a, b)
+        except ArithmeticError:
+            return True  # a NaN: False with identity ==, an error with value ==
+        return v is not NotImplemented and v != (a is b)
+
+    def eq(a, b):
+        _CMP["eq"] += 1
+        _CMP["eq_diff"] += differs(a, b)
+        if registered:
+            return (a is b) if isinstance(b, CobDecimal) else NotImplemented
+        return value_eq(a, b)
+
+    def ne(a, b):
+        r = eq(a, b)
+        return r if r is NotImplemented else not r
+
+    def ordering(name):
+        value_op = getattr(CobDecimal, name)
+
+        def op(a, b):
+            _CMP["order"] += 1
+            if not registered:
+                return value_op(a, b)
+            if isinstance(b, CobDecimal):  # the message Python gives without the method
+                raise TypeError(f"'{_ORDER[name]}' not supported between instances of "
+                                "'CobDecimal' and 'CobDecimal'")
+            return NotImplemented
+        return op
+
+    value_hash = CobDecimal.__hash__
+
+    def hash_(a):
+        _CMP["hash"] += 1
+        return object.__hash__(a) if registered else value_hash(a)
+
+    for name in _ORDER:
+        setattr(CobDecimal, name, ordering(name))
+    CobDecimal.__eq__, CobDecimal.__ne__, CobDecimal.__hash__ = eq, ne, hash_
+
+
+def _cmp_counts():
+    r = dict(_CMP)
+    for k in _CMP:
+        _CMP[k] = 0
+    return r
+
+
 def _err(e: BaseException) -> str:
     return f"{type(e).__name__}: {e}"[:500]
 
@@ -93,6 +161,7 @@ def main() -> int:
     real_stdout = sys.stdout
     sys.stdout = io.StringIO()  # prints of the translation are not its output
     _reset()
+    _setup_runtime(req.get("runtime"))
     load_error = None
     mod = None
     _arm(req["timeout"])
@@ -123,6 +192,7 @@ def main() -> int:
         stdin = base64.b64decode(vec.get("stdin", ""))
         files = {k: base64.b64decode(v) for k, v in vec.get("files", {}).items()}
         _reset()
+        _cmp_counts()
         _arm(req["timeout"])
         try:
             out, out_files = mod.main(stdin, dict(files))
@@ -146,6 +216,7 @@ def main() -> int:
             _disarm()
             r = {"error": _err(e), "trace": traceback.format_exc()[-1500:]}
         r["unsupported"] = _hits() + import_hits
+        r["cmp"] = _cmp_counts()
         emit(r)
     sys.stdout = real_stdout
     out_fh.close()

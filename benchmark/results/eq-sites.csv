@@ -1,0 +1,39 @@
+track,program,condition,attempt,round,line,kind,code,translation
+E,rc-fibonacci-sequence,A,3,0,46,order,if dec(cnt) < dec(1):,benchmark/runs/E/rc-fibonacci-sequence/A/3/translation.py
+E,rc-fibonacci-sequence,A,3,0,48,order,if dec(cnt) < dec(2):,benchmark/runs/E/rc-fibonacci-sequence/A/3/translation.py
+E,rc-fibonacci-sequence,A,3,0,54,eq,while not (dec(cnt) == dec(0)):,benchmark/runs/E/rc-fibonacci-sequence/A/3/translation.py
+E,rc-greatest-common-divisor,A,1,0,23,order,if dec(A) < dec(B):,benchmark/runs/E/rc-greatest-common-divisor/A/1/translation.py
+E,rc-greatest-common-divisor,A,1,0,28,eq,while not (dec(B) == dec(0)):,benchmark/runs/E/rc-greatest-common-divisor/A/1/translation.py
+E,rc-integer-comparison,A,3,0,23,order,if da < db:,benchmark/runs/E/rc-integer-comparison/A/3/translation.py
+E,rc-integer-comparison,A,3,0,25,eq,elif da == db:,benchmark/runs/E/rc-integer-comparison/A/3/translation.py
+E,rc-integer-comparison,A,3,0,27,order,elif da > db:,benchmark/runs/E/rc-integer-comparison/A/3/translation.py
+E,rc-roman-numerals-encode,A,1,0,46,eq,while not (dec(num) == dec(0)):,benchmark/runs/E/rc-roman-numerals-encode/A/1/translation.py
+E,rc-roman-numerals-encode,A,1,0,48,order,if dec(num) > dec(0) and dec(num) < dec(4000):,benchmark/runs/E/rc-roman-numerals-encode/A/1/translation.py
+E,rc-roman-numerals-encode,A,1,0,52,eq,while not (dec(num) == dec(0)):,benchmark/runs/E/rc-roman-numerals-encode/A/1/translation.py
+E,rc-roman-numerals-encode,A,1,0,54,order,while not (dec(num) < dec(div)):,benchmark/runs/E/rc-roman-numerals-encode/A/1/translation.py
+E,rc-soloways-recurring-rainfall,A,2,0,23,eq,if dec(current) == dec(99999):,benchmark/runs/E/rc-soloways-recurring-rainfall/A/2/translation.py
+E,rc-soloways-recurring-rainfall,A,3,0,23,eq,if dec(current) == dec(99999):,benchmark/runs/E/rc-soloways-recurring-rainfall/A/3/translation.py
+R,payroll,A,3,0,63,order,if dec(hours) > dec(40):,benchmark/runs/R/payroll/A/3/translation.py
+R,payroll,A,3,0,70,order,if dec(gross) <= dec(1000):,benchmark/runs/R/payroll/A/3/translation.py
+R,payroll,A,3,0,72,order,elif dec(gross) <= dec(5000):,benchmark/runs/R/payroll/A/3/translation.py
+R,payroll,A,3,0,87,order,if dec(net) < dec(0):,benchmark/runs/R/payroll/A/3/translation.py
+R,custlist,A,1,0,93,order,if mm < dec(1) or mm > dec(12):,benchmark/runs/R/custlist/A/1/translation.py
+R,custlist,A,1,0,95,order,"elif dec(cust[""CU-OPENED-N""]) < dec(19000101):",benchmark/runs/R/custlist/A/1/translation.py
+R,custlist,A,2,0,96,order,if mm < dec(1) or mm > dec(12):,benchmark/runs/R/custlist/A/2/translation.py
+R,custlist,A,2,0,98,order,"elif dec(cust[""CU-OPENED-N""]) < dec(19000101):",benchmark/runs/R/custlist/A/2/translation.py
+R,matrix,A,1,0,48,order,if r < dec(1) or r > dec(4) or c < dec(1) or c > dec(5):,benchmark/runs/R/matrix/A/1/translation.py
+R,matrix,A,1,0,66,order,"if dec(cell(i, j)) > dec(ws[""WS-MAX""]):",benchmark/runs/R/matrix/A/1/translation.py
+R,stockupd,A,1,0,73,order,if dec(TR_QTY) > dec(pt_onhand(px)):,benchmark/runs/R/stockupd/A/1/translation.py
+R,stockupd,A,1,0,93,eq,if k == target:,benchmark/runs/R/stockupd/A/1/translation.py
+R,stockupd,A,1,0,96,order,if k < target:,benchmark/runs/R/stockupd/A/1/translation.py
+R,stockupd,A,1,0,111,order,if q >= dec(500) and q <= dec(999):,benchmark/runs/R/stockupd/A/1/translation.py
+R,stockupd,A,1,0,121,order,if dec(TR_QTY) > dec(pt_onhand(px)):,benchmark/runs/R/stockupd/A/1/translation.py
+R,stockupd,A,1,0,137,eq,if oh == dec(0):,benchmark/runs/R/stockupd/A/1/translation.py
+R,stockupd,A,1,0,139,order,elif oh < dec(20):,benchmark/runs/R/stockupd/A/1/translation.py
+R,stockupd,A,3,0,63,order,"if dec(tran[""TR-QTY""]) > dec(onhand(px)):",benchmark/runs/R/stockupd/A/3/translation.py
+R,stockupd,A,3,0,80,eq,if k == key:,benchmark/runs/R/stockupd/A/3/translation.py
+R,stockupd,A,3,0,83,order,if k < key:,benchmark/runs/R/stockupd/A/3/translation.py
+R,stockupd,A,3,0,97,order,if dec(500) <= q <= dec(999):,benchmark/runs/R/stockupd/A/3/translation.py
+R,stockupd,A,3,0,107,order,"if dec(tran[""TR-QTY""]) > dec(onhand(px)):",benchmark/runs/R/stockupd/A/3/translation.py
+R,stockupd,A,3,0,123,eq,if v == dec(0):,benchmark/runs/R/stockupd/A/3/translation.py
+R,stockupd,A,3,0,125,order,elif v < dec(20):,benchmark/runs/R/stockupd/A/3/translation.py

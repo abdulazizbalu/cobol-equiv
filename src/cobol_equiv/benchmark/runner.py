@@ -41,12 +41,16 @@ def python_for(condition: str) -> list[str]:
 
 
 def run_translation(path: Path, inputs: list[dict], timeout: float, condition: str,
-                    total: float = TOTAL_LIMIT, max_timeouts: int | None = None) -> list[dict]:
+                    total: float = TOTAL_LIMIT, max_timeouts: int | None = None,
+                    runtime: str | None = None) -> list[dict]:
     """Per input: {"stdout", "files"} (base64) or {"error"} or {"timeout"},
-    each with "unsupported" (number of Unsupported errors raised). Vectors not
+    each with "unsupported" (number of Unsupported errors raised) and "cmp"
+    (CobDecimal comparison calls, counted when `runtime`, "registered" or
+    "corrected", is given; see _driver.py). Vectors not
     reached before the total time limit get {"timeout": True, "total": True};
     the results of the vectors finished before it are kept."""
     req = {"module": str(path.resolve()), "timeout": timeout, "max_timeouts": max_timeouts,
+           "runtime": runtime,
            "vectors": [{"stdin": b64(inp.get(STDIN, b"")),
                         "files": {k: b64(v) for k, v in inp.items() if k != STDIN}} for inp in inputs]}
     with tempfile.TemporaryDirectory(prefix="cobol-equiv-run-") as d, \
@@ -89,18 +93,20 @@ def run_translation(path: Path, inputs: list[dict], timeout: float, condition: s
     return results
 
 
-def run_extended(path: Path, inputs: list[dict], timeout: float, condition: str) -> list[dict]:
+def run_extended(path: Path, inputs: list[dict], timeout: float, condition: str,
+                 runtime: str | None = None) -> list[dict]:
     """run_translation with the protocol's limits; vectors that exceed them
     are run again with EXTENDED_TIMEOUT per vector and EXTENDED_TOTAL in total
     (deviation D12). A vector that finishes there gets "slow": True; one that
     still exceeds the limits stays a timeout. After EXTENDED_MAX_TIMEOUTS such
     vectors the extended run stops; the late vectors not run again stay
     timeouts ("not_rerun": True)."""
-    results = run_translation(path, inputs, timeout, condition)
+    results = run_translation(path, inputs, timeout, condition, runtime=runtime)
     late = [i for i, r in enumerate(results) if r.get("timeout")]
     if late:
         again = run_translation(path, [inputs[i] for i in late], EXTENDED_TIMEOUT, condition,
-                                total=EXTENDED_TOTAL, max_timeouts=EXTENDED_MAX_TIMEOUTS)
+                                total=EXTENDED_TOTAL, max_timeouts=EXTENDED_MAX_TIMEOUTS,
+                                runtime=runtime)
         for i, r in zip(late, again):
             if not r.get("timeout"):
                 r["slow"] = True

@@ -173,7 +173,8 @@ def first_dev_failure(p: Program, path: Path | None, condition: str):
     inputs = [decode_input(v["input"]) for v in dev]
     if path is None:
         return (inputs[0] if inputs else {}), Verdict(False, "no code")
-    results = run_translation(path, inputs, spec.timeout, condition)
+    # repair feedback as in the registered runs: runtime 1.0.0 comparisons (D14)
+    results = run_translation(path, inputs, spec.timeout, condition, runtime="registered")
     for inp, v, r in zip(inputs, dev, results):
         verdict = judge(spec, v["expected"][PRIMARY], r)
         if not verdict.passed:

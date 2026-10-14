@@ -1,0 +1,44 @@
+name: Benchmark full verification
+
+# Re-verifies every committed translation in the registered runtime mode and
+# the D14 scope in the corrected mode (deviation D14), split into one job
+# per runtime mode and track (docs/benchmark.md, "Verification in CI"). Each job starts with an empty
+# cache, so every unit is run; the saved units are then cached for the
+# pull-request jobs of ci.yml.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"  # Mondays 03:17 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    timeout-minutes: 300
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [registered, corrected]
+        track: [E, R]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install package
+        run: python -m pip install -e ".[dev]" -r requirements-repro.txt
+      - name: Fetch Track E sources (pinned URLs, checksums)
+        run: python -m cobol_equiv.benchmark.fetch
+      - name: Every unit of the mode and track reproduces the committed verdicts
+        run: python -m cobol_equiv.benchmark.ci check --runtime ${{ matrix.runtime }} --track ${{ matrix.track }}
+      - name: Save the verified units for pull requests
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: benchmark/results/.verify-parts
+          # a new key per run: cache entries cannot be overwritten; the
+          # pull-request jobs restore the newest entry by its prefix
+          key: verify-${{ matrix.runtime }}-${{ matrix.track }}-${{ hashFiles('benchmark/results/verify-inputs.json', 'src/cobol_equiv/benchmark/*.py', 'src/cobol_equiv/runtime/*.py') }}-full-${{ github.run_id }}

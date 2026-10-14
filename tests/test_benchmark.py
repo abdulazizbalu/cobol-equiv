@@ -288,11 +288,11 @@ def _fake_evaluate(monkeypatch, results):
     from cobol_equiv.benchmark import verify
     from cobol_equiv.benchmark.vectors import b64
 
-    monkeypatch.setattr(verify, "_results", lambda path, condition, items, timeout: results)
+    monkeypatch.setattr(verify, "_results", lambda path, condition, items, timeout, mode: results)
     p = next(p for p in ALL if p.name == "acctpost")
     exp = {"3.1.2": {"stdout": b64(b"x\n"), "files": {}}}
     items = [{"input": {}, "expected": exp} for _ in results]
-    return verify._evaluate(p, Path(__file__), "A", items, "3.1.2")
+    return verify._evaluate(p, Path(__file__), "A", items, "3.1.2", "registered")
 
 
 def test_timeout_precedence(monkeypatch):
@@ -362,3 +362,170 @@ def test_report_check_fails_without_the_generated_block(tmp_path, monkeypatch):
     doc.write_text("no block here\n", encoding="utf-8")
     monkeypatch.setattr(analysis, "DOC", doc)
     assert analysis.report(check=True) == 1
+
+
+COMPARING_TRANSLATION = """\
+from cobol_equiv.runtime import dec
+
+def main(stdin, files):
+    a, b = dec("1.50"), dec("1.5")
+    out = [a == b, a != b, a == a, dec(2) == 2, hash(a) == hash(b)]
+    if stdin == b"order":
+        out.append(a < dec(2))
+    return repr(out).encode("ascii"), {}
+"""
+
+
+def test_driver_runtime_modes(tmp_path):
+    """registered: CobDecimal as in runtime 1.0.0 (identity ==, no ordering);
+    corrected: value comparison; both count the calls (D14)."""
+    from cobol_equiv.benchmark.runner import run_translation
+    from cobol_equiv.benchmark.vectors import unb64
+
+    t = tmp_path / "t.py"
+    t.write_text(COMPARING_TRANSLATION, encoding="utf-8")
+    inputs = [{"<stdin>": b""}, {"<stdin>": b"order"}]
+    reg = run_translation(t, inputs, timeout=10, condition="A", runtime="registered")
+    cor = run_translation(t, inputs, timeout=10, condition="A", runtime="corrected")
+    assert unb64(reg[0]["stdout"]) == b"[False, True, True, False, False]"
+    assert reg[1]["error"] == "TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'"
+    assert unb64(cor[0]["stdout"]) == b"[True, False, True, True, True]"
+    assert unb64(cor[1]["stdout"]) == b"[True, False, True, True, True, True]"
+    # a == b, a != b and dec(2) == 2 answer differently in the two modes; a == a does not
+    for r in (reg[0], cor[0]):
+        assert (r["cmp"]["eq"], r["cmp"]["eq_diff"], r["cmp"]["hash"]) == (4, 3, 2)
+    assert reg[1]["cmp"]["order"] == cor[1]["cmp"]["order"] == 1
+    # without a mode the installed runtime is used and nothing is counted
+    plain = run_translation(t, inputs[:1], timeout=10, condition="A")
+    assert unb64(plain[0]["stdout"]) == unb64(cor[0]["stdout"]) and not any(plain[0]["cmp"].values())
+
+
+REGISTERED_PROBE = """\
+from decimal import Decimal
+from cobol_equiv.runtime import dec
+
+def main(stdin, files):
+    a, b = dec(1), dec(1)
+    out = [a == b, a != b, a == a, a != a, a == 1, 1 == a, a != 1, a == Decimal(1), Decimal(1) == a,
+           a == "1", a == None, hash(a) == object.__hash__(a)]
+    for x, y in ((a, b), (a, 1), (1, a), (a, Decimal(1)), (a, "1")):
+        try:
+            x < y
+            out.append("no error")
+        except TypeError as e:
+            out.append(str(e))
+    return repr(out).encode("ascii"), {}
+"""
+
+
+def test_registered_mode_is_runtime_1_0_0(tmp_path):
+    """Registered mode: CobDecimal behaves as a class without comparison
+    methods (runtime 1.0.0), with the same reflected fallbacks and messages."""
+    from cobol_equiv.benchmark.runner import run_translation
+    from cobol_equiv.benchmark.vectors import unb64
+
+    t = tmp_path / "t.py"
+    t.write_text(REGISTERED_PROBE, encoding="utf-8")
+    r = run_translation(t, [{"<stdin>": b""}], timeout=10, condition="A", runtime="registered")[0]
+    msg = "'<' not supported between instances of '{}' and '{}'"
+    expected = [False, True, True, False, False, False, True, False, False, False, False, True,
+                msg.format("CobDecimal", "CobDecimal"), msg.format("CobDecimal", "int"),
+                msg.format("int", "CobDecimal"), msg.format("CobDecimal", "decimal.Decimal"),
+                msg.format("CobDecimal", "str")]
+    assert unb64(r["stdout"]).decode("ascii") == repr(expected)
+
+
+def test_eqscan_finds_comparison_sites():
+    from cobol_equiv.benchmark.eqscan import scan
+
+    src = (
+        "from cobol_equiv.runtime import dec as D\n"
+        "def total(ws):\n    return D(ws['A']) + 1\n"
+        "def main(stdin, files):\n"
+        "    x = D(1)\n"
+        "    if x == 0: pass\n"
+        "    if total(None) != D(2): pass\n"
+        "    while D(3) < x: pass\n"
+        "    s = {x}\n"
+        "    if x in s: pass\n"
+        "    y = max(x, D(4))\n"
+        "    if 1 == 2: pass\n"
+        "    if x.to_decimal() == 0: pass\n"
+    )
+    kinds = [(line, kind) for line, kind, _ in scan(src)]
+    assert kinds == [(6, "eq"), (7, "eq"), (8, "order"), (9, "hash"), (10, "in"), (11, "order")]
+
+
+def test_ci_sample_is_fixed_and_stratified():
+    from cobol_equiv.benchmark import ci, verify
+
+    us = verify.units()
+    a, b = ci.sample(us, 2), ci.sample(list(us), 2)
+    assert a == b and len(a) == 12
+    strata = {(u[0], u[2]) for u in a}
+    assert strata == {(t, c) for t in "ER" for c in "ABC"}
+
+
+def test_ci_input_hash_keys(monkeypatch):
+    from cobol_equiv.benchmark import ci, verify
+
+    a = next(u for u in verify.units() if u[2] == "A")
+    c = next(u for u in verify.units() if u[2] == "C")
+    assert ci.input_hash(a, "registered") != ci.input_hash(a, "corrected")
+    assert ci.input_hash(c, "registered") == ci.input_hash(c, "corrected")
+    before = ci.input_hash(a, "corrected"), ci.input_hash(c, "corrected")
+    monkeypatch.setattr(ci, "runtime_version", lambda: "0.0.0-test")
+    assert ci.input_hash(a, "corrected") != before[0] and ci.input_hash(c, "corrected") == before[1]
+
+
+def test_corrected_verdicts_differ_only_inside_the_d14_scope():
+    """Outside the D14 scope, verdicts-corrected.csv holds the registered rows;
+    the sample units have the same verdicts in both modes; the comparisons
+    files cover exactly the scope."""
+    from cobol_equiv.benchmark import ci, verify
+
+    reg = ci._rows_by_unit(verify.OUT.read_text(encoding="utf-8"))
+    cor = ci._rows_by_unit(verify.OUTS["corrected"][0].read_text(encoding="utf-8"))
+    affected, sampled = ci.scope()
+    assert set(reg) == set(cor)
+    for u in verify.units():
+        i = ci.unit_id(u)
+        if u not in affected and u not in sampled:
+            assert reg[i] == cor[i], i
+        elif u in sampled:
+            assert [r["pass"] for r in reg[i]] == [r["pass"] for r in cor[i]], i
+    scope_ids = {ci.unit_id(u) for u in affected + sampled}
+    for out in (verify.OUTS["registered"][1], verify.OUTS["corrected"][1]):
+        assert set(ci._rows_by_unit(out.read_text(encoding="utf-8"))) == scope_ids
+    assert ci.c_uses_runtime() == []
+
+
+def test_ci_check_compares_with_the_committed_rows(monkeypatch):
+    """ci.check on rows equal to the committed ones passes and a changed
+    verdict fails (units are not run: run_units returns committed rows)."""
+    from cobol_equiv.benchmark import ci, verify
+
+    def fake(changed=None):
+        def run_units(units, mode, jobs, progress):
+            committed = ci._rows_by_unit(verify.OUTS[mode][0].read_text(encoding="utf-8"))
+            usage = ci._rows_by_unit(verify.OUTS[mode][1].read_text(encoding="utf-8"))
+            out = {}
+            for u in units:
+                rows = [dict(r) for r in committed[ci.unit_id(u)]]
+                counts = {(r["round"]): r for r in usage.get(ci.unit_id(u), [])}
+                for r in rows:
+                    c = counts.get(r["round"]) if r["set"] == "heldout" and r["version"] == verify.PRIMARY else None
+                    for k in verify.CMP:
+                        r[k] = c[k] if c else "0"
+                    if changed and ci.unit_id(u) == changed:
+                        r["pass"] = "1" if r["pass"] == "0" else "0"
+                out[u] = rows
+            return out
+        return run_units
+
+    for mode in verify.MODES:
+        monkeypatch.setattr(ci, "run_units", fake())
+        assert ci.check(mode, "R", None, 2, 1, lambda m: None) == 0
+    unit = next(u for u in ci.scope()[0] if u[0] == "R")
+    monkeypatch.setattr(ci, "run_units", fake(ci.unit_id(unit)))
+    assert ci.check("corrected", "R", None, 2, 1, lambda m: None) == 1

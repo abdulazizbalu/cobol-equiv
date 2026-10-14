@@ -12,8 +12,8 @@ E,rc-julia-set,C,1,difference,other,"conversion of non-numeric ACCEPT input text
 E,rc-julia-set,C,2,difference,other,DISPLAY '' writes one space before the newline; the translation writes none,"<stdout> line 1, column 57: expected b'           ', got b'          '"
 E,rc-julia-set,C,3,difference,other,"conversion of non-numeric ACCEPT input text to the numeric constant differs, so the plot differs","<stdout> line 7, column 27: expected b'          #####               ', got b'                              '"
 E,rc-roman-numerals-encode,A,1,error,crash or syntax error,TypeError: '>' not supported between instances of 'CobDecimal' and 'CobDecimal',TypeError: '>' not supported between instances of 'CobDecimal' and 'CobDecimal'
-E,rc-soloways-recurring-rainfall,A,2,timeout,time-out,"the loop ends on dec(x) == dec(99999), which is never true: CobDecimal has no equality operator (D13)",timed out
-E,rc-soloways-recurring-rainfall,A,3,timeout,time-out,"the loop ends on dec(x) == dec(99999), which is never true: CobDecimal has no equality operator (D13)",timed out
+E,rc-soloways-recurring-rainfall,A,2,timeout,time-out,"the loop ends on dec(x) == dec(99999), which is never true: CobDecimal == compares identity (D13)",timed out
+E,rc-soloways-recurring-rainfall,A,3,timeout,time-out,"the loop ends on dec(x) == dec(99999), which is never true: CobDecimal == compares identity (D13)",timed out
 R,custlist,A,1,error,crash or syntax error,TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal',TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'
 R,custlist,A,2,error,crash or syntax error,TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal',TypeError: '<' not supported between instances of 'CobDecimal' and 'CobDecimal'
 R,interest,C,1,difference,other,DISPLAY of a numeric item with decimal places shows no decimal point,"<stdout> line 1, column 55: expected b'.5004 F006.36254589 N', got b'.5004 F00636254589 N'"
